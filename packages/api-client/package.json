@@ -1,0 +1,32 @@
+{
+  "name": "@academic/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "lint": "eslint src/",
+    "type-check": "tsc --noEmit",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@academic/shared-types": "workspace:*",
+    "@tanstack/react-query": "^5.0.0",
+    "axios": "^1.6.0",
+    "ky": "^1.0.0"
+  },
+  "devDependencies": {
+    "@academic/tsconfig": "workspace:*",
+    "@academic/eslint-config": "workspace:*",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "@tanstack/react-query": "^5.0.0"
+  }
+}

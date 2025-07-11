@@ -1,0 +1,46 @@
+{
+  "name": "academic-platform",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:frontend": "turbo dev --filter=@academic/frontend",
+    "dev:backend": "turbo dev --filter=@academic/backend",
+    "build": "turbo build",
+    "build:frontend": "turbo build --filter=@academic/frontend",
+    "build:backend": "turbo build --filter=@academic/backend",
+    "start": "turbo start",
+    "start:frontend": "turbo start --filter=@academic/frontend",
+    "start:backend": "turbo start --filter=@academic/backend",
+    "test": "turbo test",
+    "test:unit": "turbo test:unit",
+    "test:integration": "turbo test:integration",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint -- --fix",
+    "type-check": "turbo type-check",
+    "clean": "turbo clean",
+    "setup": "pnpm install && pnpm build",
+    "db:generate": "turbo db:generate --filter=@academic/backend",
+    "db:migrate": "turbo db:migrate --filter=@academic/backend",
+    "db:seed": "turbo db:seed --filter=@academic/backend",
+    "db:studio": "turbo db:studio --filter=@academic/backend",
+    "install:all": "pnpm install",
+    "update:all": "pnpm update --recursive"
+  },
+  "devDependencies": {
+    "turbo": "^1.13.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "eslint": "^8.0.0",
+    "prettier": "^3.0.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}
