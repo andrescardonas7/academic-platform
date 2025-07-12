@@ -297,4 +297,4 @@ Este proyecto es privado y propietario. Todos los derechos reservados.
 
 ---
 
-**Desarrollado con ❤️ usando arquitectura moderna y mejores prácticas de desarrollo.**
+**Desarrollado en Cartaguito ❤️ **
