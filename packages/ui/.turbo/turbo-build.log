@@ -1,0 +1,14 @@
+
+> @academic/ui@0.0.0 build C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui
+> npx tsc
+
+src/components/Button.tsx(42,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/index.ts(2,53): error TS2307: Cannot find module './components/Avatar' or its corresponding type declarations.
+src/index.ts(3,23): error TS2307: Cannot find module './components/Badge' or its corresponding type declarations.
+src/index.ts(4,24): error TS6142: Module './components/Button' was resolved to 'C:/Users/zelda/Documents/ESTUDIO PROGRAMACION/academic-platform/academic-platform/packages/ui/src/components/Button.tsx', but '--jsx' is not set.
+src/index.ts(5,87): error TS2307: Cannot find module './components/Card' or its corresponding type declarations.
+src/index.ts(6,23): error TS2307: Cannot find module './components/Input' or its corresponding type declarations.
+src/index.ts(12,34): error TS6142: Module './components/Button' was resolved to 'C:/Users/zelda/Documents/ESTUDIO PROGRAMACION/academic-platform/academic-platform/packages/ui/src/components/Button.tsx', but '--jsx' is not set.
+src/index.ts(13,32): error TS2307: Cannot find module './components/Card' or its corresponding type declarations.
+src/index.ts(14,33): error TS2307: Cannot find module './components/Input' or its corresponding type declarations.
+ ELIFECYCLE  Command failed with exit code 2.

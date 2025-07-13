@@ -62,10 +62,6 @@ cat > apps/backend/package.json << 'EOF'
     "test:integration": "vitest --run src/**/*.integration.test.ts",
     "lint": "eslint src/",
     "type-check": "tsc --noEmit",
-    "db:generate": "pnpm --filter @academic/database db:generate",
-    "db:migrate": "pnpm --filter @academic/database db:migrate",
-    "db:seed": "pnpm --filter @academic/database db:seed",
-    "db:studio": "pnpm --filter @academic/database db:studio"
   },
   "dependencies": {
     "@academic/shared-types": "workspace:*",
@@ -75,8 +71,7 @@ cat > apps/backend/package.json << 'EOF'
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",
     "compression": "^1.7.4",
-    "dotenv": "^16.3.1",
-    "@prisma/client": "^5.7.0"
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "@academic/tsconfig": "workspace:*",

@@ -1,41 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import {
+  connectDatabase,
+  disconnectDatabase,
+  prisma,
+} from '@academic/database';
 
-declare global {
-  var __prisma: PrismaClient | undefined;
-}
-
-let prisma: PrismaClient;
-
-if (process.env.NODE_ENV === 'production') {
-  prisma = new PrismaClient();
-} else {
-  if (!global.__prisma) {
-    global.__prisma = new PrismaClient({
-      log: ['query', 'info', 'warn', 'error'],
-    });
-  }
-  prisma = global.__prisma;
-}
-
-export const connectDatabase = async () => {
-  try {
-    await prisma.$connect();
-    console.log('✅ Database connected successfully');
-  } catch (error) {
-    console.error('❌ Database connection failed:', error);
-    throw error;
-  }
-};
-
-export const disconnectDatabase = async () => {
-  try {
-    await prisma.$disconnect();
-    console.log('✅ Database disconnected successfully');
-  } catch (error) {
-    console.error('❌ Database disconnection failed:', error);
-    throw error;
-  }
-};
-
-export { prisma };
+export { connectDatabase, disconnectDatabase, prisma };
 export default prisma;

@@ -24,23 +24,28 @@
     "type-check": "turbo type-check",
     "clean": "turbo clean",
     "setup": "pnpm install && pnpm build",
-    "db:generate": "turbo db:generate --filter=@academic/backend",
-    "db:migrate": "turbo db:migrate --filter=@academic/backend",
-    "db:seed": "turbo db:seed --filter=@academic/backend",
-    "db:studio": "turbo db:studio --filter=@academic/backend",
+    "db:generate": "turbo db:generate --filter=@academic/database",
+    "db:migrate": "turbo db:migrate --filter=@academic/database",
+    "db:seed": "turbo db:seed --filter=@academic/database",
+    "db:studio": "turbo db:studio --filter=@academic/database",
     "install:all": "pnpm install",
     "update:all": "pnpm update --recursive"
   },
   "devDependencies": {
-    "turbo": "^1.13.0",
+    "@types/jest": "^29.5.8",
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0",
+    "@types/testing-library__jest-dom": "^6.0.0",
     "eslint": "^8.0.0",
-    "prettier": "^3.0.0"
+    "prettier": "^3.0.0",
+    "turbo": "^1.13.0",
+    "typescript": "^5.0.0"
   },
-  "packageManager": "pnpm@8.15.0",
+  "packageManager": "pnpm@9.6.0",
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
+  },
+  "dependencies": {
+    "@prisma/engines": "5.22.0"
   }
 }
