@@ -8,7 +8,7 @@
     "build": "npx tsc",
     "dev": "npx tsc --watch",
     "clean": "rm -rf dist",
-    "lint": "eslint src/",
+    "lint": "eslint src/**/*.{ts,tsx}",
     "type-check": "npx tsc --noEmit"
   },
   "dependencies": {

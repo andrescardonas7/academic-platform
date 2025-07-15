@@ -1,58 +1,124 @@
 import { NextFunction, Request, Response } from 'express';
 
-interface CustomError extends Error {
-  status?: number;
+export interface AppError extends Error {
   statusCode?: number;
+  code?: string;
+  isOperational?: boolean;
 }
 
 export const errorHandler = (
-  err: CustomError,
+  error: AppError,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  // Default error
-  let error = { ...err };
-  error.message = err.message;
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const statusCode = error.statusCode || 500;
+  const message = error.message || 'Internal Server Error';
 
-  // Log error
-  console.error('Error:', err);
+  // Security: Enhanced logging with security context
+  const logData = {
+    message: error.message,
+    statusCode,
+    url: req.url,
+    method: req.method,
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+    timestamp: new Date().toISOString(),
+    code: error.code || 'UNKNOWN_ERROR',
+    isOperational: error.isOperational || false,
+  };
 
-  // Mongoose bad ObjectId
-  if (err.name === 'CastError') {
-    const message = 'Resource not found';
-    error = { name: 'CastError', message, status: 404 } as CustomError;
+  if (isDevelopment || error.isOperational) {
+    console.error('Security Event - Error details:', {
+      ...logData,
+      stack: error.stack,
+    });
+  } else {
+    // In production, log minimal info for non-operational errors
+    console.error('Security Event - Non-operational error:', logData);
   }
 
-  // Mongoose duplicate key
-  if (err.name === 'MongoError' && (err as any).code === 11000) {
-    const message = 'Duplicate field value entered';
-    error = { name: 'DuplicateError', message, status: 400 } as CustomError;
+  // Prepare response based on environment
+  const response: any = {
+    error: statusCode >= 500 ? 'Internal Server Error' : 'Bad Request',
+    message: isDevelopment
+      ? message
+      : statusCode >= 500
+        ? 'Something went wrong'
+        : message,
+    code: error.code || 'UNKNOWN_ERROR',
+  };
+
+  // Only include stack trace in development
+  if (isDevelopment && error.stack) {
+    response.stack = error.stack;
   }
 
-  // Mongoose validation error
-  if (err.name === 'ValidationError') {
-    const message = 'Validation Error';
-    error = { name: 'ValidationError', message, status: 400 } as CustomError;
+  // Include validation details if available
+  if (error.code === 'VALIDATION_ERROR' && (error as any).details) {
+    response.details = (error as any).details;
   }
 
-  // JWT errors
-  if (err.name === 'JsonWebTokenError') {
-    const message = 'Invalid token';
-    error = { name: 'JsonWebTokenError', message, status: 401 } as CustomError;
-  }
-
-  if (err.name === 'TokenExpiredError') {
-    const message = 'Token expired';
-    error = { name: 'TokenExpiredError', message, status: 401 } as CustomError;
-  }
-
-  // Send error response
-  res.status(error.status || error.statusCode || 500).json({
-    success: false,
-    error: {
-      message: error.message || 'Server Error',
-      ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-    }
-  });
+  res.status(statusCode).json(response);
 };
+
+// Custom error classes
+export class ValidationError extends Error implements AppError {
+  statusCode = 400;
+  code = 'VALIDATION_ERROR';
+  isOperational = true;
+
+  constructor(
+    message: string,
+    public details?: any[]
+  ) {
+    super(message);
+    this.name = 'ValidationError';
+    this.details = details;
+  }
+}
+
+export class AuthenticationError extends Error implements AppError {
+  statusCode = 401;
+  code = 'AUTHENTICATION_ERROR';
+  isOperational = true;
+
+  constructor(message: string = 'Authentication required') {
+    super(message);
+    this.name = 'AuthenticationError';
+  }
+}
+
+export class AuthorizationError extends Error implements AppError {
+  statusCode = 403;
+  code = 'AUTHORIZATION_ERROR';
+  isOperational = true;
+
+  constructor(message: string = 'Access denied') {
+    super(message);
+    this.name = 'AuthorizationError';
+  }
+}
+
+export class NotFoundError extends Error implements AppError {
+  statusCode = 404;
+  code = 'NOT_FOUND';
+  isOperational = true;
+
+  constructor(message: string = 'Resource not found') {
+    super(message);
+    this.name = 'NotFoundError';
+  }
+}
+
+export class RateLimitError extends Error implements AppError {
+  statusCode = 429;
+  code = 'RATE_LIMIT_EXCEEDED';
+  isOperational = true;
+
+  constructor(message: string = 'Rate limit exceeded') {
+    super(message);
+    this.name = 'RateLimitError';
+  }
+}

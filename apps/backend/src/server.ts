@@ -2,38 +2,101 @@ import compression from 'compression';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
-import rateLimit from 'express-rate-limit';
+import session from 'express-session';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { connectDatabase } from './config/database';
+import { rateLimit } from './middleware/auth';
+import { csrfProtection, getCSRFToken } from './middleware/csrf';
 import { errorHandler } from './middleware/errorHandler';
 import { notFoundHandler } from './middleware/notFoundHandler';
-import { apiRoutes } from './routes';
+import apiRoutes from './routes';
 
 // Load environment variables
 dotenv.config();
+// Security: Removed credential logging
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'), // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
-});
-
 // Middleware
-app.use(helmet()); // Security headers
+// Enhanced security headers
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        mediaSrc: ["'self'"],
+        frameSrc: ["'none'"],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+  })
+);
+// Session configuration
+app.use(
+  session({
+    secret:
+      process.env.SESSION_SECRET || 'fallback-secret-change-in-production',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: 'strict',
+    },
+  })
+);
+
 app.use(compression()); // Compress responses
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-  credentials: true
-}));
+
+// Enhanced CORS configuration
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        process.env.CORS_ORIGIN || 'http://localhost:3000',
+        'http://localhost:3000',
+        'https://localhost:3000',
+      ];
+
+      // Allow requests with no origin (mobile apps, etc.)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-api-key',
+      'x-csrf-token',
+    ],
+  })
+);
+
 app.use(morgan('combined')); // Logging
-app.use(limiter); // Rate limiting
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(rateLimit); // Enhanced rate limiting
+app.use(express.json({ limit: '1mb' })); // Reduced limit for security
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+
+// CSRF Protection
+app.use(csrfProtection);
+
+// CSRF token endpoint
+app.get('/csrf-token', getCSRFToken);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -41,7 +104,7 @@ app.get('/health', (req, res) => {
     status: 'OK',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
-    version: process.env.npm_package_version || '1.0.0'
+    version: process.env.npm_package_version || '1.0.0',
   });
 });
 

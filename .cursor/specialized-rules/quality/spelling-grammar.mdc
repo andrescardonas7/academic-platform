@@ -1,0 +1,112 @@
+## Spelling & Grammar
+
+All comments, documentation, variable names, commit messages and user-visible text **MUST** be free of spelling or grammatical errors. Project-specific technical terms can be added to a custom dictionary when necessary.
+
+---
+
+## Spelling & Grammar
+
+All comments, documentation, variable names, commit messages and user-visible text **MUST** be free of spelling or grammatical errors. Project-specific technical terms can be added to a custom dictionary when necessary.
+
+All comments, documentation, variable names, commit messages and user-visible text **MUST** be free of spelling or grammatical errors. Project-specific technical terms can be added to a custom dictionary when necessary.
+
+---
+
+## 1. **¿Es óptima la forma actual?**
+
+**Ventajas del enfoque actual:**
+
+- **Documentación exhaustiva:** Tienes visión, arquitectura, guía de implementación, cronograma y backlog bien definidos.
+- **Separación de responsabilidades:** Cada archivo cumple un propósito (planeación, arquitectura, guía, tareas).
+- **Transparencia:** Cualquier miembro puede entender el “qué” y el “cómo” del proyecto.
+
+**Desventajas y riesgos:**
+
+- **Desincronización:** El estado real de los PBIs puede divergir entre archivos (ej: `TODO_IMPLEMENTATION.md` vs `SPRINT_PLANNING.md`).
+- **Redundancia:** Los PBIs y tareas aparecen en varios archivos, lo que puede llevar a duplicidad y errores de actualización.
+- **Dificultad de auditoría:** No hay un único lugar donde ver el estado real y el cumplimiento de Definition of Done para cada PBI.
+- **Escalabilidad limitada:** A medida que el proyecto crece, mantener múltiples fuentes de verdad se vuelve insostenible.
+
+---
+
+## 2. **¿Qué haría un Senior Developer para optimizar esto?**
+
+### a) **Single Source of Truth (SSOT)**
+
+- **Centralizar el estado de los PBIs y tareas en un solo archivo estructurado** (ej: `docs/delivery/backlog.md` o un board digital como GitHub Projects).
+- **Todos los demás documentos** (cronograma, guías, arquitectura) **referencian** este archivo, pero no duplican el estado.
+
+### b) **Automatización y sincronización**
+
+- Usar herramientas que permitan **sincronizar automáticamente** el estado de los PBIs (por ejemplo, integrando con GitHub Issues/Projects o scripts que actualicen los checkboxes en los markdowns).
+- Generar reportes y dashboards a partir de la fuente de verdad.
+
+### c) **Checklist y Definition of Done por PBI**
+
+- Cada PBI debe tener su propio checklist de DoD y Definition of Ready, y su estado debe ser auditable.
+- Idealmente, cada PBI es un archivo markdown en una carpeta `/docs/delivery/PBI-XXX/` con su historia, criterios, tasks y estado.
+
+### d) **Backlog y cronograma como vistas, no como fuentes de estado**
+
+- El cronograma (`SPRINT_PLANNING.md`) y la estructura (`PROJECT_STRUCTURE.md`) solo muestran vistas o resúmenes del backlog, no el estado real.
+- El avance se consulta siempre en la fuente de verdad.
+
+### e) **Menos es más**
+
+- Elimina la redundancia: si una tarea/PBI está en más de un lugar, debe ser referenciada, no duplicada.
+- Usa tablas o dashboards para resúmenes, no listas largas de checkboxes en varios archivos.
+
+---
+
+## 3. **¿Cómo se vería una estructura ideal?**
+
+```plaintext
+docs/
+  delivery/
+    backlog.md                # ÚNICA fuente de verdad de PBIs y su estado
+    PBI-001/
+      prd.md
+      tasks.md
+      DoD.md
+      status.md
+    PBI-002/
+      ...
+  sprints/
+    SPRINT_01.md              # Solo cronograma y planning, referencia a PBIs
+  architecture/
+    TECHNICAL_ARCHITECTURE.md # Solo arquitectura, sin estado de PBIs
+  implementation/
+    IMPLEMENTATION_GUIDE.md   # Guía paso a paso, sin checkboxes de PBIs
+  reference/
+    PROJECT_STRUCTURE.md      # Visión, estructura, sin checkboxes de PBIs
+```
+
+- **El estado de cada PBI** (pendiente, en progreso, hecho, bloqueado) **solo se actualiza en `backlog.md` y/o en su propio archivo**.
+- **Las vistas de sprint, arquitectura y guía** solo referencian los PBIs, nunca duplican su estado.
+
+---
+
+## 4. **¿Qué herramientas usaría un senior para esto?**
+
+- **GitHub Projects/Issues** como fuente de verdad, con automatización para sincronizar con markdowns si se requiere documentación offline.
+- **Scripts de sincronización** para actualizar checkboxes o generar dashboards.
+- **Plantillas de PBI** para asegurar que cada uno tenga su DoR, DoD y checklist de cumplimiento.
+
+---
+
+## 5. **Conclusión y recomendación**
+
+**Un senior developer prioriza:**
+
+- **Centralización del estado** (SSOT)
+- **Automatización**
+- **Eliminación de redundancia**
+- **Documentación clara, pero no repetitiva**
+- **Facilidad de auditoría y escalabilidad**
+
+**Recomendación:**
+Migra el estado real de los PBIs a un solo archivo (o sistema) y haz que el resto de la documentación solo lo referencie. Automatiza la generación de vistas y reportes. Así, tu documentación será robusta, escalable y fácil de mantener, incluso en equipos grandes o proyectos de larga duración.
+
+¿Quieres que te ayude a diseñar esa estructura ideal y a migrar tu documentación actual a ese modelo?
+
+All comments, documentation, variable names, commit messages and user-visible text **MUST** be free of spelling or grammatical errors. Project-specific technical terms can be added to a custom dictionary when necessary.

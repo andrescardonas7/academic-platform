@@ -1,77 +1,85 @@
-import { Request, Response, Router } from 'express';
+import { Router } from 'express';
+import { supabase } from '../config/supabase';
+import { rateLimit, validateApiKey } from '../middleware/auth';
+import { NotFoundError } from '../middleware/errorHandler';
+import { validateSearchQuery } from '../middleware/validation';
+import { SearchService } from '../services/SearchService';
 
 const router = Router();
+const searchService = new SearchService();
 
-// POST /api/search - Advanced search for institutions and careers
-router.post('/', async (req: Request, res: Response) => {
+// Apply authentication and rate limiting to all search routes
+router.use(validateApiKey);
+router.use(rateLimit);
+
+// GET /api/search - Search offerings with filters and pagination
+router.get('/', validateSearchQuery, async (req, res, next) => {
   try {
-    const { query, filters } = req.body;
-
-    // TODO: Implement advanced search logic with database
-    const searchResults = {
-      institutions: [
-        {
-          id: 1,
-          name: 'Universidad Nacional de Colombia',
-          type: 'public',
-          location: 'Bogotá',
-          rating: 4.5,
-          relevance: 0.95
-        }
-      ],
-      careers: [
-        {
-          id: 1,
-          name: 'Ingeniería de Sistemas',
-          category: 'Engineering',
-          duration: 10,
-          relevance: 0.92
-        }
-      ],
-      totalResults: 2
+    const filters = {
+      q: req.query.q as string,
+      modalidad: req.query.modalidad as string,
+      institucion: req.query.institucion as string,
+      nivel: req.query.nivel as string,
+      area: req.query.area as string,
+      page: parseInt(req.query.page as string) || 1,
+      limit: parseInt(req.query.limit as string) || 15,
+      sortBy: (req.query.sortBy as string) || 'nombre',
+      sortOrder: (req.query.sortOrder as 'asc' | 'desc') || 'asc',
     };
 
+    const result = await searchService.searchOfferings(filters);
+
     res.json({
       success: true,
-      data: searchResults,
-      query,
-      filters
+      data: result.data,
+      pagination: result.pagination,
+      filters: result.filters,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: 'Error performing search'
-    });
+    next(error);
   }
 });
 
-// GET /api/search/suggestions - Get search suggestions
-router.get('/suggestions', async (req: Request, res: Response) => {
+// GET /api/search/filters - Get available filter options
+router.get('/filters', async (req, res, next) => {
   try {
-    const { q } = req.query;
-
-    // TODO: Implement suggestion logic
-    const suggestions = [
-      'Ingeniería de Sistemas',
-      'Medicina',
-      'Derecho',
-      'Administración de Empresas',
-      'Universidad Nacional',
-      'Pontificia Javeriana'
-    ].filter(item =>
-      q ? item.toLowerCase().includes((q as string).toLowerCase()) : true
-    );
+    const filterOptions = await searchService.getFilterOptions();
 
     res.json({
       success: true,
-      data: suggestions
+      data: filterOptions,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: 'Error fetching suggestions'
-    });
+    next(error);
   }
 });
 
-export { router as searchRoutes };
+// GET /api/search/:id - Get specific offering by ID
+router.get('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!id || isNaN(parseInt(id))) {
+      throw new NotFoundError('Invalid offering ID');
+    }
+
+    const { data, error } = await supabase
+      .from('offerings')
+      .select('*')
+      .eq('id', parseInt(id))
+      .single();
+
+    if (error || !data) {
+      throw new NotFoundError('Offering not found');
+    }
+
+    res.json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+export default router;

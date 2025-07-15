@@ -1,0 +1,43 @@
+---
+alwaysApply: true
+---
+
+## Security Deep-Dive
+
+### 1. OWASP Checklist (Top 10)
+
+- Injection, Broken Auth, XSS, Insecure Deserialization, etc.
+- Perform quarterly review vs OWASP cheat-sheets.
+
+### 2. Secret Management
+
+- No secrets in code. Use `.env` only for local; vault in CI (e.g., GitHub Secrets).
+- Rotate keys at least every 90 days.
+
+### 3. Dependency Security
+
+- Enable **Dependabot** or **Renovate** for automatic PRs.
+- CI runs `npm audit --omit dev` (or `yarn npm audit`) and SCA (Snyk/GH).
+
+### 4. CI/CD Hardening
+
+- Principle of least privilege for tokens.
+- Require signed commits & protected branches.
+- Use OIDC for cloud deploy auth (no long-lived creds).
+
+### 5. HTTP Security Headers
+
+`Content-Security-Policy`, `Strict-Transport-Security`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`.
+
+### 6. Input Validation & Output Encoding
+
+- Centralized validation layer (zod/Joi).
+- Escape output in HTML templates to prevent XSS.
+
+### 7. Incident Response
+
+- Severity classification, on-call rotation, post-mortem template in `docs/incident/`.
+
+### 7. Incident Response
+
+- Severity classification, on-call rotation, post-mortem template in `docs/incident/`.

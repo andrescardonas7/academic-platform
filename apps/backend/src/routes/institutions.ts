@@ -1,81 +1,115 @@
-import { Request, Response, Router } from 'express';
+import { Router } from 'express';
+import { supabase } from '../config/supabase';
+import { rateLimit, validateApiKey } from '../middleware/auth';
+import { NotFoundError } from '../middleware/errorHandler';
 
 const router = Router();
 
-// GET /api/institutions - Get all institutions with optional filters
-router.get('/', async (req: Request, res: Response) => {
+// Apply authentication and rate limiting to all institutions routes
+router.use(validateApiKey);
+router.use(rateLimit);
+
+// GET /api/institutions - Get all institutions with pagination
+router.get('/', async (req, res, next) => {
   try {
-    // TODO: Implement database query
-    const institutions = [
-      {
-        id: 1,
-        name: 'Universidad Nacional de Colombia',
-        type: 'public',
-        location: 'Bogotá',
-        rating: 4.5,
-        description: 'Universidad pública de excelencia académica',
-        website: 'https://unal.edu.co',
-        established: 1867,
-        studentCount: 53000
-      },
-      {
-        id: 2,
-        name: 'Pontificia Universidad Javeriana',
-        type: 'private',
-        location: 'Bogotá',
-        rating: 4.3,
-        description: 'Universidad privada de tradición jesuita',
-        website: 'https://javeriana.edu.co',
-        established: 1623,
-        studentCount: 28000
-      }
-    ];
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = Math.min(100, parseInt(req.query.limit as string) || 20);
+    const offset = (page - 1) * limit;
+
+    // Get distinct institutions with their offerings count
+    const { data, error, count } = await supabase
+      .from('offerings')
+      .select('institucion', { count: 'exact' })
+      .not('institucion', 'is', null)
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+
+    // Get unique institutions and count their offerings
+    const institutions = await Promise.all(
+      [...new Set(data?.map((item) => item.institucion))].map(
+        async (institucion) => {
+          const { count: offeringsCount } = await supabase
+            .from('offerings')
+            .select('*', { count: 'exact', head: true })
+            .eq('institucion', institucion);
+
+          return {
+            name: institucion,
+            offeringsCount: offeringsCount || 0,
+          };
+        }
+      )
+    );
+
+    const total = count || 0;
+    const totalPages = Math.ceil(total / limit);
 
     res.json({
       success: true,
       data: institutions,
-      total: institutions.length
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1,
+      },
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: 'Error fetching institutions'
-    });
+    next(error);
   }
 });
 
-// GET /api/institutions/:id - Get institution by ID
-router.get('/:id', async (req: Request, res: Response) => {
+// GET /api/institutions/:name - Get specific institution by name
+router.get('/:name', async (req, res, next) => {
   try {
-    const { id } = req.params;
+    const { name } = req.params;
 
-    // TODO: Implement database query
+    if (!name) {
+      throw new NotFoundError('Institution name is required');
+    }
+
+    const { data, error, count } = await supabase
+      .from('offerings')
+      .select('*', { count: 'exact' })
+      .eq('institucion', name)
+      .order('nombre', { ascending: true });
+
+    if (error) {
+      throw new Error(`Database error: ${error.message}`);
+    }
+
+    if (!data || data.length === 0) {
+      throw new NotFoundError('Institution not found');
+    }
+
+    // Get institution statistics
+    const modalidades = [...new Set(data.map((item) => item.modalidad))];
+    const niveles = [...new Set(data.map((item) => item.nivel))];
+    const areas = [...new Set(data.map((item) => item.area))];
+
     const institution = {
-      id: parseInt(id),
-      name: 'Universidad Nacional de Colombia',
-      type: 'public',
-      location: 'Bogotá',
-      rating: 4.5,
-      description: 'Universidad pública de excelencia académica',
-      website: 'https://unal.edu.co',
-      established: 1867,
-      studentCount: 53000,
-      careers: [
-        { id: 1, name: 'Ingeniería de Sistemas', duration: 10 },
-        { id: 2, name: 'Medicina', duration: 12 }
-      ]
+      name,
+      offeringsCount: count || 0,
+      offerings: data,
+      statistics: {
+        modalidades,
+        niveles,
+        areas,
+      },
     };
 
     res.json({
       success: true,
-      data: institution
+      data: institution,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: 'Error fetching institution'
-    });
+    next(error);
   }
 });
 
-export { router as institutionsRoutes };
+export default router;

@@ -1,0 +1,34 @@
+---
+alwaysApply: true
+---
+
+## Tooling & Automation (Formatting & Linting)
+
+To guarantee consistent code style and prevent regressions the following toolchain **MUST** be configured and pass on every commit:
+
+1. **Prettier** – default formatter for all supported file types (`.ts, .tsx, .js, .jsx, .json, .md`, etc.).
+2. **ESLint** with TypeScript support and recommended plugins:
+   - `@typescript-eslint` – TypeScript lint rules.
+   - `eslint-plugin-react` – React best-practices.
+   - `eslint-plugin-tailwindcss` – Tailwind utility validation (where applicable).
+3. **Husky** Git hooks + **lint-staged** to run Prettier and ESLint on staged files _before_ each commit:
+
+```json
+"lint-staged": {
+  "**/*.{ts,tsx,js,jsx,json,md}": [
+    "prettier --write"
+  ],
+  "**/*.{ts,tsx,js,jsx}": [
+    "eslint --fix"
+  ]
+}
+```
+
+If any of these checks fail the commit **MUST** be aborted and issues fixed before retrying.
+
+}
+
+```
+
+If any of these checks fail the commit **MUST** be aborted and issues fixed before retrying.
+```

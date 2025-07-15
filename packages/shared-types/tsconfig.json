@@ -4,8 +4,11 @@
     "outDir": "dist",
     "rootDir": "src",
     "module": "esnext",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false
   },
-  "include": [],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }

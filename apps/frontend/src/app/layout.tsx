@@ -1,34 +1,55 @@
-import { Providers } from '@/components/providers'
-import '@/styles/globals.css'
-import { cn } from '@/utils/cn'
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import { Providers } from '../components/providers';
+import '../styles/globals.css';
+import { cn } from '../utils/cn';
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: {
-    default: 'Academic Platform',
-    template: '%s | Academic Platform'
+    default: 'Diseña tu futuro - Encuéntralo en Cartago',
+    template: '%s | Cartago Académico',
   },
-  description: 'Discover and compare academic institutions and careers. Find the perfect educational path for your future.',
-  keywords: ['education', 'university', 'college', 'careers', 'academic', 'institutions'],
-  authors: [{ name: 'Academic Platform Team' }],
-  creator: 'Academic Platform Team',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  icons: {
+    icon: '/icon',
+    shortcut: '/icon',
+    apple: '/icon',
+  },
+  description:
+    'La plataforma que unifica la oferta académica de Cartago, Valle del Cauca. Busca, compara y decide tu futuro académico.',
+  keywords: [
+    'educación',
+    'universidad',
+    'cartago',
+    'valle del cauca',
+    'carreras',
+    'programas académicos',
+    'instituciones',
+    'pregrado',
+    'posgrado',
+    'colombia',
+  ],
+  authors: [{ name: 'Plataforma Académica Cartago' }],
+  creator: 'Plataforma Académica Cartago',
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  ),
   openGraph: {
     type: 'website',
-    locale: 'en_US',
+    locale: 'es_CO',
     url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-    title: 'Academic Platform',
-    description: 'Discover and compare academic institutions and careers.',
-    siteName: 'Academic Platform',
+    title: 'Diseña tu futuro - Encuéntralo en Cartago',
+    description:
+      'La plataforma que unifica la oferta académica de Cartago, Valle del Cauca. Busca, compara y decide.',
+    siteName: 'Cartago Académico',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Academic Platform',
-    description: 'Discover and compare academic institutions and careers.',
-    creator: '@academicplatform',
+    title: 'Diseña tu futuro - Encuéntralo en Cartago',
+    description:
+      'La plataforma que unifica la oferta académica de Cartago, Valle del Cauca.',
+    creator: '@cartagoacademico',
   },
   robots: {
     index: true,
@@ -44,23 +65,23 @@ export const metadata: Metadata = {
   verification: {
     google: 'your-google-verification-code',
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={cn(
-        inter.className,
-        'min-h-screen bg-background font-sans antialiased'
-      )}>
-        <Providers>
-          {children}
-        </Providers>
+    <html lang='es' suppressHydrationWarning>
+      <body
+        className={cn(
+          inter.className,
+          'min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 font-sans antialiased'
+        )}
+      >
+        <Providers>{children}</Providers>
       </body>
     </html>
-  )
+  );
 }

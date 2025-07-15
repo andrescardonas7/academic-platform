@@ -1,0 +1,3 @@
+<!-- Generated: 2025-07-14 00:00:00 UTC -->
+
+// ...existing code from SPRINT_PLANNING.md...

@@ -1,15 +1,19 @@
 # 🎓 Academic Platform - Estructura del Proyecto
 
 ## Visión del Proyecto
+
 **Plataforma centralizada para búsqueda de oferta académica de Cartago, Valle** que permite a los usuarios buscar carreras y comparar instituciones en un solo lugar.
 
 ## ROL DEL DESARROLLADOR
+
 Senior Web Developer con +15 años de experiencia aplicando metodologías modernas: PBI, To Do organizadas por prioridades, arquitectura escalable, UI/UX 2025, y estructura modular.
 
 ## OBJETIVO PRINCIPAL
+
 Desarrollar una web app que integre toda la oferta académica de un país/región, permitiendo búsqueda por carrera y comparación de instituciones con información completa.
 
 ## INFORMACIÓN MOSTRADA POR CARRERA
+
 - ✅ Nombre de la institución
 - ✅ Modalidad (presencial, virtual, híbrida)
 - ✅ Precio
@@ -17,6 +21,7 @@ Desarrollar una web app que integre toda la oferta académica de un país/regió
 - ✅ Enlace al sitio oficial o página del programa
 
 ## PROPÓSITO
+
 - ⚡ Acceso inmediato y comparativo
 - 🔍 Eliminar fricción de búsqueda universidad por universidad
 - 📊 Mejorar toma de decisiones con información centralizada
@@ -29,12 +34,14 @@ Desarrollar una web app que integre toda la oferta académica de un país/regió
 ### Stack Seleccionado
 
 #### Frontend
+
 - **Framework**: Next.js 15 (App Router) - Solo Frontend
 - **Styling**: Tailwind CSS + shadcn/ui + Radix UI
 - **State Management**: Zustand + TanStack Query
 - **Hosting**: Vercel
 
 #### Backend
+
 - **Framework**: Node.js + Express.js / Fastify
 - **Database**: SQLite + Prisma ORM (MVP) → PostgreSQL (Scaling)
 - **API**: REST + GraphQL (opcional)
@@ -42,12 +49,14 @@ Desarrollar una web app que integre toda la oferta académica de un país/regió
 - **Hosting**: Railway / Render / DigitalOcean
 
 #### Infraestructura
+
 - **Monorepo**: Turborepo + pnpm
 - **Container**: Docker (backend)
 - **CI/CD**: GitHub Actions
 - **Monitoring**: Sentry + Vercel Analytics
 
 ### Estructura del Monorepo Separado
+
 ```
 academic-platform/
 ├── apps/
@@ -149,9 +158,11 @@ academic-platform/
 ## 📋 PRODUCT BACKLOG ITEMS (PBIs)
 
 ### EPIC 1: FUNDACIÓN DEL PROYECTO
+
 **Objetivo**: Establecer la base técnica y estructura del monorepo separado
 
 #### Sprint 1: Setup Inicial (Semana 1)
+
 - **PBI-001**: Configuración del monorepo separado (frontend/backend)
 - **PBI-002**: Setup Backend API con Node.js + Express
 - **PBI-003**: Setup Frontend Next.js (solo cliente)
@@ -160,9 +171,11 @@ academic-platform/
 - **PBI-006**: Configuración de CI/CD para ambos servicios
 
 ### EPIC 2: CORE FEATURES
+
 **Objetivo**: Implementar funcionalidades principales de búsqueda y visualización
 
 #### Sprint 2: Búsqueda y Datos (Semana 2)
+
 - **PBI-007**: Modelo de datos y seed inicial (backend)
 - **PBI-008**: API REST de búsqueda con filtros avanzados (backend)
 - **PBI-009**: API Client y React Query setup (frontend)
@@ -170,6 +183,7 @@ academic-platform/
 - **PBI-011**: Sistema de filtros UI (frontend)
 
 #### Sprint 3: Visualización y Detalle (Semana 3)
+
 - **PBI-012**: API endpoints para detalles y comparación (backend)
 - **PBI-013**: Página de resultados con grid responsivo (frontend)
 - **PBI-014**: Cards de instituciones con información completa (frontend)
@@ -177,45 +191,54 @@ academic-platform/
 - **PBI-016**: Comparador de instituciones (frontend)
 
 ### EPIC 3: UX/UI MODERNO
+
 **Objetivo**: Implementar experiencia de usuario nivel 2025
 
 #### Sprint 4: Polish y Experiencia (Semana 4)
+
 - **PBI-017**: Optimización mobile-first (frontend)
 - **PBI-018**: Microinteracciones y animaciones (frontend)
 - **PBI-019**: Estados de carga y skeleton loaders (frontend)
 - **PBI-020**: Accesibilidad WCAG AA (frontend)
 
 #### Sprint 5: SEO y Performance (Semana 5)
+
 - **PBI-021**: SEO dinámico y meta tags (frontend)
 - **PBI-022**: Optimización de performance (backend + frontend)
 - **PBI-023**: Implementación de Analytics (frontend)
 - **PBI-024**: Deploy y configuración de dominio
 
 ### EPIC 4: FEATURES AVANZADOS
+
 **Objetivo**: Implementar funcionalidades que agreguen valor único
 
 #### Sprint 6: Comparación Avanzada (Semana 6)
+
 - **PBI-025**: Sistema de favoritos (backend + frontend)
 - **PBI-026**: Comparación lado a lado (frontend)
 - **PBI-027**: Exportación de resultados (PDF/Excel) (frontend)
 - **PBI-028**: Filtros geográficos y mapas (frontend)
 
 #### Sprint 7: Inteligencia Artificial (Semana 7-8)
+
 - **PBI-029**: Integración de chatbot con RAG (backend + frontend)
 - **PBI-030**: Recomendaciones personalizadas (backend)
 - **PBI-031**: Análisis de tendencias de carreras (backend)
 - **PBI-032**: Predicciones de empleabilidad (backend)
 
 ### EPIC 5: ADMINISTRACIÓN Y ESCALABILIDAD
+
 **Objetivo**: Herramientas para gestión y crecimiento
 
 #### Sprint 8: Admin Dashboard (Semana 9)
+
 - **PBI-033**: Panel de administración (admin app)
 - **PBI-034**: Gestión de instituciones y carreras (admin)
 - **PBI-035**: Sistema de validación de datos (backend)
 - **PBI-036**: Reportes y analytics internos (admin)
 
 #### Sprint 9: API Pública (Semana 10)
+
 - **PBI-037**: API REST documentada (backend)
 - **PBI-038**: Sistema de autenticación (backend)
 - **PBI-039**: Rate limiting y monetización (backend)
@@ -226,6 +249,7 @@ academic-platform/
 ## ✅ TO DO LISTS POR PRIORIDAD
 
 ### 🔥 PRIORIDAD ALTA (MVP - Semanas 1-3)
+
 1. **[PBI-001]** Setup monorepo separado (frontend/backend)
 2. **[PBI-002]** Crear Backend API con Node.js + Express
 3. **[PBI-003]** Crear Frontend Next.js (solo cliente)
@@ -240,6 +264,7 @@ academic-platform/
 12. **[PBI-015]** Página de detalle de carrera (frontend)
 
 ### 🚀 PRIORIDAD MEDIA (Post-MVP - Semanas 4-6)
+
 1. **[PBI-011]** Sistema de filtros avanzados (frontend)
 2. **[PBI-016]** Comparador de instituciones (frontend)
 3. **[PBI-017]** Optimización mobile (frontend)
@@ -250,7 +275,8 @@ academic-platform/
 8. **[PBI-026]** Comparación lado a lado (frontend)
 
 ### 💡 PRIORIDAD BAJA (Futuro - Semanas 7+)
-1. **[PBI-029]** Chatbot con IA (backend + frontend)
+
+1. **[PBI-029]** ✅ Chatbot con IA (backend + frontend) - COMPLETADO
 2. **[PBI-030]** Recomendaciones ML (backend)
 3. **[PBI-033]** Admin dashboard (admin app)
 4. **[PBI-037]** API pública (backend)
@@ -262,12 +288,14 @@ academic-platform/
 ## 🎯 METODOLOGÍA ÁGIL
 
 ### Framework: **Scrum adaptado**
+
 - **Sprints**: 1 semana (iteraciones rápidas)
 - **Planning**: Lunes (2h máximo)
 - **Daily**: Async via GitHub Issues/Comments
 - **Review/Retro**: Viernes (1h)
 
 ### Herramientas
+
 - **Project Management**: GitHub Projects
 - **Code**: VS Code + GitHub Copilot
 - **Design**: Figma (wireframes rápidos)
@@ -279,6 +307,7 @@ academic-platform/
 ## 📊 MÉTRICAS DE ÉXITO
 
 ### MVP (Semana 3)
+
 - ✅ Búsqueda funcional con >1000 programas
 - ✅ Tiempo de carga <2s
 - ✅ Mobile responsive 100%
@@ -286,6 +315,7 @@ academic-platform/
 - ✅ API REST funcionando
 
 ### Post-MVP (Semana 6)
+
 - 📈 >100 usuarios únicos/día
 - 📈 <1s tiempo de búsqueda
 - 📈 >70% engagement en resultados
@@ -293,6 +323,7 @@ academic-platform/
 - 📈 API response time <500ms
 
 ### Escalado (Semana 12)
+
 - 🚀 >1000 usuarios únicos/día
 - 🚀 API pública con >10 integraciones
 - 🚀 Chatbot con >80% precisión
@@ -314,6 +345,7 @@ academic-platform/
 ## 🎨 COMUNICACIÓN FRONTEND ↔ BACKEND
 
 ### API Endpoints Principales
+
 ```typescript
 // Backend API Structure
 const apiRoutes = {
@@ -338,11 +370,12 @@ const apiRoutes = {
 
   // Health & Status
   'GET /api/health': 'Service health check',
-  'GET /api/status': 'Detailed service status'
+  'GET /api/status': 'Detailed service status',
 };
 ```
 
 ### Frontend API Client
+
 ```typescript
 // Frontend API Client
 export const apiClient = {
@@ -355,7 +388,7 @@ export const apiClient = {
 
   async getCareer(slug: string): Promise<Career> {
     return this.get(`/api/careers/${slug}`);
-  }
+  },
 };
 ```
 

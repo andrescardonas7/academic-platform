@@ -1,0 +1,34 @@
+---
+alwaysApply: true
+---
+
+## Performance & Profiling
+
+### Web Performance
+
+- Track **Core Web Vitals** (LCP ≤2.5 s, FID ≤100 ms, CLS ≤0.1).
+- Use **Lighthouse CI** in PRs with thresholds.
+- Code-split via dynamic `import()`; lazy-load images with `loading="lazy"`.
+
+### Bundle Optimisation
+
+- Analyse bundle using `webpack-bundle-analyzer` or `next build --profile`.
+- Set a budget (<250 KB gzipped for main chunk).
+
+### Memory & CPU Profiling
+
+- Use Chrome DevTools / Node `--inspect` heap snapshots.
+- Investigate long tasks >50 ms.
+
+### Server Performance
+
+- Implement caching (CDN, HTTP 304, Redis).
+- Use connection pooling for DB.
+
+### Monitoring
+
+- Expose latency percentiles (p95, p99).
+- Alert on spike vs baseline (>20%).
+
+- Expose latency percentiles (p95, p99).
+- Alert on spike vs baseline (>20%).

@@ -1,0 +1,44 @@
+---
+alwaysApply: true
+---
+
+## Observability Guidelines
+
+### 1. Structured Logging
+
+- Use `pino` (Node) or `winston` with JSON output.
+- Include `timestamp`, `level`, `msg`, `requestId`, `userId` where available.
+- Never log sensitive data (passwords, tokens).
+
+### 2. Log Levels
+
+`fatal` > `error` > `warn` > `info` > `debug` > `trace`.
+Default production level: `info`.
+
+### 3. Correlation IDs
+
+- Generate `requestId` at ingress; propagate via headers (`X-Request-Id`).
+- Attach to logs, metrics, traces.
+
+### 4. Distributed Tracing
+
+- Adopt **OpenTelemetry** instrumentation.
+- Export traces to Jaeger/Zipkin/Otel Collector.
+
+### 5. Metrics
+
+- Expose Prometheus metrics endpoint `/metrics`.
+- Key domains: latency, throughput, error rate, saturation (RED/SUSE).
+
+### 6. Alerts & Dashboards
+
+- Create SLO-based alerts (99% latency < X ms, error rate < Y%).
+- Grafana dashboards source from Prometheus + trace backend.
+
+### 7. Local Development
+
+- Pretty-print logs, enable debug level via `LOG_LEVEL=debug`.
+
+### 7. Local Development
+
+- Pretty-print logs, enable debug level via `LOG_LEVEL=debug`.

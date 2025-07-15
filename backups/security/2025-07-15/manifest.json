@@ -1,0 +1,77 @@
+{
+  "timestamp": "2025-07-15T20:24:24.582Z",
+  "files": [
+    {
+      "original": "apps/backend/src/middleware/auth.ts",
+      "backup": "backups\\security\\2025-07-15\\apps_backend_src_middleware_auth.ts",
+      "size": 4088,
+      "checksum": "e452c3a3e42fd6fa56c9752835cf22abbd577887eb258806683296a76018161c"
+    },
+    {
+      "original": "apps/backend/src/middleware/csrf.ts",
+      "backup": "backups\\security\\2025-07-15\\apps_backend_src_middleware_csrf.ts",
+      "size": 1408,
+      "checksum": "2dbdda9a0935077d0d4a3e471a017de8d95f89b0ac550b8fc51fb1b878ee11e8"
+    },
+    {
+      "original": "apps/backend/src/middleware/security.ts",
+      "backup": "backups\\security\\2025-07-15\\apps_backend_src_middleware_security.ts",
+      "size": 2757,
+      "checksum": "d7112093d4c89ee24fb3d4f49834c39cd1352e2784919f04240bcb9085a4ce55"
+    },
+    {
+      "original": "apps/backend/src/middleware/securityMonitor.ts",
+      "backup": "backups\\security\\2025-07-15\\apps_backend_src_middleware_securityMonitor.ts",
+      "size": 6211,
+      "checksum": "93d773cd6d4f1ec16be9dab92934036507d05bc64fd2e8fa6c9832b78860e8fc"
+    },
+    {
+      "original": "apps/backend/src/utils/SecurityLogger.ts",
+      "backup": "backups\\security\\2025-07-15\\apps_backend_src_utils_SecurityLogger.ts",
+      "size": 5315,
+      "checksum": "e241a3a9979b8aeb4fcc875e159c78c147a420436d7dc42b32356d64e6d1c6ef"
+    },
+    {
+      "original": "apps/backend/.env.example",
+      "backup": "backups\\security\\2025-07-15\\apps_backend_.env.example",
+      "size": 644,
+      "checksum": "116a49a3415e1d17e04f1c3582000037928beccc22e97eab4dc9c1f8afe4990c"
+    },
+    {
+      "original": "SECURITY.md",
+      "backup": "backups\\security\\2025-07-15\\SECURITY.md",
+      "size": 2724,
+      "checksum": "609ef76931f4f1b0e535754b87c15ef61fe61fbe2ee782fd6bc1b495f4dcf99d"
+    },
+    {
+      "original": "SECURITY_FIXES.md",
+      "backup": "backups\\security\\2025-07-15\\SECURITY_FIXES.md",
+      "size": 4916,
+      "checksum": "9af2aaac1ad9ccbc4fbf4b1054812a01acdf2ca31dacaffeb4096db58c5b2e31"
+    },
+    {
+      "original": "SECURITY_AUDIT_FINAL.md",
+      "backup": "backups\\security\\2025-07-15\\SECURITY_AUDIT_FINAL.md",
+      "size": 5727,
+      "checksum": "edfd7c5015ff962d2fcff0f5f6298813c803671a4d7e15db26bd8e6cf420d699"
+    },
+    {
+      "original": ".gitignore",
+      "backup": "backups\\security\\2025-07-15\\.gitignore",
+      "size": 668,
+      "checksum": "800ef8b9c9b6b2c40c9fc7e814cbb89997679f87b6f869e45b90887c9b9430d2"
+    }
+  ],
+  "checksums": {
+    "apps/backend/src/middleware/auth.ts": "e452c3a3e42fd6fa56c9752835cf22abbd577887eb258806683296a76018161c",
+    "apps/backend/src/middleware/csrf.ts": "2dbdda9a0935077d0d4a3e471a017de8d95f89b0ac550b8fc51fb1b878ee11e8",
+    "apps/backend/src/middleware/security.ts": "d7112093d4c89ee24fb3d4f49834c39cd1352e2784919f04240bcb9085a4ce55",
+    "apps/backend/src/middleware/securityMonitor.ts": "93d773cd6d4f1ec16be9dab92934036507d05bc64fd2e8fa6c9832b78860e8fc",
+    "apps/backend/src/utils/SecurityLogger.ts": "e241a3a9979b8aeb4fcc875e159c78c147a420436d7dc42b32356d64e6d1c6ef",
+    "apps/backend/.env.example": "116a49a3415e1d17e04f1c3582000037928beccc22e97eab4dc9c1f8afe4990c",
+    "SECURITY.md": "609ef76931f4f1b0e535754b87c15ef61fe61fbe2ee782fd6bc1b495f4dcf99d",
+    "SECURITY_FIXES.md": "9af2aaac1ad9ccbc4fbf4b1054812a01acdf2ca31dacaffeb4096db58c5b2e31",
+    "SECURITY_AUDIT_FINAL.md": "edfd7c5015ff962d2fcff0f5f6298813c803671a4d7e15db26bd8e6cf420d699",
+    ".gitignore": "800ef8b9c9b6b2c40c9fc7e814cbb89997679f87b6f869e45b90887c9b9430d2"
+  }
+}
