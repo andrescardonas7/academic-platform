@@ -34,6 +34,14 @@ export const csrfProtection = (
     return next();
   }
 
+  // Skip CSRF for chatbot routes during development
+  if (
+    req.path.startsWith('/api/chatbot/') ||
+    req.path.startsWith('/chatbot/')
+  ) {
+    return next();
+  }
+
   const token = req.headers['x-csrf-token'] as string;
   const sessionToken = req.session?.csrfToken;
 

@@ -7,6 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { ChatBubbleLeftRightIcon as ChatSolid } from '@heroicons/react/24/solid';
 import React, { useEffect, useRef, useState } from 'react';
+import { apiClient } from '../utils/api'; // Asegúrate de que la ruta sea correcta
 
 interface Message {
   id: string;
@@ -74,25 +75,12 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chatbot/message', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ message: userMessage.content }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Error en la respuesta del servidor');
-      }
-
-      const data = await response.json();
+      const response = await apiClient.chatbot.sendMessage(userMessage.content);
 
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         content:
-          data.message ||
+          (response as any)?.data?.message ||
           'Lo siento, no pude procesar tu mensaje. ¿Podrías intentar de nuevo?',
         isUser: false,
         timestamp: new Date(),

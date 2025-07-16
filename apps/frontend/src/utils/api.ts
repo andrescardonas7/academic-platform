@@ -1,12 +1,12 @@
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-// API_KEY removed - using session-based authentication
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || '';
 
 // Create axios instance with default configuration
 const api = {
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    ...(API_KEY && { 'x-api-key': API_KEY }),
   },
 };
 
@@ -18,6 +18,7 @@ async function request<T>(
   const url = `${api.baseURL}${endpoint}`;
 
   const config: RequestInit = {
+    credentials: 'include', // Include cookies for sessions
     headers: {
       ...api.headers,
       ...options.headers,
@@ -53,10 +54,10 @@ export const apiClient = {
           searchParams.append(key, String(value));
         }
       });
-      return request(`/search?${searchParams.toString()}`);
+      return request(`/api/search?${searchParams.toString()}`);
     },
-    filters: () => request('/search/filters'),
-    byId: (id: number) => request(`/search/${id}`),
+    filters: () => request('/api/search/filters'),
+    byId: (id: number) => request(`/api/search/${id}`),
   },
 
   // Careers endpoints
@@ -102,15 +103,15 @@ export const apiClient = {
   // Chatbot endpoints
   chatbot: {
     sendMessage: (message: string, context?: string) =>
-      request('/chatbot/message', {
+      request('/api/chatbot/message', {
         method: 'POST',
         body: JSON.stringify({ message, context }),
       }),
-    health: () => request('/chatbot/health'),
+    health: () => request('/api/chatbot/health'),
   },
 
   // Health check
-  health: () => request('/health'),
+  health: () => request('/api/health'),
 };
 
 export default apiClient;

@@ -14,10 +14,11 @@ class ApiClient {
 
   constructor() {
     this.baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    // API Key removed - authentication now handled server-side
-    this.apiKey = '';
+    // API Key for development - in production use proper authentication
+    this.apiKey = process.env.NEXT_PUBLIC_API_KEY || '';
     this.defaultHeaders = {
       'Content-Type': 'application/json',
+      ...(this.apiKey && { 'x-api-key': this.apiKey }),
     };
   }
 

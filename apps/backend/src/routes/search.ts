@@ -9,12 +9,13 @@ const router = Router();
 const searchService = new SearchService();
 
 // Apply authentication and rate limiting to all search routes
-router.use(validateApiKey);
+router.use(validateApiKey); // Reactivado para producción
 router.use(rateLimit);
 
 // GET /api/search - Search offerings with filters and pagination
 router.get('/', validateSearchQuery, async (req, res, next) => {
   try {
+    console.log('GET /api/search params:', req.query); // Log de depuración
     const filters = {
       q: req.query.q as string,
       modalidad: req.query.modalidad as string,
@@ -43,6 +44,7 @@ router.get('/', validateSearchQuery, async (req, res, next) => {
 // GET /api/search/filters - Get available filter options
 router.get('/filters', async (req, res, next) => {
   try {
+    console.log('GET /api/search/filters called'); // Log de depuración
     const filterOptions = await searchService.getFilterOptions();
 
     res.json({

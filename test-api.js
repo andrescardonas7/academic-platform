@@ -1,88 +1,43 @@
-// Test script for API endpoints
-const http = require('http');
-const https = require('https');
-const { URL } = require('url');
+// Test script para verificar la API desde el navegador
+// Ejecutar en la consola del navegador
 
-const testEndpoint = async (url, description) => {
+console.log('🔍 Testing API from browser...');
+
+// Configuración
+const API_URL = 'http://localhost:3001/api';
+const API_KEY = 'academic-platform-2024-secure-key-CHANGE-IN-PRODUCTION';
+
+// Test function
+async function testBrowserAPI() {
   try {
-    console.log(`\n🧪 Testing: ${description}`);
-    console.log(`📡 URL: ${url}`);
+    console.log('Testing search endpoint...');
 
-    const response = await makeRequest(url);
+    const response = await fetch(`${API_URL}/search`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': API_KEY,
+      },
+    });
 
-    console.log(`✅ Status: ${response.statusCode}`);
-    console.log(`📄 Response:`, response.data);
+    console.log('Response status:', response.status);
+    console.log('Response headers:', [...response.headers.entries()]);
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log('✅ API Response:', data);
+      console.log('Data length:', data.data?.length || 0);
+    } else {
+      const errorText = await response.text();
+      console.log('❌ API Error:', errorText);
+    }
   } catch (error) {
-    console.log(`❌ Error:`, error.message);
+    console.error('❌ Network Error:', error);
   }
-};
+}
 
-const makeRequest = (url) => {
-  return new Promise((resolve, reject) => {
-    const urlObj = new URL(url);
-    const lib = urlObj.protocol === 'https:' ? https : http;
+// Ejecutar test
+testBrowserAPI();
 
-    const req = lib.request(url, (res) => {
-      let data = '';
-
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-
-      res.on('end', () => {
-        try {
-          const parsedData = JSON.parse(data);
-          resolve({
-            statusCode: res.statusCode,
-            data: JSON.stringify(parsedData, null, 2),
-          });
-        } catch (e) {
-          resolve({
-            statusCode: res.statusCode,
-            data: data,
-          });
-        }
-      });
-    });
-
-    req.on('error', (error) => {
-      reject(error);
-    });
-
-    req.setTimeout(5000, () => {
-      req.destroy();
-      reject(new Error('Request timeout'));
-    });
-
-    req.end();
-  });
-};
-
-const runTests = async () => {
-  console.log('🚀 Testing Academic Platform API\n');
-
-  // Test health endpoint
-  await testEndpoint('http://localhost:3002/health', 'Health Check');
-
-  // Test API docs
-  await testEndpoint('http://localhost:3002/api/docs', 'API Documentation');
-
-  // Test institutions
-  await testEndpoint(
-    'http://localhost:3002/api/institutions',
-    'All Institutions'
-  );
-
-  // Test specific institution
-  await testEndpoint(
-    'http://localhost:3002/api/institutions/1',
-    'Institution by ID'
-  );
-
-  // Test careers
-  await testEndpoint('http://localhost:3002/api/careers', 'All Careers');
-
-  console.log('\n✨ API testing completed!');
-};
-
-runTests();
+// También exportar para uso manual
+window.testBrowserAPI = testBrowserAPI;

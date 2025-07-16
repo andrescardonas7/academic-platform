@@ -10,6 +10,7 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { apiClient } from '../../utils/api';
 
 interface ChatMessage {
   id: string;
@@ -68,30 +69,18 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        'http://localhost:3001/api/chatbot/message',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include', // Include cookies for session-based auth
-          body: JSON.stringify({ message: userMessage.content }),
-        }
-      );
+      const data = await apiClient.chatbot.sendMessage(userMessage.content);
 
-      const data = await response.json();
-
-      if (data.success) {
+      if (data && data.message) {
         const botMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
-          content: data.data.message,
+          content: data.message,
           isUser: false,
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, botMessage]);
       } else {
-        throw new Error(data.error || 'Error en la comunicación');
+        throw new Error('Error en la comunicación');
       }
     } catch (error) {
       const errorMessage: ChatMessage = {

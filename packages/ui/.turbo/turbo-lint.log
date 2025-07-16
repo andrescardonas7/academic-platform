@@ -1,13 +1,16 @@
 
 > @academic/ui@0.0.0 lint C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui
-> eslint src/
+> eslint src/**/*.{ts,tsx}
 
 
 Oops! Something went wrong! :(
 
 ESLint: 8.57.1
 
-No files matching the pattern "src/" were found.
-Please check for typing mistakes in the pattern.
+ESLint couldn't find the config "@academic/eslint-config" to extend from. Please check that the name of the config is correct.
+
+The config "@academic/eslint-config" was referenced from the config file in "C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\.eslintrc.js".
+
+If you still have problems, please stop by https://eslint.org/chat/help to chat with the team.
 
  ELIFECYCLE  Command failed with exit code 2.

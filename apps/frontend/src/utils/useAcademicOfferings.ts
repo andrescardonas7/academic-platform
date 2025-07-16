@@ -9,7 +9,7 @@ export function useAcademicOfferings() {
   useEffect(() => {
     setLoading(true);
     fetchAcademicOfferings()
-      .then(setData)
+      .then((response) => setData(response.data?.data || []))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);

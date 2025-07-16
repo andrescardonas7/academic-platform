@@ -24,6 +24,7 @@ node_modules/
 .env*.local
 apps/backend/.env
 apps/frontend/.env
+apps/frontend/.env.local
 packages/*/.env
 
 # SECURITY: API keys and secrets

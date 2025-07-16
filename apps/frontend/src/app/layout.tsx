@@ -12,9 +12,9 @@ export const metadata: Metadata = {
     template: '%s | Cartago Académico',
   },
   icons: {
-    icon: '/icon',
-    shortcut: '/icon',
-    apple: '/icon',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
   },
   description:
     'La plataforma que unifica la oferta académica de Cartago, Valle del Cauca. Busca, compara y decide tu futuro académico.',

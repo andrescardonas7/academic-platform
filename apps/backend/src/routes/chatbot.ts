@@ -14,22 +14,31 @@ router.use(rateLimit);
 // POST /api/chatbot/message - Send message to chatbot
 router.post('/message', validateChatMessage, async (req, res, next) => {
   try {
+    console.log('🔍 Chatbot route hit - Request body:', req.body);
+    console.log('🔍 Headers:', req.headers);
+
     const { message, context } = req.body;
 
     if (!message || message.trim().length === 0) {
       throw new ValidationError('Message is required');
     }
 
+    console.log('🔍 About to call cerebrasService.sendMessage');
     const response = await cerebrasService.sendMessage(message, context);
+    console.log('🔍 Response from cerebrasService:', response);
 
-    res.json({
+    const result = {
       success: true,
       data: {
         message: response,
         timestamp: new Date().toISOString(),
       },
-    });
+    };
+
+    console.log('🔍 Sending response:', result);
+    res.json(result);
   } catch (error) {
+    console.log('🔍 Error in chatbot route:', error);
     next(error);
   }
 });

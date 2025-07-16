@@ -9,7 +9,7 @@
 @layer components {
   /* Button variants - No more repeated Tailwind classes */
   .btn-primary {
-    @apply bg-[#10B981] hover:bg-[#059669] text-white font-semibold px-8 py-4 rounded-lg transition-all duration-250 ease-out hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-[#10B981]/30;
+    @apply bg-[#10B981] hover:bg-[#059669] text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 ease-out hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-4 focus:ring-[#10B981]/30;
   }
 
   .btn-secondary {

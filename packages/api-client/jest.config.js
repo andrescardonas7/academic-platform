@@ -12,9 +12,6 @@ module.exports = {
     ],
   },
   collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts'],
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  transformIgnorePatterns: ['node_modules/(?!(@academic)/)'],
-  moduleNameMapper: {
-    '^@academic/(.*)$': '<rootDir>/../../packages/$1/src',
-  },
 };
