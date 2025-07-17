@@ -3,18 +3,27 @@
 > eslint src/**/*.{ts,tsx}
 
 
-Oops! Something went wrong! :(
+C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\components\Avatar.tsx
+  2:29  error  Parsing error: Unexpected token <
 
-ESLint: 8.57.1
+C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\components\Badge.tsx
+  2:28  error  Parsing error: Unexpected token <
 
-Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'typescript-eslint' imported from C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\eslint.config.mjs
-    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:256:9)
-    at packageResolve (node:internal/modules/esm/resolve:768:81)
- ELIFECYCLE  Command failed with exit code 2.
-    at moduleResolve (node:internal/modules/esm/resolve:854:18)
-    at defaultResolve (node:internal/modules/esm/resolve:984:11)
-    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:780:12)
-    at #cachedDefaultResolve (node:internal/modules/esm/loader:704:25)
-    at ModuleLoader.resolve (node:internal/modules/esm/loader:687:38)
-    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:305:38)
-    at ModuleJob._link (node:internal/modules/esm/module_job:137:49)
+C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\components\Button.tsx
+  2:20  error  Parsing error: Unexpected token VariantProps
+
+C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\components\Card.tsx
+  2:27  error  Parsing error: Unexpected token <
+
+C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\components\Input.tsx
+  2:28  error  Parsing error: Unexpected token <
+
+C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\index.ts
+  19:8  error  Parsing error: Unexpected token type
+
+C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\utils\cn.ts
+  3:13  error  Parsing error: Unexpected token :
+
+✖ 7 problems (7 errors, 0 warnings)
+
+ ELIFECYCLE  Command failed with exit code 1.
