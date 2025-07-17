@@ -29,16 +29,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       setTimeout(() => {
         const query = searchQuery.trim().toLowerCase();
         const cards = document.querySelectorAll('[id^="program-card-"]');
-        let found: HTMLElement | null = null;
         cards.forEach((card) => {
           if (card instanceof HTMLElement && card.id.includes(query)) {
-            found = card;
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (typeof card.focus === 'function') card.focus();
           }
         });
-        if (found) {
-          found.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          if (typeof found.focus === 'function') found.focus();
-        }
         // Eliminar limpieza automática del campo y del filtro
       }, 300);
     }

@@ -71,10 +71,10 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
     try {
       const data = await apiClient.chatbot.sendMessage(userMessage.content);
 
-      if (data && data.message) {
+      if (data && (data as any).data?.message) {
         const botMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
-          content: data.message,
+          content: (data as any).data.message,
           isUser: false,
           timestamp: new Date(),
         };
