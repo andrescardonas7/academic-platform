@@ -81,6 +81,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
 
   return (
     <div
+      id={`program-card-${program.carrera.toLowerCase().replace(/\s+/g, '-')}`}
       className={`group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6 border border-gray-100 hover:border-gray-200 transform hover:-translate-y-2 ${onClick ? 'cursor-pointer' : ''} ${className}`}
       onClick={handleClick}
     >
@@ -165,16 +166,12 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
               href={program.enlace}
               target='_blank'
               rel='noopener noreferrer'
-              className='flex items-center gap-1 px-3 py-2 text-xs font-semibold text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all duration-300'
+              className='flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 transform group-hover:scale-105 shadow-lg hover:shadow-blue-500/25'
               onClick={(e) => e.stopPropagation()}
             >
-              <ArrowTopRightOnSquareIcon className='h-3 w-3' />
+              <ArrowTopRightOnSquareIcon className='h-4 w-4' />
               Oficial
             </a>
-            <button className='flex items-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 transform group-hover:scale-105 shadow-lg hover:shadow-blue-500/25'>
-              Ver más
-              <ArrowTopRightOnSquareIcon className='h-4 w-4' />
-            </button>
           </div>
         </div>
       </div>

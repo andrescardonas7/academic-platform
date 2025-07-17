@@ -9,7 +9,7 @@ export const searchQuerySchema = z.object({
   nivel: z.string().optional(),
   area: z.string().optional(),
   page: z.coerce.number().int().min(1).max(1000).optional().default(1),
-  limit: z.coerce.number().int().min(1).max(100).optional().default(15),
+  limit: z.coerce.number().int().min(1).max(100).optional().default(50),
   sortBy: z
     .enum(['nombre', 'institucion', 'modalidad', 'nivel', 'area', 'duracion'])
     .optional()

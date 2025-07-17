@@ -23,7 +23,7 @@ router.get('/', validateSearchQuery, async (req, res, next) => {
       nivel: req.query.nivel as string,
       area: req.query.area as string,
       page: parseInt(req.query.page as string) || 1,
-      limit: parseInt(req.query.limit as string) || 15,
+      limit: parseInt(req.query.limit as string) || 50,
       sortBy: (req.query.sortBy as string) || 'nombre',
       sortOrder: (req.query.sortOrder as 'asc' | 'desc') || 'asc',
     };

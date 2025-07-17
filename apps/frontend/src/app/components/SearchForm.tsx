@@ -1,9 +1,10 @@
-import { useMemo, useState, useRef, useEffect, useCallback } from 'react';
-import { Search, ChevronDown } from 'lucide-react';
+import { ChevronDown, Search } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 interface SearchFormProps {
   data: any[];
   onSelect: (item: any) => void;
+  onSearch: (query: string) => void;
   placeholder?: string;
   className?: string;
 }
@@ -11,13 +12,15 @@ interface SearchFormProps {
 export function SearchForm({
   data,
   onSelect,
-  placeholder = "Buscar carrera o institución...",
-  className = ""
+  onSearch,
+  placeholder = 'Buscar carrera o institución...',
+  className = '',
 }: SearchFormProps) {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [pendingQuery, setPendingQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLUListElement>(null);
 
@@ -42,6 +45,31 @@ export function SearchForm({
       .slice(0, 8);
   }, [debouncedQuery, data]);
 
+  // Chips de filtros predeterminados
+  const filterChips = [
+    'Pregrado',
+    'Posgrado',
+    'Virtual',
+    'Presencial',
+    'Ingeniería',
+    'Administración',
+  ];
+
+  // Handler para chips
+  const handleChipClick = (chip: string) => {
+    setQuery(chip);
+    setPendingQuery(chip);
+    inputRef.current?.focus();
+  };
+
+  // Handler para búsqueda
+  const handleSearch = () => {
+    setDebouncedQuery(query);
+    setPendingQuery('');
+    setIsOpen(false);
+    onSearch(query);
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
@@ -49,13 +77,16 @@ export function SearchForm({
     setSelectedIndex(-1);
   };
 
-  const handleSelect = useCallback((item: any) => {
-    onSelect(item);
-    setQuery('');
-    setIsOpen(false);
-    setSelectedIndex(-1);
-    inputRef.current?.blur();
-  }, [onSelect]);
+  const handleSelect = useCallback(
+    (item: any) => {
+      onSelect(item);
+      setQuery('');
+      setIsOpen(false);
+      setSelectedIndex(-1);
+      inputRef.current?.blur();
+    },
+    [onSelect]
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isOpen || suggestions.length === 0) return;
@@ -63,13 +94,13 @@ export function SearchForm({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex(prev =>
+        setSelectedIndex((prev) =>
           prev < suggestions.length - 1 ? prev + 1 : 0
         );
         break;
       case 'ArrowUp':
         e.preventDefault();
-        setSelectedIndex(prev =>
+        setSelectedIndex((prev) =>
           prev > 0 ? prev - 1 : suggestions.length - 1
         );
         break;
@@ -101,34 +132,79 @@ export function SearchForm({
     }, 150);
   };
 
+  // Limpieza
+  const handleClear = () => {
+    setQuery('');
+    setDebouncedQuery('');
+    setPendingQuery('');
+    setIsOpen(false);
+    setSelectedIndex(-1);
+    inputRef.current?.focus();
+  };
+
   return (
     <div className={`relative ${className}`} style={{ marginBottom: 24 }}>
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+      {/* Chips de filtros */}
+      <div className='flex flex-wrap gap-2 mb-4'>
+        {filterChips.map((chip) => (
+          <button
+            key={chip}
+            type='button'
+            className={`px-4 py-2 rounded-full bg-slate-100 text-gray-700 font-medium shadow hover:bg-blue-100 hover:text-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 ${query === chip ? 'bg-blue-600 text-white' : ''}`}
+            onClick={() => handleChipClick(chip)}
+            aria-pressed={query === chip}
+          >
+            {chip}
+          </button>
+        ))}
+      </div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSearch();
+        }}
+        className='relative'
+      >
+        <Search
+          className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 cursor-pointer'
+          onClick={handleSearch}
+        />
         <input
           ref={inputRef}
-          type="text"
+          type='text'
           value={query}
           onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleSearch();
+            } else handleKeyDown(e);
+          }}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           placeholder={placeholder}
-          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
-          style={{
-            minWidth: '320px',
-            fontSize: '16px'
-          }}
+          className='w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200'
+          style={{ minWidth: '320px', fontSize: '16px' }}
         />
-        {isOpen && suggestions.length > 0 && (
-          <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        {query && (
+          <button
+            type='button'
+            className='absolute right-10 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5'
+            onClick={handleClear}
+            aria-label='Limpiar búsqueda'
+          >
+            ×
+          </button>
         )}
-      </div>
+        {isOpen && suggestions.length > 0 && (
+          <ChevronDown className='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5' />
+        )}
+      </form>
 
       {isOpen && suggestions.length > 0 && (
         <ul
           ref={dropdownRef}
-          className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto"
+          className='absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto'
           style={{ minWidth: '320px' }}
         >
           {suggestions.map((suggestion, index) => (
@@ -142,18 +218,18 @@ export function SearchForm({
               onClick={() => handleSelect(suggestion)}
               onMouseEnter={() => setSelectedIndex(index)}
             >
-              <div className="flex flex-col">
-                <span className="font-semibold text-gray-900 text-sm">
+              <div className='flex flex-col'>
+                <span className='font-semibold text-gray-900 text-sm'>
                   {suggestion.carrera}
                 </span>
-                <span className="text-gray-600 text-xs mt-1">
+                <span className='text-gray-600 text-xs mt-1'>
                   {suggestion.institucion}
                 </span>
-                <div className="flex gap-2 mt-1">
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                <div className='flex gap-2 mt-1'>
+                  <span className='text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded'>
                     {suggestion.modalidad}
                   </span>
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                  <span className='text-xs bg-green-100 text-green-800 px-2 py-1 rounded'>
                     {suggestion.duracion_semestres} semestres
                   </span>
                 </div>
@@ -164,7 +240,7 @@ export function SearchForm({
       )}
 
       {isOpen && suggestions.length === 0 && debouncedQuery && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 text-center text-gray-500">
+        <div className='absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 text-center text-gray-500'>
           No se encontraron resultados para "{debouncedQuery}"
         </div>
       )}

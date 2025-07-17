@@ -1,24 +1,39 @@
 // HomePage - Academic Platform
 'use client';
 
-import { AcademicProgram, SearchFilters } from '@academic/shared-types';
+import { AcademicProgram } from '@academic/shared-types';
 import { Search, X } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ChatbotWidget from '../components/ChatbotWidget';
 import HeroSection from '../components/HeroSection';
 import ProgramCard from '../components/ProgramCard';
 import SearchForm from '../components/SearchForm';
 import { useAcademicData } from '../hooks/useAcademicData';
+import { filterPrograms } from '../utils/programFilters';
 
 export default function HomePage() {
-  const { programs, filterOptions, loading, error, refetch } =
-    useAcademicData();
-  const [filters, setFilters] = useState<SearchFilters>({});
+  const { programs, loading, error, refetch } = useAcademicData();
   const [selectedProgram, setSelectedProgram] =
     useState<AcademicProgram | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [clearTrigger, setClearTrigger] = useState(0);
 
-  const filteredPrograms = useFilteredPrograms(programs, filters, searchQuery);
+  const filteredPrograms = useMemo(
+    () => filterPrograms(programs, {}, searchQuery),
+    [programs, searchQuery]
+  );
+
+  // Cuando searchQuery se limpia, también limpiar selección
+  useEffect(() => {
+    if (!searchQuery) setSelectedProgram(null);
+  }, [searchQuery]);
+
+  // Handler para limpiar todo
+  const handleClear = () => {
+    setSearchQuery('');
+    setClearTrigger((c) => c + 1);
+    setSelectedProgram(null);
+  };
 
   if (error) {
     return <ErrorState error={error} onRetry={refetch} />;
@@ -26,17 +41,16 @@ export default function HomePage() {
 
   return (
     <div className='min-h-screen bg-gray-50'>
-      <HeroSection onSearch={setSearchQuery} />
-
+      <HeroSection onSearch={setSearchQuery} clearTrigger={clearTrigger} />
       <main className='container mx-auto px-4 py-8'>
         <div className='mb-8'>
           <SearchForm
             data={programs}
             onSelect={setSelectedProgram}
+            onSearch={setSearchQuery}
             placeholder='Buscar programas académicos...'
           />
         </div>
-
         <div className='flex items-center justify-between mb-6'>
           <div className='flex items-center gap-3'>
             <Search className='w-5 h-5 text-gray-600' />
@@ -47,10 +61,9 @@ export default function HomePage() {
               {filteredPrograms.length} programas
             </span>
           </div>
-
-          {selectedProgram && (
+          {(selectedProgram || searchQuery) && (
             <button
-              onClick={() => setSelectedProgram(null)}
+              onClick={handleClear}
               className='flex items-center gap-2 px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50'
             >
               <X className='w-4 h-4' />
@@ -58,7 +71,6 @@ export default function HomePage() {
             </button>
           )}
         </div>
-
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
           {loading ? (
             <div className='col-span-full text-center py-8'>
@@ -82,7 +94,6 @@ export default function HomePage() {
           )}
         </div>
       </main>
-
       <ChatbotWidget />
     </div>
   );
@@ -115,36 +126,4 @@ function ErrorState({
       </div>
     </div>
   );
-}
-
-// Custom hook for filtering programs
-function useFilteredPrograms(
-  programs: AcademicProgram[],
-  filters: SearchFilters,
-  searchQuery: string
-): AcademicProgram[] {
-  return useMemo(() => {
-    return programs.filter((program) => {
-      // Search query filter
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const matchesQuery =
-          program.carrera.toLowerCase().includes(query) ||
-          program.institucion.toLowerCase().includes(query) ||
-          program.modalidad.toLowerCase().includes(query);
-        if (!matchesQuery) return false;
-      }
-
-      // Other filters
-      if (filters.modalidad && program.modalidad !== filters.modalidad)
-        return false;
-      if (filters.institucion && program.institucion !== filters.institucion)
-        return false;
-      if (filters.nivel && program.nivel_programa !== filters.nivel)
-        return false;
-      if (filters.area && program.clasificacion !== filters.area) return false;
-
-      return true;
-    });
-  }, [programs, filters, searchQuery]);
 }
