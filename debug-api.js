@@ -1,6 +1,6 @@
 // Debug script para probar la API
 const API_URL = 'http://localhost:3001/api';
-const API_KEY = 'academic-platform-2024-secure-key-CHANGE-IN-PRODUCTION';
+const API_KEY = 'your-api-key-here'; // Replace with your actual API key
 
 async function testAPI() {
   console.log('🔍 Testing API connection...');

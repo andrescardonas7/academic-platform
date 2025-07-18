@@ -5,7 +5,7 @@ console.log('🔍 Testing API from browser...');
 
 // Configuración
 const API_URL = 'http://localhost:3001/api';
-const API_KEY = 'academic-platform-2024-secure-key-CHANGE-IN-PRODUCTION';
+const API_KEY = 'your-api-key-here'; // Replace with your actual API key
 
 // Test function
 async function testBrowserAPI() {
