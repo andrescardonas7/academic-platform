@@ -90,9 +90,9 @@ class ApiClient {
 class ApiError extends Error {
     constructor(message, endpoint, statusCode) {
         super(message);
+        this.name = 'ApiError';
         this.endpoint = endpoint;
         this.statusCode = statusCode;
-        this.name = 'ApiError';
     }
 }
 exports.ApiError = ApiError;

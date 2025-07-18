@@ -1,4 +1,12 @@
 import { ApiResponse, FilterOptions, SearchFilters, SearchResult } from '@academic/shared-types';
+declare global {
+    interface RequestInit {
+        headers?: Record<string, string>;
+        method?: string;
+        body?: string;
+        signal?: AbortSignal;
+    }
+}
 declare class ApiClient {
     private readonly baseURL;
     private readonly apiKey;
@@ -26,8 +34,8 @@ declare class ApiClient {
 }
 export declare class ApiError extends Error {
     endpoint: string;
-    statusCode?: number | undefined;
-    constructor(message: string, endpoint: string, statusCode?: number | undefined);
+    statusCode?: number;
+    constructor(message: string, endpoint: string, statusCode?: number);
 }
 export declare const apiClient: ApiClient;
 export declare const fetchAcademicOfferings: () => Promise<ApiResponse<SearchResult>>;
