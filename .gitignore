@@ -23,6 +23,8 @@ node_modules/
 .env.production.local
 .env*.local
 apps/backend/.env
+apps/backend-supabase/.env
+apps/backend-supabase/env.txt
 apps/frontend/.env
 apps/frontend/.env.local
 packages/*/.env
