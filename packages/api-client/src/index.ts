@@ -7,6 +7,16 @@ import {
   SearchResult,
 } from '@academic/shared-types';
 
+// Global type declarations for Node.js environment
+declare global {
+  interface RequestInit {
+    headers?: Record<string, string>;
+    method?: string;
+    body?: string;
+    signal?: AbortSignal;
+  }
+}
+
 class ApiClient {
   private readonly baseURL: string;
   private readonly apiKey: string;
@@ -124,13 +134,14 @@ class ApiClient {
 
 // Custom error class for better error handling
 export class ApiError extends Error {
-  constructor(
-    message: string,
-    public endpoint: string,
-    public statusCode?: number
-  ) {
+  public endpoint: string;
+  public statusCode?: number;
+
+  constructor(message: string, endpoint: string, statusCode?: number) {
     super(message);
     this.name = 'ApiError';
+    this.endpoint = endpoint;
+    this.statusCode = statusCode;
   }
 }
 

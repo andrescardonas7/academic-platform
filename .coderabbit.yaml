@@ -1,0 +1,94 @@
+# CodeRabbit Configuration
+# Optimized for 100 file limit in large monorepo
+
+# Files to prioritize for review
+reviews:
+  # SOLO REVISAR ESTOS ARCHIVOS (incluir solo lo que necesites)
+  include_only:
+    # Código principal del frontend
+    - 'apps/frontend/src/app/**/*.{ts,tsx}'
+    - 'apps/frontend/src/components/**/*.{ts,tsx}'
+    - 'apps/frontend/src/hooks/**/*.{ts,tsx}'
+    - 'apps/frontend/src/utils/**/*.{ts,tsx}'
+
+    # Código principal del backend
+    - 'apps/backend/src/controllers/**/*.ts'
+    - 'apps/backend/src/services/**/*.ts'
+    - 'apps/backend/src/models/**/*.ts'
+    - 'apps/backend/src/middleware/**/*.ts'
+
+    # Archivos de configuración críticos
+    - 'package.json'
+    - 'vercel.json'
+    - 'apps/*/package.json'
+
+  # Files to exclude from review
+  exclude:
+    - '**/*.test.{ts,tsx,js,jsx}'
+    - '**/*.spec.{ts,tsx,js,jsx}'
+    - '**/dist/**'
+    - '**/build/**'
+    - '**/node_modules/**'
+    - '**/.next/**'
+    - '**/.turbo/**'
+    - '**/coverage/**'
+    - '**/*.log'
+    - '**/*.map'
+    - '**/pnpm-lock.yaml'
+    - '**/.eslintcache'
+    - '**/tsconfig.tsbuildinfo'
+    - '**/*.d.ts.map'
+    - '.unlighthouse/**'
+    - 'backups/**'
+    - '**/__tests__/**'
+    - '**/.git/**'
+    - '**/.vscode/**'
+    - '**/.cursor/**'
+    - '**/docs/**'
+    - '**/scripts/**'
+    - '**/*.md'
+    - '**/*.txt'
+    - '**/*.config.{js,ts,mjs}'
+    - '**/eslint.config.*'
+    - '**/.eslintrc.*'
+    - '**/prettier.config.*'
+    - '**/tailwind.config.*'
+    - '**/next.config.*'
+    - '**/vite.config.*'
+    - '**/jest.config.*'
+    - '**/vitest.config.*'
+
+  # Focus areas for AI review
+  focus_areas:
+    - security
+    - performance
+    - type_safety
+    - architecture
+    - business_logic
+
+# Language-specific settings
+language_settings:
+  typescript:
+    # Focus on critical TS issues
+    focus_on:
+      - type_errors
+      - unused_variables
+      - async_await_patterns
+      - error_handling
+
+  react:
+    focus_on:
+      - component_patterns
+      - hooks_usage
+      - performance_issues
+
+# Review depth
+review_depth: 'focused' # Options: shallow, focused, deep
+
+# Skip certain file types entirely
+skip_files:
+  - '**/*.min.js'
+  - '**/*.bundle.js'
+  - '**/*.chunk.js'
+  - '**/vendor/**'
+  - '**/third-party/**'

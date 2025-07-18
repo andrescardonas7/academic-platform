@@ -1,12 +1,6 @@
 import { apiClient, ApiError } from './index';
 
-// Jest globals
-declare const jest: any;
-declare const describe: any;
-declare const it: any;
-declare const expect: any;
-declare const beforeEach: any;
-declare const afterEach: any;
+// Jest globals are configured in .eslintrc.js
 
 const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
 
