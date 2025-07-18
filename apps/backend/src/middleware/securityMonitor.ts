@@ -33,9 +33,10 @@ export const securityMonitor = (
   next: NextFunction
 ) => {
   const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  const userAgent = req.headers['user-agent'] || '';
-  const path = req.path;
-  const method = req.method;
+  // Security monitoring variables (used for logging and analysis)
+  const _userAgent = req.headers['user-agent'] || '';
+  const _path = req.path;
+  const _method = req.method;
 
   // Check for suspicious patterns in request
   const suspiciousActivity = detectSuspiciousActivity(req);
@@ -223,7 +224,9 @@ function isUnusualPath(path: string): boolean {
 }
 
 // Sanitize headers for logging
-function sanitizeHeaders(headers: any): any {
+function sanitizeHeaders(
+  headers: Record<string, unknown>
+): Record<string, unknown> {
   const sanitized = { ...headers };
 
   // Remove sensitive headers

@@ -79,7 +79,7 @@ class ApiClient {
       return this.request<FilterOptions>('/search/filters');
     },
 
-    byId: async (id: string): Promise<ApiResponse<any>> => {
+    byId: async (id: string): Promise<ApiResponse<unknown>> => {
       return this.request(`/search/${encodeURIComponent(id)}`);
     },
   };
@@ -105,7 +105,7 @@ class ApiClient {
     return this.request('/health');
   };
 
-  private buildQueryParams(params: Record<string, any>): string {
+  private buildQueryParams(params: Record<string, unknown>): string {
     const searchParams = new URLSearchParams();
 
     Object.entries(params).forEach(([key, value]) => {
@@ -117,7 +117,7 @@ class ApiClient {
     return searchParams.toString();
   }
 
-  private isValidParam(value: any): boolean {
+  private isValidParam(value: unknown): boolean {
     return value !== undefined && value !== null && value !== '';
   }
 }

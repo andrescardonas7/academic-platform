@@ -11,6 +11,6 @@ export interface ISearchService {
 }
 
 export interface IDatabase {
-  query<T>(table: string, filters?: Record<string, any>): Promise<T[]>;
-  count(table: string, filters?: Record<string, any>): Promise<number>;
+  query<T>(table: string, filters?: Record<string, unknown>): Promise<T[]>;
+  count(table: string, filters?: Record<string, unknown>): Promise<number>;
 }

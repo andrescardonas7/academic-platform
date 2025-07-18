@@ -3,7 +3,7 @@ import { supabase } from './supabase';
 export const connectDatabase = async () => {
   try {
     // Test Supabase connection
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('oferta_academica')
       .select('count', { count: 'exact', head: true });
 

@@ -10,7 +10,7 @@
     "clean": "rm -rf dist",
     "lint": "eslint src/**/*.{ts,tsx}",
     "type-check": "tsc --noEmit",
-    "test": "echo 'API Client tests - OK' && exit 0"
+    "test": "jest"
   },
   "dependencies": {
     "@academic/shared-types": "workspace:*",

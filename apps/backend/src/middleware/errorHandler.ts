@@ -10,7 +10,7 @@ export const errorHandler = (
   error: AppError,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const isDevelopment = process.env.NODE_ENV === 'development';
   const statusCode = error.statusCode || 500;

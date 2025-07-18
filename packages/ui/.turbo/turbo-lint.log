@@ -2,28 +2,3 @@
 > @academic/ui@0.0.0 lint C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui
 > eslint src/**/*.{ts,tsx}
 
-
-C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\components\Avatar.tsx
-  2:29  error  Parsing error: Unexpected token <
-
-C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\components\Badge.tsx
-  2:28  error  Parsing error: Unexpected token <
-
-C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\components\Button.tsx
-  2:20  error  Parsing error: Unexpected token VariantProps
-
-C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\components\Card.tsx
-  2:27  error  Parsing error: Unexpected token <
-
-C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\components\Input.tsx
-  2:28  error  Parsing error: Unexpected token <
-
-C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\index.ts
-  19:8  error  Parsing error: Unexpected token type
-
-C:\Users\zelda\Documents\ESTUDIO PROGRAMACION\academic-platform\academic-platform\packages\ui\src\utils\cn.ts
-  3:13  error  Parsing error: Unexpected token :
-
-✖ 7 problems (7 errors, 0 warnings)
-
- ELIFECYCLE  Command failed with exit code 1.

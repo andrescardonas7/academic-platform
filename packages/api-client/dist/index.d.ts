@@ -8,7 +8,7 @@ declare class ApiClient {
     readonly search: {
         offerings: (filters?: SearchFilters) => Promise<ApiResponse<SearchResult>>;
         filters: () => Promise<ApiResponse<FilterOptions>>;
-        byId: (id: string) => Promise<ApiResponse<any>>;
+        byId: (id: string) => Promise<ApiResponse<unknown>>;
     };
     readonly chatbot: {
         sendMessage: (message: string) => Promise<ApiResponse<{
