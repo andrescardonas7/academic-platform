@@ -53,7 +53,7 @@ export function useChat(initialMessage?: Message): UseChatReturn {
         const botMessage: Message = {
           id: (Date.now() + 1).toString(),
           content:
-            (response as any)?.data?.message ||
+            (response as { data?: { message?: string } })?.data?.message ||
             'Lo siento, no pude procesar tu mensaje. ¿Podrías intentar de nuevo?',
           isUser: false,
           timestamp: new Date(),

@@ -19,6 +19,27 @@ export const securityMiddleware = (
     'geolocation=(), microphone=(), camera=()'
   );
 
+  // Content Security Policy
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; " +
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'; " +
+      "style-src 'self' 'unsafe-inline'; " +
+      "img-src 'self' data: https:; " +
+      "font-src 'self' data:; " +
+      "connect-src 'self' https://api.cerebras.ai https://*.supabase.co; " +
+      "media-src 'self'; " +
+      "object-src 'none'; " +
+      "base-uri 'self'; " +
+      "form-action 'self';"
+  );
+
+  // Strict Transport Security
+  res.setHeader(
+    'Strict-Transport-Security',
+    'max-age=31536000; includeSubDomains; preload'
+  );
+
   // Security: Prevent caching of sensitive endpoints
   if (req.path.includes('/api/')) {
     res.setHeader(

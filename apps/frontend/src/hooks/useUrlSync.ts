@@ -5,7 +5,7 @@ import { SearchFilters, useSearchStore } from '../store/search';
 export function useUrlSync() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { filters, setFilters, setCurrentPage } = useSearchStore();
+  const { setFilters, setCurrentPage } = useSearchStore();
 
   // Sync URL to store on mount and URL changes
   useEffect(() => {

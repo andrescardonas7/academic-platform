@@ -69,18 +69,25 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
     setIsLoading(true);
 
     try {
-      const data = await apiClient.chatbot.sendMessage(userMessage.content);
+      const response = await apiClient.chatbot.sendMessage(userMessage.content);
 
-      if (data && (data as any).data?.message) {
-        const botMessage: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          content: (data as any).data.message,
-          isUser: false,
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, botMessage]);
+      // Type-safe response handling
+      if (response && typeof response === 'object' && 'data' in response) {
+        const apiResponse = response as { data?: { message?: string } };
+
+        if (apiResponse.data?.message) {
+          const botMessage: ChatMessage = {
+            id: (Date.now() + 1).toString(),
+            content: apiResponse.data.message,
+            isUser: false,
+            timestamp: new Date(),
+          };
+          setMessages((prev) => [...prev, botMessage]);
+        } else {
+          throw new Error('Respuesta inválida del servidor');
+        }
       } else {
-        throw new Error('Error en la comunicación');
+        throw new Error('Error en la comunicación con el servidor');
       }
     } catch (error) {
       const errorMessage: ChatMessage = {

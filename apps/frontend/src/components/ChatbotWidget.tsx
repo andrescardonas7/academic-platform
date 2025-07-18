@@ -80,7 +80,7 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
         content:
-          (response as any)?.data?.message ||
+          (response as { data?: { message?: string } })?.data?.message ||
           'Lo siento, no pude procesar tu mensaje. ¿Podrías intentar de nuevo?',
         isUser: false,
         timestamp: new Date(),
@@ -112,8 +112,7 @@ const ChatbotWidget: React.FC<ChatbotWidgetProps> = ({
   const handleVoiceInput = () => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition =
-        (window as any).webkitSpeechRecognition ||
-        (window as any).SpeechRecognition;
+        window.webkitSpeechRecognition || window.SpeechRecognition;
       const recognition = new SpeechRecognition();
 
       recognition.lang = 'es-ES';

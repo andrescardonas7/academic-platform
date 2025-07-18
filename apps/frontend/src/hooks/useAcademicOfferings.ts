@@ -63,7 +63,7 @@ export function useAcademicOfferings() {
     try {
       setLoading(true);
       const response = await apiClient.search.filters();
-      setFilterOptions((response as any).data);
+      setFilterOptions((response as { data?: FilterOptions }).data || null);
     } catch (err) {
       console.error('Error loading filter options:', err);
       setError('Error loading filter options');
@@ -78,11 +78,16 @@ export function useAcademicOfferings() {
       setLoading(true);
       setError(null);
 
-      const response = await apiClient.search.offerings(searchFilters);
+      const response = await apiClient.search.offerings(
+        searchFilters as Record<string, unknown>
+      );
 
-      setOfferings((response as any).data);
-      setPagination((response as any).pagination);
-      setFilters((response as any).filters);
+      setOfferings((response as { data?: AcademicOffering[] }).data || []);
+      setPagination(
+        (response as { pagination?: SearchResult['pagination'] }).pagination ||
+          null
+      );
+      setFilters((response as { filters?: SearchFilters }).filters || {});
     } catch (err) {
       console.error('Error searching offerings:', err);
       setError(

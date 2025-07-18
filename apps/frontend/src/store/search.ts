@@ -13,7 +13,7 @@ interface SearchState {
   // State
   query: string;
   filters: SearchFilters;
-  selectedProgram: any | null;
+  selectedProgram: Record<string, unknown> | null;
   currentPage: number;
   pageSize: number;
 
@@ -21,7 +21,7 @@ interface SearchState {
   setQuery: (query: string) => void;
   setFilters: (filters: Partial<SearchFilters>) => void;
   clearFilters: () => void;
-  setSelectedProgram: (program: any | null) => void;
+  setSelectedProgram: (program: Record<string, unknown> | null) => void;
   setCurrentPage: (page: number) => void;
   resetSearch: () => void;
 }
@@ -36,7 +36,7 @@ const initialFilters: SearchFilters = {
 
 export const useSearchStore = create<SearchState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       // Initial state
       query: '',
       filters: initialFilters,
@@ -60,7 +60,7 @@ export const useSearchStore = create<SearchState>()(
         set({ filters: initialFilters, currentPage: 1 });
       },
 
-      setSelectedProgram: (program: any | null) => {
+      setSelectedProgram: (program: Record<string, unknown> | null) => {
         set({ selectedProgram: program });
       },
 

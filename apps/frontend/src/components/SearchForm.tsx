@@ -94,8 +94,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
   const handleVoiceSearch = () => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition =
-        (window as any).webkitSpeechRecognition ||
-        (window as any).SpeechRecognition;
+        window.webkitSpeechRecognition || window.SpeechRecognition;
       const recognition = new SpeechRecognition();
 
       recognition.lang = 'es-ES';
@@ -253,11 +252,11 @@ const SuggestionsList: React.FC<SuggestionsListProps> = ({
       <div className='absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-xl z-50 p-6 text-center'>
         <div className='text-gray-500 mb-2'>
           <MagnifyingGlassIcon className='h-8 w-8 mx-auto mb-2 opacity-50' />
-          No se encontraron resultados para "{query}"
+          No se encontraron resultados para &quot;{query}&quot;
         </div>
         <p className='text-sm text-gray-400'>
-          Intenta con otros términos como "ingeniería", "administración" o el
-          nombre de una institución
+          Intenta con otros términos como &quot;ingeniería&quot;,
+          &quot;administración&quot; o el nombre de una institución
         </p>
       </div>
     );

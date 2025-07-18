@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import React from 'react';
 import { Providers } from '../components/providers';
 import '../styles/globals.css';
 import { cn } from '../utils/cn';
@@ -74,6 +75,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='es' suppressHydrationWarning>
+      <head></head>
       <body
         className={cn(
           inter.className,

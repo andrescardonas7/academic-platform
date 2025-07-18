@@ -1,15 +1,18 @@
 import { ChevronDown, Filter, X } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+
+type FiltersState = {
+  carrera?: string;
+  institucion?: string;
+  modalidad?: string;
+  jornada?: string;
+  precio?: string;
+  [key: string]: unknown;
+};
 
 interface FiltersProps {
-  filters: {
-    modalidad: string;
-    institucion: string;
-    carrera: string;
-    precio?: string;
-    jornada?: string;
-  };
-  setFilters: (filters: any) => void;
+  filters: FiltersState;
+  setFilters: React.Dispatch<React.SetStateAction<FiltersState>>;
   options: {
     modalidad: string[];
     institucion: string[];
@@ -27,7 +30,6 @@ export function Filters({
   className = '',
 }: FiltersProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [activeFilters, setActiveFilters] = useState(0);
 
   // Count active filters
   const countActiveFilters = () => {
@@ -45,7 +47,7 @@ export function Filters({
   };
 
   const clearFilter = (filterName: string) => {
-    setFilters((prev: any) => ({ ...prev, [filterName]: '' }));
+    setFilters((prev) => ({ ...prev, [filterName]: '' }));
   };
 
   const activeFiltersCount = countActiveFilters();
@@ -111,7 +113,9 @@ export function Filters({
                     className='inline-flex items-center gap-1 bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full'
                   >
                     <span className='capitalize'>{key}:</span>
-                    <span>{value}</span>
+                    <span>
+                      {typeof value === 'string' ? value : String(value)}
+                    </span>
                     <button
                       onClick={() => clearFilter(key)}
                       className='ml-1 hover:bg-blue-200 rounded-full p-0.5'
@@ -138,7 +142,7 @@ export function Filters({
                     type='button'
                     className={`px-4 py-2 rounded-full bg-slate-100 text-gray-700 font-medium shadow hover:bg-blue-100 hover:text-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 ${filters.modalidad === m ? 'bg-blue-600 text-white' : ''}`}
                     onClick={() =>
-                      setFilters((f: any) => ({
+                      setFilters((f: Record<string, unknown>) => ({
                         ...f,
                         modalidad: filters.modalidad === m ? '' : m,
                       }))
@@ -159,7 +163,7 @@ export function Filters({
               <select
                 value={filters.institucion}
                 onChange={(e) =>
-                  setFilters((f: any) => ({
+                  setFilters((f: Record<string, unknown>) => ({
                     ...f,
                     institucion: e.target.value,
                   }))
@@ -183,7 +187,10 @@ export function Filters({
               <select
                 value={filters.carrera}
                 onChange={(e) =>
-                  setFilters((f: any) => ({ ...f, carrera: e.target.value }))
+                  setFilters((f: Record<string, unknown>) => ({
+                    ...f,
+                    carrera: e.target.value,
+                  }))
                 }
                 className='w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200'
               >
@@ -205,7 +212,10 @@ export function Filters({
                 <select
                   value={filters.jornada || ''}
                   onChange={(e) =>
-                    setFilters((f: any) => ({ ...f, jornada: e.target.value }))
+                    setFilters((f: Record<string, unknown>) => ({
+                      ...f,
+                      jornada: e.target.value,
+                    }))
                   }
                   className='w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200'
                 >
@@ -228,7 +238,10 @@ export function Filters({
                 <select
                   value={filters.precio || ''}
                   onChange={(e) =>
-                    setFilters((f: any) => ({ ...f, precio: e.target.value }))
+                    setFilters((f: Record<string, unknown>) => ({
+                      ...f,
+                      precio: e.target.value,
+                    }))
                   }
                   className='w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200'
                 >

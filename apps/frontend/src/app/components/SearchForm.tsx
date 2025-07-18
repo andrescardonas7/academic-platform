@@ -1,9 +1,24 @@
 import { ChevronDown, Search } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
+interface SearchItem {
+  Id?: string;
+  carrera?: string;
+  institucion?: string;
+  modalidad?: string;
+  duracion_semestres?: number;
+  [key: string]: string | number | undefined;
+}
 
 interface SearchFormProps {
-  data: any[];
-  onSelect: (item: any) => void;
+  data: SearchItem[];
+  onSelect: (item: SearchItem) => void;
   onSearch: (query: string) => void;
   placeholder?: string;
   className?: string;
@@ -20,7 +35,6 @@ export function SearchForm({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [pendingQuery, setPendingQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLUListElement>(null);
 
@@ -58,14 +72,12 @@ export function SearchForm({
   // Handler para chips
   const handleChipClick = (chip: string) => {
     setQuery(chip);
-    setPendingQuery(chip);
     inputRef.current?.focus();
   };
 
   // Handler para búsqueda
   const handleSearch = () => {
     setDebouncedQuery(query);
-    setPendingQuery('');
     setIsOpen(false);
     onSearch(query);
   };
@@ -77,13 +89,12 @@ export function SearchForm({
     setSelectedIndex(-1);
   };
 
+  // Cambia el tipo del callback interno a SearchItem
   const handleSelect = useCallback(
-    (item: any) => {
+    (item: SearchItem) => {
       onSelect(item);
-      setQuery('');
       setIsOpen(false);
-      setSelectedIndex(-1);
-      inputRef.current?.blur();
+      setQuery(item.carrera || item.institucion || '');
     },
     [onSelect]
   );
@@ -136,7 +147,6 @@ export function SearchForm({
   const handleClear = () => {
     setQuery('');
     setDebouncedQuery('');
-    setPendingQuery('');
     setIsOpen(false);
     setSelectedIndex(-1);
     inputRef.current?.focus();
@@ -209,7 +219,7 @@ export function SearchForm({
         >
           {suggestions.map((suggestion, index) => (
             <li
-              key={suggestion.Id}
+              key={suggestion.Id ?? suggestion.carrera}
               className={`px-4 py-3 cursor-pointer transition-colors duration-150 ${
                 index === selectedIndex
                   ? 'bg-blue-50 border-l-4 border-blue-500'
@@ -227,10 +237,12 @@ export function SearchForm({
                 </span>
                 <div className='flex gap-2 mt-1'>
                   <span className='text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded'>
-                    {suggestion.modalidad}
+                    {suggestion.modalidad ?? ''}
                   </span>
                   <span className='text-xs bg-green-100 text-green-800 px-2 py-1 rounded'>
-                    {suggestion.duracion_semestres} semestres
+                    {suggestion.duracion_semestres
+                      ? `${suggestion.duracion_semestres} semestres`
+                      : ''}
                   </span>
                 </div>
               </div>
@@ -241,7 +253,7 @@ export function SearchForm({
 
       {isOpen && suggestions.length === 0 && debouncedQuery && (
         <div className='absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 text-center text-gray-500'>
-          No se encontraron resultados para "{debouncedQuery}"
+          No se encontraron resultados para &quot;{debouncedQuery}&quot;
         </div>
       )}
     </div>

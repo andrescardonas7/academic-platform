@@ -32,9 +32,11 @@ export function useAcademicData(): UseAcademicDataReturn {
         apiClient.search.filters(),
       ]);
 
-      setPrograms((programsResponse as any).data || []);
+      setPrograms(
+        (programsResponse as { data?: AcademicProgram[] }).data || []
+      );
       setFilterOptions(
-        (filtersResponse as any).data || {
+        (filtersResponse as { data?: FilterOptions }).data || {
           modalidades: [],
           instituciones: [],
           areas: [],

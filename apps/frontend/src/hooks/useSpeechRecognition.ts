@@ -28,8 +28,18 @@ export function useSpeechRecognition(
     }
 
     const SpeechRecognition =
-      (window as any).webkitSpeechRecognition ||
-      (window as any).SpeechRecognition;
+      (
+        window as typeof window & {
+          webkitSpeechRecognition?: unknown;
+          SpeechRecognition?: unknown;
+        }
+      ).webkitSpeechRecognition ||
+      (
+        window as typeof window & {
+          webkitSpeechRecognition?: unknown;
+          SpeechRecognition?: unknown;
+        }
+      ).SpeechRecognition;
 
     const recognition = new SpeechRecognition();
 
@@ -41,13 +51,21 @@ export function useSpeechRecognition(
       setIsListening(true);
     };
 
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      onResult(transcript);
+    type MinimalSpeechRecognitionEvent = {
+      results: ArrayLike<ArrayLike<{ transcript: string }>>;
+    };
+    recognition.onresult = (event: MinimalSpeechRecognitionEvent) => {
+      if (event.results && event.results.length > 0) {
+        const transcript = event.results[0][0].transcript;
+        onResult(transcript);
+      }
       setIsListening(false);
     };
 
-    recognition.onerror = (event: any) => {
+    type MinimalSpeechRecognitionErrorEvent = {
+      error: string;
+    };
+    recognition.onerror = (event: MinimalSpeechRecognitionErrorEvent) => {
       console.error('Speech recognition error:', event.error);
       setIsListening(false);
     };

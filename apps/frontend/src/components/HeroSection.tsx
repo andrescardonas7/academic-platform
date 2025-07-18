@@ -43,8 +43,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   const handleVoiceSearch = () => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition =
-        (window as any).webkitSpeechRecognition ||
-        (window as any).SpeechRecognition;
+        window.webkitSpeechRecognition || window.SpeechRecognition;
       const recognition = new SpeechRecognition();
 
       recognition.lang = 'es-ES';
@@ -55,13 +54,24 @@ const HeroSection: React.FC<HeroSectionProps> = ({
         setIsListening(true);
       };
 
-      recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        setSearchQuery(transcript);
+      type MinimalSpeechRecognitionEvent = {
+        results: ArrayLike<ArrayLike<{ transcript: string }>>;
+      };
+
+      recognition.onresult = (event: MinimalSpeechRecognitionEvent) => {
+        if (event.results && event.results.length > 0) {
+          const transcript = event.results[0][0].transcript;
+          setSearchQuery(transcript);
+        }
         setIsListening(false);
       };
 
-      recognition.onerror = () => {
+      type MinimalSpeechRecognitionErrorEvent = {
+        error: string;
+      };
+
+      recognition.onerror = (event: MinimalSpeechRecognitionErrorEvent) => {
+        console.warn('Speech recognition error:', event.error);
         setIsListening(false);
       };
 

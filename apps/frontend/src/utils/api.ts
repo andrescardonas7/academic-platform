@@ -47,7 +47,7 @@ async function request<T>(
 export const apiClient = {
   // Search endpoints
   search: {
-    offerings: (params: Record<string, any> = {}) => {
+    offerings: (params: Record<string, unknown> = {}) => {
       const searchParams = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
@@ -62,7 +62,7 @@ export const apiClient = {
 
   // Careers endpoints
   careers: {
-    list: (params: Record<string, any> = {}) => {
+    list: (params: Record<string, unknown> = {}) => {
       const searchParams = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
@@ -72,7 +72,10 @@ export const apiClient = {
       return request(`/careers?${searchParams.toString()}`);
     },
     byId: (id: number) => request(`/careers/${id}`),
-    byInstitution: (institution: string, params: Record<string, any> = {}) => {
+    byInstitution: (
+      institution: string,
+      params: Record<string, unknown> = {}
+    ) => {
       const searchParams = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
@@ -87,7 +90,7 @@ export const apiClient = {
 
   // Institutions endpoints
   institutions: {
-    list: (params: Record<string, any> = {}) => {
+    list: (params: Record<string, unknown> = {}) => {
       const searchParams = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null && value !== '') {
