@@ -20,7 +20,7 @@ router.post('/message', validateChatMessage, async (req, res, next) => {
       throw new ValidationError('Message is required');
     }
 
-    const response = await cerebrasService.sendMessage(message, context);
+    const response = await cerebrasService.sendMessage(message);
 
     res.json({
       success: true,

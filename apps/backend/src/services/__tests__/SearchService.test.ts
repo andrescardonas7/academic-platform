@@ -1,3 +1,6 @@
+/* eslint-env jest */
+/* global jest, describe, it, expect, beforeEach, afterEach */
+
 import { supabase } from '../../config/supabase';
 import { AppError } from '../../utils/ErrorHandler';
 import { SearchService } from '../SearchService';

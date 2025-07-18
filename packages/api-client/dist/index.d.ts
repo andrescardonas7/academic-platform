@@ -1,12 +1,4 @@
 import { ApiResponse, FilterOptions, SearchFilters, SearchResult } from '@academic/shared-types';
-declare global {
-    interface RequestInit {
-        headers?: Record<string, string>;
-        method?: string;
-        body?: string;
-        signal?: AbortSignal;
-    }
-}
 declare class ApiClient {
     private readonly baseURL;
     private readonly apiKey;

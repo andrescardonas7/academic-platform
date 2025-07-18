@@ -1,6 +1,7 @@
-import { apiClient, ApiError } from './index';
+/* eslint-env jest */
+/* global jest, describe, it, expect, beforeEach, afterEach */
 
-// Jest globals are configured in .eslintrc.js
+import { apiClient, ApiError } from './index';
 
 const mockFetch = global.fetch as jest.MockedFunction<typeof fetch>;
 

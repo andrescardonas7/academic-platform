@@ -7,14 +7,12 @@ import {
   SearchResult,
 } from '@academic/shared-types';
 
-// Global type declarations for Node.js environment
-declare global {
-  interface RequestInit {
-    headers?: Record<string, string>;
-    method?: string;
-    body?: string;
-    signal?: AbortSignal;
-  }
+// Type definitions for our API client
+interface ApiRequestInit {
+  headers?: Record<string, string>;
+  method?: string;
+  body?: string;
+  signal?: AbortSignal;
 }
 
 class ApiClient {
@@ -34,7 +32,7 @@ class ApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: ApiRequestInit = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
 
@@ -42,7 +40,7 @@ class ApiClient {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), API.TIMEOUT);
 
-    const config: RequestInit = {
+    const config: ApiRequestInit = {
       headers: {
         ...this.defaultHeaders,
         ...options.headers,
@@ -115,7 +113,7 @@ class ApiClient {
     return this.request('/health');
   };
 
-  private buildQueryParams(params: Record<string, unknown>): string {
+  private buildQueryParams(params: SearchFilters): string {
     const searchParams = new URLSearchParams();
 
     Object.entries(params).forEach(([key, value]) => {

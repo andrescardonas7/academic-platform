@@ -5,7 +5,8 @@ const router = Router();
 // POST /api/auth/login - User login
 router.post('/login', async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { email } = req.body;
+    // TODO: Implement password validation
 
     // TODO: Implement authentication logic
     res.json({
@@ -15,13 +16,13 @@ router.post('/login', async (req: Request, res: Response) => {
       user: {
         id: 1,
         email,
-        name: 'Sample User'
-      }
+        name: 'Sample User',
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: 'Login failed'
+      error: 'Login failed',
     });
   }
 });
@@ -29,7 +30,8 @@ router.post('/login', async (req: Request, res: Response) => {
 // POST /api/auth/register - User registration
 router.post('/register', async (req: Request, res: Response) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, name } = req.body;
+    // TODO: Implement password hashing and validation
 
     // TODO: Implement registration logic
     res.status(201).json({
@@ -38,13 +40,13 @@ router.post('/register', async (req: Request, res: Response) => {
       user: {
         id: 1,
         email,
-        name
-      }
+        name,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: 'Registration failed'
+      error: 'Registration failed',
     });
   }
 });
@@ -58,13 +60,13 @@ router.get('/profile', async (req: Request, res: Response) => {
       user: {
         id: 1,
         email: 'user@example.com',
-        name: 'Sample User'
-      }
+        name: 'Sample User',
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: 'Error fetching profile'
+      error: 'Error fetching profile',
     });
   }
 });

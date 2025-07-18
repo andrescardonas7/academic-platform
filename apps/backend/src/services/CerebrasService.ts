@@ -25,7 +25,7 @@ export class CerebrasService implements IChatService {
     }
   }
 
-  async sendMessage(message: string, context?: string): Promise<string> {
+  async sendMessage(message: string): Promise<string> {
     try {
       // Security: Validate and sanitize input
       const sanitizedMessage = this.validateAndSanitizeInput(message);

@@ -33,10 +33,6 @@ export const securityMonitor = (
   next: NextFunction
 ) => {
   const clientIp = req.ip || req.socket.remoteAddress || 'unknown';
-  // Security monitoring variables (used for logging and analysis)
-  const _userAgent = req.headers['user-agent'] || '';
-  const _path = req.path;
-  const _method = req.method;
 
   // Check for suspicious patterns in request
   const suspiciousActivity = detectSuspiciousActivity(req);
