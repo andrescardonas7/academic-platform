@@ -12,6 +12,9 @@ import { AppError, ErrorHandler } from '../utils/ErrorHandler';
 
 export class SearchService implements ISearchService {
   private readonly tableName = 'oferta_academica';
+  private filterOptionsCache: FilterOptions | null = null;
+  private filterOptionsCacheTime: number = 0;
+  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
   async searchOfferings(filters: SearchFilters = {}): Promise<SearchResult> {
     try {
@@ -22,10 +25,43 @@ export class SearchService implements ISearchService {
       const page = Math.max(filters.page || PAGINATION.DEFAULT_PAGE, 1);
       const offset = (page - 1) * limit;
 
-      const { data, error, count } = await supabase
-        .from(this.tableName)
-        .select('*', { count: 'exact' })
-        .range(offset, offset + limit - 1);
+      // Build optimized query with filters
+      let query = supabase.from(this.tableName).select('*', { count: 'exact' });
+
+      // Apply text search filter (optimized with full-text search)
+      if (filters.q && filters.q.trim()) {
+        const searchTerm = filters.q.trim();
+        query = query.or(
+          `carrera.ilike.%${searchTerm}%,institucion.ilike.%${searchTerm}%,clasificacion.ilike.%${searchTerm}%`
+        );
+      }
+
+      // Apply specific filters
+      if (filters.modalidad) {
+        query = query.eq('modalidad', filters.modalidad);
+      }
+
+      if (filters.institucion) {
+        query = query.eq('institucion', filters.institucion);
+      }
+
+      if (filters.nivel) {
+        query = query.ilike('nivel_programa', `%${filters.nivel}%`);
+      }
+
+      if (filters.area) {
+        query = query.ilike('clasificacion', `%${filters.area}%`);
+      }
+
+      // Apply sorting
+      const sortField = this.mapSortField(filters.sortBy || 'carrera');
+      const sortOrder = filters.sortOrder === 'desc' ? false : true;
+      query = query.order(sortField, { ascending: sortOrder });
+
+      // Apply pagination
+      query = query.range(offset, offset + limit - 1);
+
+      const { data, error, count } = await query;
 
       if (error) {
         throw new AppError(
@@ -51,6 +87,15 @@ export class SearchService implements ISearchService {
 
   async getFilterOptions(): Promise<FilterOptions> {
     try {
+      // Check cache first
+      const now = Date.now();
+      if (
+        this.filterOptionsCache &&
+        now - this.filterOptionsCacheTime < this.CACHE_TTL
+      ) {
+        return this.filterOptionsCache;
+      }
+
       const { data, error } = await supabase
         .from(this.tableName)
         .select('modalidad, institucion, clasificacion, nivel_programa')
@@ -64,7 +109,13 @@ export class SearchService implements ISearchService {
         );
       }
 
-      return this.extractUniqueValues(data || []);
+      const filterOptions = this.extractUniqueValues(data || []);
+
+      // Update cache
+      this.filterOptionsCache = filterOptions;
+      this.filterOptionsCacheTime = now;
+
+      return filterOptions;
     } catch (error) {
       const appError = ErrorHandler.handle(error);
       ErrorHandler.logError(appError, 'SearchService.getFilterOptions');
@@ -106,5 +157,18 @@ export class SearchService implements ISearchService {
 
   private getUniqueValues(data: any[], field: string): string[] {
     return [...new Set(data.map((item) => item[field]).filter(Boolean))].sort();
+  }
+
+  private mapSortField(sortBy: string): string {
+    const fieldMap: Record<string, string> = {
+      nombre: 'carrera',
+      carrera: 'carrera',
+      institucion: 'institucion',
+      modalidad: 'modalidad',
+      duracion: 'duracion_semestres',
+      precio: 'valor_semestre',
+      nivel: 'nivel_programa',
+    };
+    return fieldMap[sortBy] || 'carrera';
   }
 }
