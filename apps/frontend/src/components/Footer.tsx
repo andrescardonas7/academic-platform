@@ -5,6 +5,7 @@ import {
   PhoneIcon,
 } from '@heroicons/react/24/outline';
 import { AcademicCapIcon as AcademicCapSolid } from '@heroicons/react/24/solid';
+import Image from 'next/image';
 import React from 'react';
 
 const Footer: React.FC = () => {
@@ -86,7 +87,11 @@ const Footer: React.FC = () => {
               Sponsor
             </h4>
             <ul className='space-y-3'>
-              <SponsorItem logoSrc='/buho.svg' name='Labs' />
+              <SponsorItem
+                logoSrc='/buho.svg'
+                name='Labs'
+                description='Desarrollo de software'
+              />
             </ul>
           </div>
         </div>
@@ -177,10 +182,12 @@ const SponsorItem: React.FC<SponsorItemProps> = ({
 }) => (
   <li className='flex items-center gap-3 text-slate-300'>
     <div className='w-18 h-18 flex items-center justify-center'>
-      <img
+      <Image
         src={logoSrc}
         alt={name}
-        className='h-50 w-50 opacity-80 hover:opacity-100 transition-opacity duration-200 filter brightness-0 invert'
+        width={50}
+        height={50}
+        className='opacity-80 hover:opacity-100 transition-opacity duration-200 filter brightness-0 invert'
       />
     </div>
     <div className='flex flex-col'>

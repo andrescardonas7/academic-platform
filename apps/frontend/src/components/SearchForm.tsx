@@ -150,7 +150,6 @@ const SearchForm: React.FC<SearchFormProps> = ({
               placeholder={placeholder}
               className='flex-1 bg-transparent text-gray-900 placeholder-gray-500 focus:outline-none text-lg'
               aria-label='Buscar programas académicos'
-              aria-expanded={isOpen}
               aria-haspopup='listbox'
             />
 

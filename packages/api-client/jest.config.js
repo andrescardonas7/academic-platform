@@ -12,5 +12,10 @@ module.exports = {
     '!src/**/*.test.ts',
     '!src/**/*.spec.ts',
   ],
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  setupFilesAfterEnv: ['<rootDir>/../../jest.setup.js'],
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.json',
+    },
+  },
 };
