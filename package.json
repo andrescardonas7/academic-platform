@@ -34,11 +34,10 @@
     "update:all": "pnpm update --recursive",
     "deploy:check": "node scripts/deploy.js",
     "deploy:vercel": "vercel --prod",
-    "version:patch": "pnpm version patch",
-    "version:minor": "pnpm version minor",
-    "version:major": "pnpm version major",
-    "version:prerelease": "pnpm version prerelease",
     "release": "node scripts/release.js",
+    "release:patch": "node scripts/release.js patch",
+    "release:minor": "node scripts/release.js minor",
+    "release:major": "node scripts/release.js major",
     "changelog": "node scripts/changelog.js"
   },
   "devDependencies": {
