@@ -60,3 +60,17 @@ next-env.d.ts
 
 # Vercel
 .vercel
+
+# IDE and Editor configurations (keep private)
+.cursor/
+.vscode/
+.idea/
+
+# GitHub workflows and configurations (keep private for public repos)
+.github/
+.coderabbit.yaml
+cursor-config.json
+GEMINI.md
+.unlighthouse/
+.task/
+
