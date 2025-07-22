@@ -1,6 +1,6 @@
 {
   "name": "academic-platform",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -33,7 +33,13 @@
     "install:all": "pnpm install",
     "update:all": "pnpm update --recursive",
     "deploy:check": "node scripts/deploy.js",
-    "deploy:vercel": "vercel --prod"
+    "deploy:vercel": "vercel --prod",
+    "version:patch": "pnpm version patch",
+    "version:minor": "pnpm version minor",
+    "version:major": "pnpm version major",
+    "version:prerelease": "pnpm version prerelease",
+    "release": "node scripts/release.js",
+    "changelog": "node scripts/changelog.js"
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",
