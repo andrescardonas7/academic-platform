@@ -57,6 +57,7 @@ next-env.d.ts
 
 # Turbo
 .turbo/
+.env.sentry-build-plugin
 
 # Vercel
 .vercel

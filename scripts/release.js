@@ -9,6 +9,39 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Validates and sanitizes version string to prevent command injection
+ * @param {string} version - Version string to validate
+ * @returns {boolean} - True if version is valid
+ */
+function isValidVersion(version) {
+  const versionRegex = /^\d+\.\d+\.\d+$/;
+  return versionRegex.test(version);
+}
+
+/**
+ * Escapes shell arguments to prevent command injection
+ * @param {string} arg - Argument to escape
+ * @returns {string} - Escaped argument
+ */
+function escapeShellArg(arg) {
+  return arg.replace(/'/g, "'\"'\"'");
+}
+
+/**
+ * Safely executes git commands with validation
+ * @param {string} command - Git command to execute
+ * @param {object} options - Execution options
+ * @returns {string} - Command output
+ */
+function safeExecSync(command, options = {}) {
+  try {
+    return execSync(command, { encoding: 'utf8', ...options });
+  } catch (error) {
+    throw new Error(`Command failed: ${command}\n${error.message}`);
+  }
+}
+
 const args = process.argv.slice(2);
 const releaseType = args[0] || 'patch'; // patch, minor, major
 
@@ -16,16 +49,14 @@ console.log(`🚀 Starting release process for ${releaseType} version...\n`);
 
 try {
   // Check if we're on main branch
-  const currentBranch = execSync('git branch --show-current', {
-    encoding: 'utf8',
-  }).trim();
+  const currentBranch = safeExecSync('git branch --show-current').trim();
   if (currentBranch !== 'main') {
     console.error('❌ Release must be done from main branch');
     process.exit(1);
   }
 
   // Check if working directory is clean
-  const status = execSync('git status --porcelain', { encoding: 'utf8' });
+  const status = safeExecSync('git status --porcelain');
   if (status.trim()) {
     console.error(
       '❌ Working directory is not clean. Please commit or stash changes.'
@@ -60,6 +91,13 @@ try {
   }
 
   const newVersion = versionParts.join('.');
+
+  // Validate new version format for security
+  if (!isValidVersion(newVersion)) {
+    console.error('❌ Invalid version format generated');
+    process.exit(1);
+  }
+
   console.log(`🎯 New version: ${newVersion}`);
 
   // Update package.json
@@ -90,15 +128,17 @@ try {
 
   // Run pre-release checks
   console.log('🔍 Running pre-release checks...');
-  execSync('pnpm deploy:check', { stdio: 'inherit' });
+  safeExecSync('pnpm deploy:check', { stdio: 'inherit' });
 
-  // Commit version changes
-  execSync(
-    `git add package.json apps/frontend/package.json apps/backend/package.json`
+  // Commit version changes (using safe execution)
+  safeExecSync(
+    'git add package.json apps/frontend/package.json apps/backend/package.json'
   );
-  execSync(`git commit -m "chore: bump version to ${newVersion}"`);
+  safeExecSync(
+    `git commit -m 'chore: bump version to ${escapeShellArg(newVersion)}'`
+  );
 
-  // Create git tag
+  // Create git tag with escaped message
   const tagMessage = `Release v${newVersion}
 
 🚀 Academic Platform v${newVersion}
@@ -108,13 +148,17 @@ See CHANGELOG.md for detailed information.
 
 Generated automatically by release script.`;
 
-  execSync(`git tag -a v${newVersion} -m "${tagMessage}"`);
+  // Escape tag message to prevent injection
+  const escapedTagMessage = escapeShellArg(tagMessage);
+  safeExecSync(
+    `git tag -a 'v${escapeShellArg(newVersion)}' -m '${escapedTagMessage}'`
+  );
 
   console.log(`✅ Created tag v${newVersion}`);
 
-  // Push changes and tag
-  execSync('git push origin main');
-  execSync(`git push origin v${newVersion}`);
+  // Push changes and tag (using safe execution)
+  safeExecSync('git push origin main');
+  safeExecSync(`git push origin 'v${escapeShellArg(newVersion)}'`);
 
   console.log(`\n🎉 Release v${newVersion} completed successfully!`);
   console.log('\n📋 Next steps:');

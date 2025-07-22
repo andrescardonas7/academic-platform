@@ -146,7 +146,7 @@ export class SearchService implements ISearchService {
     };
   }
 
-  private extractUniqueValues(data: any[]): FilterOptions {
+  private extractUniqueValues(data: Record<string, unknown>[]): FilterOptions {
     return {
       modalidades: this.getUniqueValues(data, 'modalidad'),
       instituciones: this.getUniqueValues(data, 'institucion'),
@@ -155,8 +155,20 @@ export class SearchService implements ISearchService {
     };
   }
 
-  private getUniqueValues(data: any[], field: string): string[] {
-    return [...new Set(data.map((item) => item[field]).filter(Boolean))].sort();
+  private getUniqueValues(
+    data: Record<string, unknown>[],
+    field: string
+  ): string[] {
+    return [
+      ...new Set(
+        data
+          .map((item) => item[field])
+          .filter(
+            (value): value is string =>
+              typeof value === 'string' && value.trim().length > 0
+          )
+      ),
+    ].sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
   }
 
   private mapSortField(sortBy: string): string {

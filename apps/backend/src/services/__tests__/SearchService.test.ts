@@ -5,18 +5,37 @@ import { supabase } from '../../config/supabase';
 import { AppError } from '../../utils/ErrorHandler';
 import { SearchService } from '../SearchService';
 
+// Mock helpers to reduce nesting
+const createMockResponse = (
+  data: any,
+  error: any = null,
+  count: number = 0
+) => ({
+  data,
+  error,
+  count,
+});
+
+const createMockRange = (response: any) =>
+  jest.fn(() => Promise.resolve(response));
+
+const createMockSelect = (rangeResponse: any) =>
+  jest.fn(() => ({
+    range: createMockRange(rangeResponse),
+  }));
+
+const createMockLimit = (response: any) =>
+  jest.fn(() => Promise.resolve(response));
+
+const createMockSelectWithLimit = (limitResponse: any) =>
+  jest.fn(() => ({
+    limit: createMockLimit(limitResponse),
+  }));
+
 // Mock de Supabase
 jest.mock('../../config/supabase', () => ({
   supabase: {
-    from: jest.fn(() => ({
-      select: jest.fn(() => ({
-        range: jest.fn(() => ({
-          data: [],
-          error: null,
-          count: 0,
-        })),
-      })),
-    })),
+    from: jest.fn(),
   },
 }));
 
@@ -47,15 +66,8 @@ describe('SearchService', () => {
         },
       ];
 
-      const mockSelect = jest.fn(() => ({
-        range: jest.fn(() =>
-          Promise.resolve({
-            data: mockData,
-            error: null,
-            count: 1,
-          })
-        ),
-      }));
+      const response = createMockResponse(mockData, null, 1);
+      const mockSelect = createMockSelect(response);
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -88,16 +100,8 @@ describe('SearchService', () => {
 
     it('should handle database errors', async () => {
       const mockError = { message: 'Database connection failed' };
-
-      const mockSelect = jest.fn(() => ({
-        range: jest.fn(() =>
-          Promise.resolve({
-            data: null,
-            error: mockError,
-            count: null,
-          })
-        ),
-      }));
+      const response = createMockResponse(null, mockError, null);
+      const mockSelect = createMockSelect(response);
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -119,17 +123,8 @@ describe('SearchService', () => {
         enlace: 'http://test.com',
       }));
 
-      const mockRange = jest.fn(() =>
-        Promise.resolve({
-          data: mockData.slice(0, 3),
-          error: null,
-          count: 5,
-        })
-      );
-
-      const mockSelect = jest.fn(() => ({
-        range: mockRange,
-      }));
+      const response = createMockResponse(mockData.slice(0, 3), null, 5);
+      const mockSelect = createMockSelect(response);
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -140,6 +135,7 @@ describe('SearchService', () => {
         limit: 3,
       });
 
+      const mockRange = mockSelect().range;
       expect(mockRange).toHaveBeenCalledWith(0, 2); // offset 0, limit 3 -> range(0, 2)
       expect(result.pagination).toEqual({
         page: 1,
@@ -152,15 +148,8 @@ describe('SearchService', () => {
     });
 
     it('should handle empty results', async () => {
-      const mockSelect = jest.fn(() => ({
-        range: jest.fn(() =>
-          Promise.resolve({
-            data: [],
-            error: null,
-            count: 0,
-          })
-        ),
-      }));
+      const response = createMockResponse([], null, 0);
+      const mockSelect = createMockSelect(response);
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -174,15 +163,8 @@ describe('SearchService', () => {
     });
 
     it('should limit maximum page size', async () => {
-      const mockSelect = jest.fn(() => ({
-        range: jest.fn(() =>
-          Promise.resolve({
-            data: [],
-            error: null,
-            count: 0,
-          })
-        ),
-      }));
+      const response = createMockResponse([], null, 0);
+      const mockSelect = createMockSelect(response);
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -221,14 +203,8 @@ describe('SearchService', () => {
         },
       ];
 
-      const mockSelect = jest.fn(() => ({
-        limit: jest.fn(() =>
-          Promise.resolve({
-            data: mockData,
-            error: null,
-          })
-        ),
-      }));
+      const response = { data: mockData, error: null };
+      const mockSelect = createMockSelectWithLimit(response);
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
@@ -246,19 +222,12 @@ describe('SearchService', () => {
 
     it('should handle database errors in filter options', async () => {
       const mockError = { message: 'Database error' };
-
-      const mockSelect = jest.fn(() => ({
-        limit: jest.fn(() =>
-          Promise.resolve({
-            data: null,
-            error: mockError,
-          })
-        ),
-      }));
+      const response = { data: null, error: mockError };
+      const mockSelect = createMockSelectWithLimit(response);
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
-      } as any);
+      } as unknown);
 
       await expect(searchService.getFilterOptions()).rejects.toThrow(AppError);
     });
@@ -279,18 +248,12 @@ describe('SearchService', () => {
         },
       ];
 
-      const mockSelect = jest.fn(() => ({
-        limit: jest.fn(() =>
-          Promise.resolve({
-            data: mockData,
-            error: null,
-          })
-        ),
-      }));
+      const response = { data: mockData, error: null };
+      const mockSelect = createMockSelectWithLimit(response);
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
-      } as any);
+      } as unknown);
 
       const result = await searchService.getFilterOptions();
 
