@@ -31,7 +31,9 @@
     "db:seed": "turbo db:seed --filter=@academic/database",
     "db:studio": "turbo db:studio --filter=@academic/database",
     "install:all": "pnpm install",
-    "update:all": "pnpm update --recursive"
+    "update:all": "pnpm update --recursive",
+    "deploy:check": "node scripts/deploy.js",
+    "deploy:vercel": "vercel --prod"
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",
