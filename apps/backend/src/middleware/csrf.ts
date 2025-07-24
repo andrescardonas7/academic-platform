@@ -8,9 +8,10 @@ export interface CSRFRequest extends Request {
   method: string;
   path: string;
   headers: Request['headers'];
-  session?: session.Session & {
-    csrfToken?: string;
-  };
+  session?: session.Session &
+    Partial<session.SessionData> & {
+      csrfToken?: string;
+    };
 }
 
 // Generate CSRF token

@@ -1,5 +1,11 @@
 // Refactored CerebrasService - Single Responsibility
-import { CEREBRAS } from '@academic/shared-types';
+// CEREBRAS configuration for Railway deployment
+const CEREBRAS = {
+  MODEL: 'cerebras-llama-3.1-8b-instruct',
+  CONTEXT_LIMIT: 5,
+  MAX_TOKENS: 1000,
+  TEMPERATURE: 0.7,
+} as const;
 import Cerebras from '@cerebras/cerebras_cloud_sdk';
 import { IChatService } from '../interfaces/IChatService';
 import { AppError, ErrorHandler } from '../utils/ErrorHandler';

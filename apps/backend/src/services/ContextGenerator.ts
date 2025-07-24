@@ -1,6 +1,6 @@
 // Single Responsibility - Only generates context
-import { AcademicProgram } from '@academic/shared-types';
 import { IContextGenerator } from '../interfaces/IChatService';
+import { AcademicProgram } from '../types/railway';
 
 export class ContextGenerator implements IContextGenerator {
   generateAcademicContext(academicData: AcademicProgram[]): string {
