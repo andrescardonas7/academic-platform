@@ -68,7 +68,7 @@ try {
     'apps\\',
     'packages\\',
   ]);
-  
+
   if (result.success && result.stdout.trim() === '') {
     console.log('✅ No se encontraron credenciales hardcodeadas');
   } else if (result.success && result.stdout.trim() !== '') {

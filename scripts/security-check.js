@@ -48,7 +48,7 @@ const checks = [
           'apps\\',
           'packages\\',
         ]);
-        
+
         // If command succeeds and no output, no credentials found (good)
         // If command fails, also means no matches found (good)
         return !result.success || result.stdout.trim() === '';

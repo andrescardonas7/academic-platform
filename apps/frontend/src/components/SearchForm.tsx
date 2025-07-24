@@ -102,7 +102,11 @@ const SearchForm: React.FC<SearchFormProps> = ({
       recognition.interimResults = false;
 
       recognition.onstart = () => setIsListening(true);
-      recognition.onresult = (event: Event & { results: { [key: number]: { [key: number]: { transcript: string } } } }) => {
+      recognition.onresult = (
+        event: Event & {
+          results: { [key: number]: { [key: number]: { transcript: string } } };
+        }
+      ) => {
         const transcript = event.results[0][0].transcript;
         setQuery(transcript);
         setIsListening(false);

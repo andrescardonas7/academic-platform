@@ -87,7 +87,11 @@ const Footer: React.FC = () => {
               Sponsor
             </h4>
             <ul className='space-y-3'>
-              <SponsorItem logoSrc='/buho.svg' name='Labs' description='Desarrollo de tecnología educativa' />
+              <SponsorItem
+                logoSrc='/buho.svg'
+                name='Labs'
+                description='Desarrollo de tecnología educativa'
+              />
             </ul>
           </div>
         </div>

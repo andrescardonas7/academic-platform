@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { SecurityUtils } from '../utils/SecurityUtils';
 import { ParsedQs } from 'qs';
+import { SecurityUtils } from '../utils/SecurityUtils';
 
 // Security middleware for additional protection
 export const securityMiddleware = (

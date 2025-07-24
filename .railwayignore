@@ -1,0 +1,33 @@
+# Railway ignore - Frontend deployment
+apps/frontend/
+apps/frontend/**
+
+# Development files
+.env
+.env.local
+.env.*.local
+
+# Build artifacts
+dist/
+build/
+.next/
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+*.lcov

@@ -9,7 +9,7 @@ import {
   User,
   X,
 } from 'lucide-react';
-import { useEffect, useRef, useState, KeyboardEvent } from 'react';
+import { KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { apiClient } from '../../utils/api';
 
 interface ChatMessage {
@@ -248,7 +248,11 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
                     <Send className='w-4 h-4' />
                   </button>
                 </div>
-                {messages.length === 1 && <SuggestionChips onSelect={(suggestion) => sendMessage(suggestion)} />}
+                {messages.length === 1 && (
+                  <SuggestionChips
+                    onSelect={(suggestion) => sendMessage(suggestion)}
+                  />
+                )}
               </div>
             </>
           )}
@@ -258,7 +262,11 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
   );
 }
 
-const SuggestionChips = ({ onSelect }: { onSelect: (suggestion: string) => void }) => {
+const SuggestionChips = ({
+  onSelect,
+}: {
+  onSelect: (suggestion: string) => void;
+}) => {
   const suggestions = [
     '¿Qué ingenierías hay en Cartago?',
     'Busco carreras virtuales',
