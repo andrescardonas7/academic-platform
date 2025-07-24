@@ -1,0 +1,10 @@
+{
+  "buildCommand": "cd ../.. && pnpm install && pnpm --filter @academic/frontend build",
+  "outputDirectory": ".next",
+  "installCommand": "pnpm install",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "env": {
+    "NEXT_PUBLIC_API_URL": "https://academic-platform-production.up.railway.app"
+  }
+}
