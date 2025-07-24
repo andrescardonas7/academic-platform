@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { SecurityUtils } from '../utils/SecurityUtils';
+import { ParsedQs } from 'qs';
 
 // Security middleware for additional protection
 export const securityMiddleware = (
@@ -65,7 +66,7 @@ export const sanitizeInput = (
   }
 
   if (req.query) {
-    req.query = SecurityUtils.sanitizeInput(req.query);
+    req.query = SecurityUtils.sanitizeInput(req.query) as ParsedQs;
   }
 
   next();

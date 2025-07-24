@@ -132,7 +132,7 @@ export class SecurityLogger {
   private static sanitizeSensitiveData(
     data: Record<string, unknown>
   ): Record<string, unknown> {
-    return SecurityUtils.sanitizeData(data);
+    return SecurityUtils.sanitizeData(data) as Record<string, unknown>;
   }
 
   // Get color code for severity

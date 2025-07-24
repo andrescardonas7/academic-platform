@@ -1,7 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { Request, Response, Router } from 'express';
 import jwt from 'jsonwebtoken';
-import { prisma } from '../../../packages/database/src';
 import { ErrorHandler } from '../utils/ErrorHandler';
 
 const router = Router();
