@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Academic Platform Backend API",
   "main": "dist/server.js",
-  "type": "module",
   "scripts": {
     "dev": "npx tsx watch src/server.ts",
     "dev:dotenv": "npx -y dotenv-cli -- npx tsx watch src/server.ts",
