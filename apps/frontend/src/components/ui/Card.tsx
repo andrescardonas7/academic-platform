@@ -21,16 +21,24 @@ const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
 const CardTitle = forwardRef<
   HTMLParagraphElement,
   HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  <h3
-    ref={ref}
-    className={cn(
-      'text-lg font-semibold leading-none tracking-tight',
-      className
-    )}
-    {...props}
-  />
-));
+>(({ className, children, ...props }, ref) => {
+  if (!children) {
+    return null;
+  }
+
+  return (
+    <h3
+      ref={ref}
+      className={cn(
+        'text-lg font-semibold leading-none tracking-tight',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </h3>
+  );
+});
 
 const CardDescription = forwardRef<
   HTMLParagraphElement,

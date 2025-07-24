@@ -1,10 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 
-export interface AppError extends Error {
-  statusCode?: number;
-  code?: string;
-  isOperational?: boolean;
-}
+import { BaseError as AppError } from '../types/shared';
 
 export const errorHandler = (
   error: AppError,
@@ -41,15 +37,20 @@ export const errorHandler = (
   }
 
   // Prepare response based on environment
-  const response: any = {
+  let responseMessage: string;
+  if (isDevelopment) {
+    responseMessage = message;
+  } else if (statusCode >= 500) {
+    responseMessage = 'Something went wrong';
+  } else {
+    responseMessage = message;
+  }
+
+  const response = {
     error: statusCode >= 500 ? 'Internal Server Error' : 'Bad Request',
-    message: isDevelopment
-      ? message
-      : statusCode >= 500
-        ? 'Something went wrong'
-        : message,
+    message: responseMessage,
     code: error.code || 'UNKNOWN_ERROR',
-  };
+  } as Record<string, unknown>;
 
   // Only include stack trace in development
   if (isDevelopment && error.stack) {
@@ -57,8 +58,8 @@ export const errorHandler = (
   }
 
   // Include validation details if available
-  if (error.code === 'VALIDATION_ERROR' && (error as any).details) {
-    response.details = (error as any).details;
+  if (error.code === 'VALIDATION_ERROR' && 'details' in error) {
+    response.details = (error as ValidationError).details;
   }
 
   res.status(statusCode).json(response);
@@ -72,7 +73,7 @@ export class ValidationError extends Error implements AppError {
 
   constructor(
     message: string,
-    public details?: any[]
+    public details?: unknown[]
   ) {
     super(message);
     this.name = 'ValidationError';

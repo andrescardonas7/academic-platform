@@ -102,7 +102,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
       recognition.interimResults = false;
 
       recognition.onstart = () => setIsListening(true);
-      recognition.onresult = (event: any) => {
+      recognition.onresult = (event: unknown) => {
         const transcript = event.results[0][0].transcript;
         setQuery(transcript);
         setIsListening(false);
@@ -264,12 +264,13 @@ const SuggestionsList: React.FC<SuggestionsListProps> = ({
   if (suggestions.length === 0) return null;
 
   return (
-    <ul
+    <div
       className='absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-xl z-50 max-h-80 overflow-y-auto'
-      role='listbox'
+      role='combobox'
+      aria-expanded='true'
     >
       {suggestions.map((suggestion, index) => (
-        <li
+        <div
           key={suggestion.Id}
           className={`px-6 py-4 cursor-pointer transition-all duration-200 ${
             index === selectedIndex
@@ -278,8 +279,15 @@ const SuggestionsList: React.FC<SuggestionsListProps> = ({
           } ${index === 0 ? 'rounded-t-2xl' : ''} ${index === suggestions.length - 1 ? 'rounded-b-2xl' : ''}`}
           onClick={() => onSelect(suggestion)}
           onMouseEnter={() => onHover(index)}
-          role='option'
+          role='button'
+          tabIndex={0}
           aria-selected={index === selectedIndex}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSelect(suggestion);
+            }
+          }}
         >
           <div className='flex items-start gap-4'>
             <div className='flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl flex items-center justify-center'>
@@ -310,9 +318,9 @@ const SuggestionsList: React.FC<SuggestionsListProps> = ({
               </div>
             </div>
           </div>
-        </li>
+        </div>
       ))}
-    </ul>
+    </div>
   );
 };
 

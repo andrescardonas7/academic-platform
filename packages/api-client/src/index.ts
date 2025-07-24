@@ -79,7 +79,8 @@ class ApiClient {
       filters: SearchFilters = {}
     ): Promise<ApiResponse<SearchResult>> => {
       const queryParams = this.buildQueryParams(filters);
-      const endpoint = `/search${queryParams ? `?${queryParams}` : ''}`;
+      const queryString = queryParams ? `?${queryParams}` : '';
+      const endpoint = `/search${queryString}`;
       return this.request<SearchResult>(endpoint);
     },
 

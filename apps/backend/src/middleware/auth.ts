@@ -1,16 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import {
+  AuthenticatedRequest as AuthRequest,
+  RateLimitData,
+} from '../types/shared';
 
 // Rate limiting storage (in production, use Redis)
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
-
-export interface AuthRequest extends Request {
-  user?: {
-    id: string;
-    email?: string;
-    role?: string;
-  };
-}
+const rateLimitStore = new Map<string, RateLimitData>();
 
 // JWT Authentication middleware
 export const authenticateJWT = (
@@ -19,7 +15,7 @@ export const authenticateJWT = (
   next: NextFunction
 ) => {
   const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  const token = authHeader?.split(' ')[1]; // Bearer TOKEN
 
   if (!token) {
     return res.status(401).json({

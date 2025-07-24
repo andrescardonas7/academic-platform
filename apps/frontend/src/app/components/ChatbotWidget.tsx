@@ -54,12 +54,13 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
     }
   }, [isOpen]);
 
-  const sendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
+  const sendMessage = async (messageContent?: string) => {
+    const content = messageContent || inputValue.trim();
+    if (!content || isLoading) return;
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
-      content: inputValue.trim(),
+      content,
       isUser: true,
       timestamp: new Date(),
     };
@@ -136,7 +137,11 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className='bg-white rounded-lg shadow-xl border border-gray-200 w-80 h-96 flex flex-col'>
+        <div
+          className={`bg-white rounded-lg shadow-xl border border-gray-200 w-96 flex flex-col transition-all duration-300 ${
+            isMinimized ? 'h-auto' : 'min-h-[24rem] max-h-[80vh]'
+          }`}
+        >
           {/* Header */}
           <div className='bg-blue-600 text-white p-4 rounded-t-lg flex items-center justify-between'>
             <div className='flex items-center gap-2'>
@@ -243,9 +248,7 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
                     <Send className='w-4 h-4' />
                   </button>
                 </div>
-                <p className='text-xs text-gray-500 mt-2 text-center'>
-                  Presiona Enter para enviar
-                </p>
+                {messages.length === 1 && <SuggestionChips onSelect={(suggestion) => sendMessage(suggestion)} />}
               </div>
             </>
           )}
@@ -254,3 +257,29 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
     </div>
   );
 }
+
+const SuggestionChips = ({ onSelect }: { onSelect: (suggestion: string) => void }) => {
+  const suggestions = [
+    '¿Qué ingenierías hay en Cartago?',
+    'Busco carreras virtuales',
+    '¿Cuánto cuesta estudiar psicología?',
+    'Universidades con programas de salud',
+  ];
+
+  return (
+    <div className='p-4 border-t border-gray-200'>
+      <p className='text-sm font-medium text-gray-600 mb-2'>Sugerencias:</p>
+      <div className='flex flex-wrap gap-2'>
+        {suggestions.map((suggestion) => (
+          <button
+            key={suggestion}
+            onClick={() => onSelect(suggestion)}
+            className='px-3 py-1.5 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors'
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};

@@ -32,7 +32,7 @@ export function AcademicGrid({
       >
         {Array.from({ length: 8 }).map((_, i) => (
           <div
-            key={i}
+            key={`academic-grid-skeleton-${i}`}
             className='bg-white border border-gray-200 rounded-xl p-6 shadow-sm animate-pulse'
           >
             {/* Title skeleton */}

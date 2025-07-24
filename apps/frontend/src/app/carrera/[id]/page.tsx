@@ -15,12 +15,12 @@ import {
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useMemo } from 'react';
-import { useAcademicOfferings } from '../../../utils/useAcademicOfferings';
+import { useAcademicData } from '../../../hooks/useAcademicData';
 
 export default function CareerDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { data, loading, error } = useAcademicOfferings();
+  const { programs: data, loading, error } = useAcademicData();
 
   const careerId = params.id as string;
 
@@ -49,7 +49,7 @@ export default function CareerDetailPage() {
                   <div className='space-y-3'>
                     {Array.from({ length: 6 }).map((_, i) => (
                       <div
-                        key={i}
+                        key={`skeleton-main-${i}`}
                         className='h-4 bg-gray-200 rounded w-full'
                       ></div>
                     ))}
@@ -61,7 +61,7 @@ export default function CareerDetailPage() {
                 <div className='space-y-3'>
                   {Array.from({ length: 4 }).map((_, i) => (
                     <div
-                      key={i}
+                      key={`skeleton-sidebar-${i}`}
                       className='h-4 bg-gray-200 rounded w-full'
                     ></div>
                   ))}

@@ -2,7 +2,7 @@
 import { AcademicProgram } from '@academic/shared-types';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SearchForm } from '../SearchForm';
+import SearchForm from '../SearchForm';
 
 const mockPrograms: AcademicProgram[] = [
   {

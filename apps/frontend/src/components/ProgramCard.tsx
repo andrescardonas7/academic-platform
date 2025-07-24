@@ -84,6 +84,23 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
       id={`program-card-${program.carrera.toLowerCase().replace(/\s+/g, '-')}`}
       className={`group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6 border border-gray-100 hover:border-gray-200 transform hover:-translate-y-2 ${onClick ? 'cursor-pointer' : ''} ${className}`}
       onClick={handleClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleClick();
+              }
+            }
+          : undefined
+      }
+      aria-label={
+        onClick
+          ? `Ver detalles de ${program.carrera} en ${program.institucion}`
+          : undefined
+      }
     >
       {/* Gradient overlay on hover */}
       <div className='absolute inset-0 bg-gradient-to-br from-blue-50/50 to-cyan-50/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500'></div>

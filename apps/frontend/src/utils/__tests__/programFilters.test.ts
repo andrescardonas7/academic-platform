@@ -11,7 +11,7 @@ const mockPrograms: AcademicProgram[] = [
     valor_semestre: 2000000,
     clasificacion: 'Ingeniería',
     nivel_programa: 'Pregrado',
-    enlace: 'http://test1.com',
+    enlace: 'https://test1.com',
   },
   {
     Id: '2',
@@ -22,7 +22,7 @@ const mockPrograms: AcademicProgram[] = [
     valor_semestre: 5000000,
     clasificacion: 'Ciencias de la Salud',
     nivel_programa: 'Pregrado',
-    enlace: 'http://test2.com',
+    enlace: 'https://test2.com',
   },
   {
     Id: '3',
@@ -33,7 +33,7 @@ const mockPrograms: AcademicProgram[] = [
     valor_semestre: 1500000,
     clasificacion: 'Ciencias Sociales',
     nivel_programa: 'Pregrado',
-    enlace: 'http://test3.com',
+    enlace: 'https://test3.com',
   },
   {
     Id: '4',
@@ -44,7 +44,7 @@ const mockPrograms: AcademicProgram[] = [
     valor_semestre: 3000000,
     clasificacion: 'Ingeniería',
     nivel_programa: 'Posgrado',
-    enlace: 'http://test4.com',
+    enlace: 'https://test4.com',
   },
 ];
 

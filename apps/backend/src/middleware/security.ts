@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { SecurityUtils } from '../utils/SecurityUtils';
 
 // Security middleware for additional protection
 export const securityMiddleware = (
@@ -59,38 +60,12 @@ export const sanitizeInput = (
   res: Response,
   next: NextFunction
 ) => {
-  // Security: Basic input sanitization
-  const sanitizeObject = (obj: any): any => {
-    if (typeof obj === 'string') {
-      // Remove potential XSS patterns
-      return obj
-        .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-        .replace(/javascript:/gi, '')
-        .replace(/on\w+\s*=/gi, '')
-        .trim();
-    }
-
-    if (Array.isArray(obj)) {
-      return obj.map(sanitizeObject);
-    }
-
-    if (obj && typeof obj === 'object') {
-      const sanitized: any = {};
-      for (const [key, value] of Object.entries(obj)) {
-        sanitized[key] = sanitizeObject(value);
-      }
-      return sanitized;
-    }
-
-    return obj;
-  };
-
   if (req.body) {
-    req.body = sanitizeObject(req.body);
+    req.body = SecurityUtils.sanitizeInput(req.body);
   }
 
   if (req.query) {
-    req.query = sanitizeObject(req.query);
+    req.query = SecurityUtils.sanitizeInput(req.query);
   }
 
   next();

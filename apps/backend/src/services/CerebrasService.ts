@@ -8,8 +8,8 @@ import { SearchService } from './SearchService';
 
 export class CerebrasService implements IChatService {
   private static client: Cerebras;
-  private static contextGenerator = new ContextGenerator();
-  private static searchService = new SearchService();
+  private static readonly contextGenerator = new ContextGenerator();
+  private static readonly searchService = new SearchService();
 
   static {
     this.client = new Cerebras({

@@ -53,7 +53,15 @@ pids/
 # Misc
 .DS_Store
 *.tsbuildinfo
+tsconfig.tsbuildinfo
 next-env.d.ts
+
+# Backups and temporary files
+backups/
+temp/
+tmp/
+*.tmp
+*.cache
 
 # Turbo
 .turbo/

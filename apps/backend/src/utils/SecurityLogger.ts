@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import fs from 'fs';
 import path from 'path';
+import { SecurityUtils } from './SecurityUtils';
 
 // Security event types
 export enum SecurityEventType {
@@ -41,7 +42,7 @@ export interface SecurityEvent {
 export class SecurityLogger {
   private static logDir = process.env.SECURITY_LOG_DIR || 'logs/security';
   private static logFile = path.join(SecurityLogger.logDir, 'security.log');
-  private static consoleOutput = process.env.NODE_ENV !== 'production';
+  private static readonly consoleOutput = process.env.NODE_ENV !== 'production';
 
   // Initialize logger
   static initialize() {
@@ -121,69 +122,17 @@ export class SecurityLogger {
 
   // Sanitize sensitive data
   private static sanitizeSensitiveData(data: any): any {
-    if (!data) return data;
-
-    // Clone the data to avoid modifying the original
-    const sanitized = JSON.parse(JSON.stringify(data));
-
-    // List of sensitive field names
-    const sensitiveFields = [
-      'password',
-      'token',
-      'apiKey',
-      'api_key',
-      'secret',
-      'credential',
-      'authorization',
-      'jwt',
-      'session',
-      'cookie',
-    ];
-
-    // Recursively sanitize objects
-    const sanitizeObject = (obj: any) => {
-      if (!obj || typeof obj !== 'object') return;
-
-      Object.keys(obj).forEach((key) => {
-        // Check if this is a sensitive field
-        const isLowerCaseSensitive = sensitiveFields.includes(
-          key.toLowerCase()
-        );
-        const containsSensitive = sensitiveFields.some((field) =>
-          key.toLowerCase().includes(field)
-        );
-
-        if (isLowerCaseSensitive || containsSensitive) {
-          obj[key] = '[REDACTED]';
-        } else if (typeof obj[key] === 'object') {
-          sanitizeObject(obj[key]);
-        }
-      });
-    };
-
-    sanitizeObject(sanitized);
-    return sanitized;
+    return SecurityUtils.sanitizeData(data);
   }
 
   // Get color code for severity
   private static getSeverityColor(severity: SecurityEventSeverity): string {
-    switch (severity) {
-      case SecurityEventSeverity.INFO:
-        return '\x1b[36m'; // Cyan
-      case SecurityEventSeverity.WARNING:
-        return '\x1b[33m'; // Yellow
-      case SecurityEventSeverity.ERROR:
-        return '\x1b[31m'; // Red
-      case SecurityEventSeverity.CRITICAL:
-        return '\x1b[41m\x1b[37m'; // White on red background
-      default:
-        return '\x1b[0m'; // Reset
-    }
+    return SecurityUtils.getSeverityColor(severity);
   }
 
   // Reset color code
   private static getResetColor(): string {
-    return '\x1b[0m';
+    return SecurityUtils.getResetColor();
   }
 }
 

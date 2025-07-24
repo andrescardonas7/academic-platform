@@ -65,19 +65,11 @@ router.get('/:id', async (req, res, next) => {
       throw new NotFoundError('Invalid offering ID');
     }
 
-    const { data, error } = await supabase
-      .from('offerings')
-      .select('*')
-      .eq('id', parseInt(id))
-      .single();
-
-    if (error || !data) {
-      throw new NotFoundError('Offering not found');
-    }
+    const offering = await searchService.getOfferingById(parseInt(id));
 
     res.json({
       success: true,
-      data,
+      data: offering,
     });
   } catch (error) {
     next(error);

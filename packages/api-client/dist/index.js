@@ -9,7 +9,8 @@ class ApiClient {
         this.search = {
             offerings: async (filters = {}) => {
                 const queryParams = this.buildQueryParams(filters);
-                const endpoint = `/search${queryParams ? `?${queryParams}` : ''}`;
+                const queryString = queryParams ? `?${queryParams}` : '';
+                const endpoint = `/search${queryString}`;
                 return this.request(endpoint);
             },
             filters: async () => {

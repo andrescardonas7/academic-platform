@@ -4,7 +4,7 @@
 import { AcademicProgram } from '@academic/shared-types';
 import { Search, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import ChatbotWidget from '../components/ChatbotWidget';
+import { ChatbotWidget } from '../app/components/ChatbotWidget';
 import Footer from '../components/Footer';
 import HeroSection from '../components/HeroSection';
 import ProgramCard from '../components/ProgramCard';

@@ -1,12 +1,6 @@
 import { useCallback, useState } from 'react';
+import { Message } from '../types/shared';
 import { apiClient } from '../utils/api';
-
-export interface Message {
-  id: string;
-  content: string;
-  isUser: boolean;
-  timestamp: Date;
-}
 
 interface UseChatReturn {
   messages: Message[];

@@ -3,23 +3,7 @@ import SecurityLogger, {
   SecurityEventSeverity,
   SecurityEventType,
 } from '../utils/SecurityLogger';
-
-// Suspicious activity patterns
-const SUSPICIOUS_PATTERNS = {
-  SQL_INJECTION: [
-    /(\bUNION\b|\bSELECT\b|\bINSERT\b|\bDELETE\b|\bDROP\b|\bCREATE\b)/i,
-    /(\bOR\s+1=1\b|\bAND\s+1=1\b)/i,
-    /(--|\/\*|\*\/)/,
-  ],
-  XSS_ATTEMPTS: [
-    /<script[^>]*>.*?<\/script>/gi,
-    /javascript:/gi,
-    /on\w+\s*=/gi,
-    /<iframe[^>]*>/gi,
-  ],
-  PATH_TRAVERSAL: [/\.\.\//g, /\.\.\\/g, /%2e%2e%2f/gi, /%2e%2e%5c/gi],
-  COMMAND_INJECTION: [/[;&|`$()]/, /\b(cat|ls|pwd|whoami|id|uname)\b/i],
-};
+import { SecurityUtils } from '../utils/SecurityUtils';
 
 // Rate limiting for suspicious activity
 const suspiciousActivityTracker = new Map<
@@ -83,9 +67,6 @@ export const securityMonitor = (
 
 // Detect suspicious activity in request
 function detectSuspiciousActivity(req: Request): string[] {
-  const suspicious: string[] = [];
-
-  // Check all request data
   const requestData = {
     body: JSON.stringify(req.body || {}),
     query: JSON.stringify(req.query || {}),
@@ -94,44 +75,7 @@ function detectSuspiciousActivity(req: Request): string[] {
     headers: JSON.stringify(req.headers || {}),
   };
 
-  // Check for SQL injection
-  Object.values(requestData).forEach((data) => {
-    SUSPICIOUS_PATTERNS.SQL_INJECTION.forEach((pattern) => {
-      if (pattern.test(data)) {
-        suspicious.push('SQL_INJECTION');
-      }
-    });
-  });
-
-  // Check for XSS attempts
-  Object.values(requestData).forEach((data) => {
-    SUSPICIOUS_PATTERNS.XSS_ATTEMPTS.forEach((pattern) => {
-      if (pattern.test(data)) {
-        suspicious.push('XSS_ATTEMPT');
-      }
-    });
-  });
-
-  // Check for path traversal
-  Object.values(requestData).forEach((data) => {
-    SUSPICIOUS_PATTERNS.PATH_TRAVERSAL.forEach((pattern) => {
-      if (pattern.test(data)) {
-        suspicious.push('PATH_TRAVERSAL');
-      }
-    });
-  });
-
-  // Check for command injection
-  Object.values(requestData).forEach((data) => {
-    SUSPICIOUS_PATTERNS.COMMAND_INJECTION.forEach((pattern) => {
-      if (pattern.test(data)) {
-        suspicious.push('COMMAND_INJECTION');
-      }
-    });
-  });
-
-  // Remove duplicates
-  return [...new Set(suspicious)];
+  return SecurityUtils.detectSuspiciousActivity(requestData);
 }
 
 // Track suspicious activity per IP
@@ -188,47 +132,17 @@ function monitorRequestPatterns(req: Request) {
 
 // Check if user agent looks like a bot
 function isBotLike(userAgent: string): boolean {
-  const botPatterns = [
-    /bot/i,
-    /crawler/i,
-    /spider/i,
-    /scraper/i,
-    /curl/i,
-    /wget/i,
-    /python/i,
-    /^$/,
-  ];
-
-  return botPatterns.some((pattern) => pattern.test(userAgent));
+  return SecurityUtils.isBotLike(userAgent);
 }
 
 // Check if path is unusual
 function isUnusualPath(path: string): boolean {
-  const unusualPatterns = [
-    /\.php$/i,
-    /\.asp$/i,
-    /\.jsp$/i,
-    /wp-admin/i,
-    /admin/i,
-    /phpmyadmin/i,
-    /\.env$/i,
-    /\.git/i,
-    /\.svn/i,
-  ];
-
-  return unusualPatterns.some((pattern) => pattern.test(path));
+  return SecurityUtils.isUnusualPath(path);
 }
 
 // Sanitize headers for logging
 function sanitizeHeaders(
   headers: Record<string, unknown>
 ): Record<string, unknown> {
-  const sanitized = { ...headers };
-
-  // Remove sensitive headers
-  delete sanitized.authorization;
-  delete sanitized.cookie;
-  delete sanitized['x-api-key'];
-
-  return sanitized;
+  return SecurityUtils.sanitizeHeaders(headers);
 }

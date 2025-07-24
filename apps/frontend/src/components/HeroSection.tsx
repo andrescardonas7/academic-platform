@@ -106,17 +106,18 @@ const HeroSection: React.FC<HeroSectionProps> = ({
       <div className='relative z-10 container mx-auto px-4 py-20 flex flex-col justify-center min-h-screen'>
         <div className='text-center max-w-5xl mx-auto'>
           {/* Main heading */}
-          <h1
-            className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight drop-shadow-lg'
-            role='banner'
-            aria-label='Campus Cartago - Busca tu futuro académico aquí'
-          >
-            Campus Cartago.
-            <br />
-            <span className='bg-gradient-to-r from-[#e33373] to-[#fdde03] bg-clip-text text-transparent drop-shadow-sm'>
-              Busca tu futuro aquí.
-            </span>
-          </h1>
+          <header>
+            <h1
+              className='text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight drop-shadow-lg'
+              aria-label='Campus Cartago - Busca tu futuro académico aquí'
+            >
+              Campus Cartago.
+              <br />
+              <span className='bg-gradient-to-r from-[#e33373] to-[#fdde03] bg-clip-text text-transparent drop-shadow-sm'>
+                Busca tu futuro aquí.
+              </span>
+            </h1>
+          </header>
 
           {/* Subtitle */}
           <p className='text-xl md:text-2xl mb-12 text-slate-300 max-w-3xl mx-auto leading-relaxed'>

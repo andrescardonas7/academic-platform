@@ -27,31 +27,7 @@ export class SearchService implements ISearchService {
 
       // Build optimized query with filters
       let query = supabase.from(this.tableName).select('*', { count: 'exact' });
-
-      // Apply text search filter (optimized with full-text search)
-      if (filters.q && filters.q.trim()) {
-        const searchTerm = filters.q.trim();
-        query = query.or(
-          `carrera.ilike.%${searchTerm}%,institucion.ilike.%${searchTerm}%,clasificacion.ilike.%${searchTerm}%`
-        );
-      }
-
-      // Apply specific filters
-      if (filters.modalidad) {
-        query = query.eq('modalidad', filters.modalidad);
-      }
-
-      if (filters.institucion) {
-        query = query.eq('institucion', filters.institucion);
-      }
-
-      if (filters.nivel) {
-        query = query.ilike('nivel_programa', `%${filters.nivel}%`);
-      }
-
-      if (filters.area) {
-        query = query.ilike('clasificacion', `%${filters.area}%`);
-      }
+      query = this.applyFilters(query, filters);
 
       // Apply sorting
       const sortField = this.mapSortField(filters.sortBy || 'carrera');
@@ -182,5 +158,57 @@ export class SearchService implements ISearchService {
       nivel: 'nivel_programa',
     };
     return fieldMap[sortBy] || 'carrera';
+  }
+
+  private applyFilters(
+    query: any,
+    filters: SearchFilters
+  ): any {
+    // Apply text search filter (optimized with full-text search)
+    if (filters.q && filters.q.trim()) {
+      const searchTerm = filters.q.trim();
+      query = query.or(
+        `carrera.ilike.%${searchTerm}%,institucion.ilike.%${searchTerm}%,clasificacion.ilike.%${searchTerm}%`
+      );
+    }
+
+    // Apply specific filters
+    if (filters.modalidad) {
+      query = query.eq('modalidad', filters.modalidad);
+    }
+
+    if (filters.institucion) {
+      query = query.eq('institucion', filters.institucion);
+    }
+
+    if (filters.nivel) {
+      query = query.ilike('nivel_programa', `%${filters.nivel}%`);
+    }
+
+    if (filters.area) {
+      query = query.ilike('clasificacion', `%${filters.area}%`);
+    }
+
+    return query;
+  }
+
+  async getOfferingById(id: number): Promise<AcademicProgram> {
+    try {
+      const { data, error } = await supabase
+        .from(this.tableName)
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error || !data) {
+        throw new AppError('Offering not found', 404, 'NOT_FOUND');
+      }
+
+      return data;
+    } catch (error) {
+      const appError = ErrorHandler.handle(error);
+      ErrorHandler.logError(appError, 'SearchService.getOfferingById');
+      throw appError;
+    }
   }
 }

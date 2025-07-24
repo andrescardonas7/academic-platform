@@ -111,6 +111,7 @@ function runNpmAudit() {
 
   try {
     execSync('npm audit --audit-level=moderate', {
+      env: { ...process.env, PATH: '/usr/local/bin:/usr/bin:/bin' },
       stdio: 'inherit',
       cwd: 'apps/backend',
     });

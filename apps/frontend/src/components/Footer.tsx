@@ -87,11 +87,7 @@ const Footer: React.FC = () => {
               Sponsor
             </h4>
             <ul className='space-y-3'>
-              <SponsorItem
-                logoSrc='/buho.svg'
-                name='Labs'
-                description='Desarrollo de software'
-              />
+              <SponsorItem logoSrc='/buho.svg' name='Labs' />
             </ul>
           </div>
         </div>
@@ -181,12 +177,12 @@ const SponsorItem: React.FC<SponsorItemProps> = ({
   href,
 }) => (
   <li className='flex items-center gap-3 text-slate-300'>
-    <div className='w-18 h-18 flex items-center justify-center'>
+    <div className='w-24 h-24 flex items-center justify-center'>
       <Image
         src={logoSrc}
         alt={name}
-        width={50}
-        height={50}
+        width={80}
+        height={80}
         className='opacity-80 hover:opacity-100 transition-opacity duration-200 filter brightness-0 invert'
       />
     </div>
