@@ -35,7 +35,14 @@ try {
     'findstr /r /s "academic-platform-2024-secure-key" apps\\ packages\\ 2>nul',
     {
       encoding: 'utf8',
-      env: { ...process.env, PATH: '/usr/local/bin:/usr/bin:/bin' },
+      // Security: Use system PATH instead of hardcoded paths
+      env: {
+        ...process.env,
+        // Remove dangerous environment variables
+        LD_PRELOAD: undefined,
+        LD_LIBRARY_PATH: undefined,
+      },
+      timeout: 10000, // 10 second timeout
     }
   );
   if (result.trim() === '') {

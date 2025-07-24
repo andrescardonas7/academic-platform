@@ -9,6 +9,47 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Safely executes deployment commands with validation
+ * @param {string} command - Command to execute
+ * @param {object} options - Execution options
+ * @returns {string} - Command output
+ */
+function safeExecSync(command, options = {}) {
+  // Security: Validate command to prevent injection
+  const allowedCommands = [
+    /^pnpm build --filter=@academic\/shared-types$/,
+    /^pnpm build --filter=@academic\/api-client$/,
+    /^pnpm build --filter=@academic\/ui$/,
+    /^pnpm type-check --filter=@academic\/frontend$/,
+    /^pnpm build --filter=@academic\/frontend$/,
+  ];
+
+  const isAllowed = allowedCommands.some((pattern) => pattern.test(command));
+  if (!isAllowed) {
+    throw new Error(`Command not allowed: ${command}`);
+  }
+
+  // Security: Use system PATH instead of hardcoded paths
+  const safeEnv = {
+    ...process.env,
+    // Remove dangerous environment variables
+    LD_PRELOAD: undefined,
+    LD_LIBRARY_PATH: undefined,
+  };
+
+  try {
+    return execSync(command, {
+      stdio: 'inherit',
+      env: safeEnv,
+      timeout: 300000, // 5 minute timeout for build processes
+      ...options,
+    });
+  } catch (error) {
+    throw new Error(`Command failed: ${command}\n${error.message}`);
+  }
+}
+
 console.log('🚀 Starting deployment process...\n');
 
 // Check if we're in the right directory
@@ -28,32 +69,17 @@ console.log('🔍 Running pre-deployment checks...');
 try {
   // Check if all workspace dependencies are built
   console.log('📦 Building workspace dependencies...');
-  execSync('pnpm build --filter=@academic/shared-types', {
-    stdio: 'inherit',
-    env: { ...process.env, PATH: '/usr/local/bin:/usr/bin:/bin' },
-  });
-  execSync('pnpm build --filter=@academic/api-client', {
-    stdio: 'inherit',
-    env: { ...process.env, PATH: '/usr/local/bin:/usr/bin:/bin' },
-  });
-  execSync('pnpm build --filter=@academic/ui', {
-    stdio: 'inherit',
-    env: { ...process.env, PATH: '/usr/local/bin:/usr/bin:/bin' },
-  });
+  safeExecSync('pnpm build --filter=@academic/shared-types');
+  safeExecSync('pnpm build --filter=@academic/api-client');
+  safeExecSync('pnpm build --filter=@academic/ui');
 
   // Type check
   console.log('🔧 Running type check...');
-  execSync('pnpm type-check --filter=@academic/frontend', {
-    stdio: 'inherit',
-    env: { ...process.env, PATH: '/usr/local/bin:/usr/bin:/bin' },
-  });
+  safeExecSync('pnpm type-check --filter=@academic/frontend');
 
   // Build frontend
   console.log('🏗️  Building frontend for production...');
-  execSync('pnpm build --filter=@academic/frontend', {
-    stdio: 'inherit',
-    env: { ...process.env, PATH: '/usr/local/bin:/usr/bin:/bin' },
-  });
+  safeExecSync('pnpm build --filter=@academic/frontend');
 
   console.log('\n✅ Deployment preparation completed successfully!');
   console.log('📋 Next steps:');
