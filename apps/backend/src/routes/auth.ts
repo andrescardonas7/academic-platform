@@ -1,28 +1,64 @@
+import bcrypt from 'bcryptjs';
 import { Request, Response, Router } from 'express';
+import jwt from 'jsonwebtoken';
+import { prisma } from '../../../packages/database/src';
+import { ErrorHandler } from '../utils/ErrorHandler';
 
 const router = Router();
 
 // POST /api/auth/login - User login
 router.post('/login', async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
-    // TODO: Implement password validation
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and password are required',
+      });
+    }
 
-    // TODO: Implement authentication logic
+    // Buscar usuario por email
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials',
+      });
+    }
+
+    // Validar contraseña
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid credentials',
+      });
+    }
+
+    // Generar JWT
+    const jwtSecret = process.env.JWT_SECRET || 'secret';
+    const token = jwt.sign(
+      { id: user.id, email: user.email, name: user.name },
+      jwtSecret,
+      { expiresIn: '1d' }
+    );
+
     res.json({
       success: true,
       message: 'Login successful',
-      token: 'sample-jwt-token',
+      token,
       user: {
-        id: 1,
-        email,
-        name: 'Sample User',
+        id: user.id,
+        email: user.email,
+        name: user.name,
       },
     });
   } catch (error) {
-    res.status(500).json({
+    const appError = ErrorHandler.handle(error);
+    ErrorHandler.logError(appError, 'auth.login');
+    res.status(appError.statusCode).json({
       success: false,
-      error: 'Login failed',
+      error: appError.message,
     });
   }
 });
@@ -30,23 +66,41 @@ router.post('/login', async (req: Request, res: Response) => {
 // POST /api/auth/register - User registration
 router.post('/register', async (req: Request, res: Response) => {
   try {
-    const { email, name } = req.body;
-    // TODO: Implement password hashing and validation
+    const { email, name, password } = req.body;
+    if (!email || !name || !password) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email, name, and password are required',
+      });
+    }
 
-    // TODO: Implement registration logic
+    // Hashear contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Guardar usuario en la base de datos
+    const user = await prisma.user.create({
+      data: {
+        email,
+        name,
+        password: hashedPassword,
+      },
+    });
+
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       user: {
-        id: 1,
-        email,
-        name,
+        id: user.id,
+        email: user.email,
+        name: user.name,
       },
     });
   } catch (error) {
-    res.status(500).json({
+    const appError = ErrorHandler.handle(error);
+    ErrorHandler.logError(appError, 'auth.register');
+    res.status(appError.statusCode).json({
       success: false,
-      error: 'Registration failed',
+      error: appError.message,
     });
   }
 });
@@ -64,9 +118,11 @@ router.get('/profile', async (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    const appError = ErrorHandler.handle(error);
+    ErrorHandler.logError(appError, 'auth.profile');
+    res.status(appError.statusCode).json({
       success: false,
-      error: 'Error fetching profile',
+      error: appError.message,
     });
   }
 });

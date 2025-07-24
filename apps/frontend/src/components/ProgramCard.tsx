@@ -80,22 +80,11 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
   };
 
   return (
-    <div
+    <button
       id={`program-card-${program.carrera.toLowerCase().replace(/\s+/g, '-')}`}
-      className={`group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6 border border-gray-100 hover:border-gray-200 transform hover:-translate-y-2 ${onClick ? 'cursor-pointer' : ''} ${className}`}
-      onClick={handleClick}
-      role={onClick ? 'button' : undefined}
-      tabIndex={onClick ? 0 : undefined}
-      onKeyDown={
-        onClick
-          ? (e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                handleClick();
-              }
-            }
-          : undefined
-      }
+      className={`group relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 p-6 border border-gray-100 hover:border-gray-200 transform hover:-translate-y-2 ${onClick ? 'cursor-pointer' : 'cursor-default'} ${className} text-left`}
+      onClick={onClick ? handleClick : undefined}
+      disabled={!onClick}
       aria-label={
         onClick
           ? `Ver detalles de ${program.carrera} en ${program.institucion}`
@@ -196,7 +185,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
       {/* Decorative elements */}
       <div className='absolute top-4 right-4 w-16 h-16 bg-gradient-to-br from-blue-100/30 to-cyan-100/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500'></div>
       <div className='absolute bottom-4 left-4 w-8 h-8 bg-gradient-to-br from-purple-100/30 to-pink-100/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500'></div>
-    </div>
+    </button>
   );
 };
 

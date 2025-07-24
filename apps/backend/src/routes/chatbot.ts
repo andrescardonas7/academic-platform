@@ -14,7 +14,7 @@ router.use(rateLimit);
 // POST /api/chatbot/message - Send message to chatbot
 router.post('/message', validateChatMessage, async (req, res, next) => {
   try {
-    const { message, context } = req.body;
+    const { message } = req.body;
 
     if (!message || message.trim().length === 0) {
       throw new ValidationError('Message is required');

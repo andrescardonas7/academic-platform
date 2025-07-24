@@ -29,6 +29,40 @@ export default function HomePage() {
     if (!searchQuery) setSelectedProgram(null);
   }, [searchQuery]);
 
+  // Función para renderizar el contenido de programas (extrae lógica ternaria compleja)
+  const renderProgramContent = () => {
+    if (loading) {
+      return (
+        <div className='col-span-full text-center py-8'>
+          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto'></div>
+          <p className='mt-2 text-gray-600'>Cargando programas...</p>
+        </div>
+      );
+    }
+
+    if (selectedProgram) {
+      return (
+        <div className='col-span-full'>
+          <ProgramCard program={selectedProgram} />
+        </div>
+      );
+    }
+
+    if (filteredPrograms.length > 0) {
+      return filteredPrograms.map((program) => (
+        <ProgramCard key={program.Id} program={program} />
+      ));
+    }
+
+    return (
+      <div className='col-span-full text-center py-8'>
+        <p className='text-gray-600'>
+          No se encontraron programas que coincidan con tu búsqueda.
+        </p>
+      </div>
+    );
+  };
+
   // Handler para limpiar todo
   const handleClear = () => {
     setSearchQuery('');
@@ -73,26 +107,7 @@ export default function HomePage() {
           )}
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-          {loading ? (
-            <div className='col-span-full text-center py-8'>
-              <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto'></div>
-              <p className='mt-2 text-gray-600'>Cargando programas...</p>
-            </div>
-          ) : selectedProgram ? (
-            <div className='col-span-full'>
-              <ProgramCard program={selectedProgram} />
-            </div>
-          ) : filteredPrograms.length > 0 ? (
-            filteredPrograms.map((program) => (
-              <ProgramCard key={program.Id} program={program} />
-            ))
-          ) : (
-            <div className='col-span-full text-center py-8'>
-              <p className='text-gray-600'>
-                No se encontraron programas que coincidan con tu búsqueda.
-              </p>
-            </div>
-          )}
+          {renderProgramContent()}
         </div>
       </main>
       <ChatbotWidget />

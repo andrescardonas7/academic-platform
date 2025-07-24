@@ -39,6 +39,8 @@ export const authenticateJWT = (
     req.user = decoded;
     next();
   } catch (error) {
+    // Log the error for debugging
+    console.error('JWT authentication error:', error);
     return res.status(403).json({
       error: 'Forbidden',
       message: 'Invalid or expired token',

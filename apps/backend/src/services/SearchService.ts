@@ -31,7 +31,7 @@ export class SearchService implements ISearchService {
 
       // Apply sorting
       const sortField = this.mapSortField(filters.sortBy || 'carrera');
-      const sortOrder = filters.sortOrder === 'desc' ? false : true;
+      const sortOrder = filters.sortOrder !== 'desc';
       query = query.order(sortField, { ascending: sortOrder });
 
       // Apply pagination
@@ -160,12 +160,9 @@ export class SearchService implements ISearchService {
     return fieldMap[sortBy] || 'carrera';
   }
 
-  private applyFilters(
-    query: any,
-    filters: SearchFilters
-  ): any {
+  private applyFilters(query: any, filters: SearchFilters): any {
     // Apply text search filter (optimized with full-text search)
-    if (filters.q && filters.q.trim()) {
+    if (filters.q?.trim()) {
       const searchTerm = filters.q.trim();
       query = query.or(
         `carrera.ilike.%${searchTerm}%,institucion.ilike.%${searchTerm}%,clasificacion.ilike.%${searchTerm}%`

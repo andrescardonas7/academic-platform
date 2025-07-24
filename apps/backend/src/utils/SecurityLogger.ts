@@ -35,13 +35,16 @@ export interface SecurityEvent {
   userAgent?: string;
   path?: string;
   method?: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 // Security logger class
 export class SecurityLogger {
   private static logDir = process.env.SECURITY_LOG_DIR || 'logs/security';
-  private static logFile = path.join(SecurityLogger.logDir, 'security.log');
+  private static readonly logFile = path.join(
+    SecurityLogger.logDir,
+    'security.log'
+  );
   private static readonly consoleOutput = process.env.NODE_ENV !== 'production';
 
   // Initialize logger
@@ -105,13 +108,16 @@ export class SecurityLogger {
     type: SecurityEventType,
     severity: SecurityEventSeverity,
     message: string,
-    details?: any
+    details?: Record<string, unknown>
   ) {
+    // Type guard para req.user
+    const userId = (req as Request & { user?: { id?: string } }).user?.id;
+
     SecurityLogger.log({
       type,
       severity,
       message,
-      userId: (req as any).user?.id,
+      userId,
       ip: req.ip || req.socket.remoteAddress,
       userAgent: req.headers['user-agent'],
       path: req.path,
@@ -121,7 +127,9 @@ export class SecurityLogger {
   }
 
   // Sanitize sensitive data
-  private static sanitizeSensitiveData(data: any): any {
+  private static sanitizeSensitiveData(
+    data: Record<string, unknown>
+  ): Record<string, unknown> {
     return SecurityUtils.sanitizeData(data);
   }
 

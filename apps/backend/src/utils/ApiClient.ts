@@ -1,13 +1,25 @@
 // DRY - Centralized API client configuration
 
+// Tipo seguro para las opciones de request
+export type ApiRequestOptions = {
+  headers?: Record<string, string>;
+  method?: string;
+  body?: string | FormData | Blob | ArrayBuffer | null;
+  // Puedes agregar más propiedades según lo que uses
+  [key: string]: unknown;
+};
+
 export class ApiClient {
-  private static defaultHeaders = {
+  private static readonly defaultHeaders = {
     'Content-Type': 'application/json',
     'x-api-key': process.env.API_KEY || 'academic-platform-2024-secure-key',
   };
 
-  static async request<T>(url: string, options: RequestInit = {}): Promise<T> {
-    const config: RequestInit = {
+  static async request<T>(
+    url: string,
+    options: ApiRequestOptions = {}
+  ): Promise<T> {
+    const config = {
       headers: {
         ...this.defaultHeaders,
         ...options.headers,

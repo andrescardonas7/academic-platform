@@ -6,12 +6,20 @@ import express from 'express';
 dotenv.config();
 
 const app = express();
+
+// Security: Remove Express version disclosure
+app.disable('x-powered-by');
 const PORT = process.env.PORT || 3002;
+
+// Validación de variables de entorno de Supabase
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  throw new Error('Faltan variables de entorno de Supabase');
+}
 
 // Supabase client
 const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
 // Middleware

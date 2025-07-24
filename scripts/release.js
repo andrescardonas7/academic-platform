@@ -35,8 +35,27 @@ function escapeShellArg(arg) {
  * @returns {string} - Command output
  */
 function safeExecSync(command, options = {}) {
+  // Security: Validate command to prevent injection
+  const allowedCommands = [
+    /^git add /,
+    /^git commit /,
+    /^git tag /,
+    /^git push /,
+    /^pnpm /,
+    /^npm /,
+  ];
+
+  const isAllowed = allowedCommands.some((pattern) => pattern.test(command));
+  if (!isAllowed) {
+    throw new Error(`Command not allowed: ${command}`);
+  }
+
   try {
-    return execSync(command, { encoding: 'utf8', ...options });
+    return execSync(command, {
+      encoding: 'utf8',
+      env: { ...process.env, PATH: '/usr/local/bin:/usr/bin:/bin' },
+      ...options,
+    });
   } catch (error) {
     throw new Error(`Command failed: ${command}\n${error.message}`);
   }

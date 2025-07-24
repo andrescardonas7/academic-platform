@@ -150,7 +150,7 @@ const SearchForm: React.FC<SearchFormProps> = ({
               placeholder={placeholder}
               className='flex-1 bg-transparent text-gray-900 placeholder-gray-500 focus:outline-none text-lg'
               aria-label='Buscar programas académicos'
-              aria-haspopup='listbox'
+              list='program-suggestions'
             />
 
             {/* Action buttons */}
@@ -193,7 +193,17 @@ const SearchForm: React.FC<SearchFormProps> = ({
         </div>
       </div>
 
-      {/* Suggestions dropdown */}
+      {/* Native datalist for accessibility */}
+      <datalist id='program-suggestions'>
+        {suggestions.map((suggestion) => (
+          <option
+            key={suggestion.Id}
+            value={`${suggestion.carrera} - ${suggestion.institucion}`}
+          />
+        ))}
+      </datalist>
+
+      {/* Custom suggestions dropdown for enhanced UX */}
       {isOpen && (
         <SuggestionsList
           suggestions={suggestions}
@@ -266,21 +276,20 @@ const SuggestionsList: React.FC<SuggestionsListProps> = ({
   return (
     <div
       className='absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-xl z-50 max-h-80 overflow-y-auto'
-      role='combobox'
-      aria-expanded='true'
+      role='listbox'
+      aria-label='Sugerencias de programas académicos'
     >
       {suggestions.map((suggestion, index) => (
-        <div
+        <button
           key={suggestion.Id}
-          className={`px-6 py-4 cursor-pointer transition-all duration-200 ${
+          className={`px-6 py-4 cursor-pointer transition-all duration-200 text-left w-full ${
             index === selectedIndex
               ? 'bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-blue-500'
               : 'hover:bg-gray-50'
           } ${index === 0 ? 'rounded-t-2xl' : ''} ${index === suggestions.length - 1 ? 'rounded-b-2xl' : ''}`}
           onClick={() => onSelect(suggestion)}
           onMouseEnter={() => onHover(index)}
-          role='button'
-          tabIndex={0}
+          role='option'
           aria-selected={index === selectedIndex}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {
@@ -318,7 +327,7 @@ const SuggestionsList: React.FC<SuggestionsListProps> = ({
               </div>
             </div>
           </div>
-        </div>
+        </button>
       ))}
     </div>
   );

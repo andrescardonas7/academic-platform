@@ -33,7 +33,10 @@ console.log('\n2. 🔐 VERIFICANDO CREDENCIALES HARDCODEADAS...');
 try {
   const result = execSync(
     'findstr /r /s "academic-platform-2024-secure-key" apps\\ packages\\ 2>nul',
-    { encoding: 'utf8' }
+    {
+      encoding: 'utf8',
+      env: { ...process.env, PATH: '/usr/local/bin:/usr/bin:/bin' },
+    }
   );
   if (result.trim() === '') {
     console.log('✅ No se encontraron credenciales hardcodeadas');

@@ -60,6 +60,8 @@ export function useAcademicData(): UseAcademicDataReturn {
     filterOptions,
     loading,
     error,
-    refetch: fetchData,
+    refetch: () => {
+      fetchData();
+    },
   };
 }

@@ -114,7 +114,11 @@ export function Filters({
                   >
                     <span className='capitalize'>{key}:</span>
                     <span>
-                      {typeof value === 'string' ? value : String(value)}
+                      {typeof value === 'string'
+                        ? value
+                        : typeof value === 'object'
+                          ? JSON.stringify(value)
+                          : String(value)}
                     </span>
                     <button
                       onClick={() => clearFilter(key)}
@@ -132,9 +136,9 @@ export function Filters({
           <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4'>
             {/* Modalidad Filter as chips */}
             <div className='space-y-2'>
-              <div className='block text-sm font-medium text-gray-700'>
+              <span className='block text-sm font-medium text-gray-700'>
                 Modalidad
-              </div>
+              </span>
               <div className='flex flex-wrap gap-2'>
                 {options.modalidad.map((m: string) => (
                   <button
@@ -157,10 +161,14 @@ export function Filters({
 
             {/* Institución Filter */}
             <div className='space-y-2'>
-              <label className='block text-sm font-medium text-gray-700'>
+              <label
+                htmlFor='institucion-select'
+                className='block text-sm font-medium text-gray-700'
+              >
                 Institución
               </label>
               <select
+                id='institucion-select'
                 value={filters.institucion}
                 onChange={(e) =>
                   setFilters((f: Record<string, unknown>) => ({
@@ -181,10 +189,14 @@ export function Filters({
 
             {/* Carrera Filter */}
             <div className='space-y-2'>
-              <label className='block text-sm font-medium text-gray-700'>
+              <label
+                htmlFor='carrera-select'
+                className='block text-sm font-medium text-gray-700'
+              >
                 Carrera
               </label>
               <select
+                id='carrera-select'
                 value={filters.carrera}
                 onChange={(e) =>
                   setFilters((f: Record<string, unknown>) => ({
@@ -206,10 +218,14 @@ export function Filters({
             {/* Jornada Filter */}
             {options.jornada && (
               <div className='space-y-2'>
-                <label className='block text-sm font-medium text-gray-700'>
+                <label
+                  htmlFor='jornada-select'
+                  className='block text-sm font-medium text-gray-700'
+                >
                   Jornada
                 </label>
                 <select
+                  id='jornada-select'
                   value={filters.jornada || ''}
                   onChange={(e) =>
                     setFilters((f: Record<string, unknown>) => ({
@@ -232,10 +248,14 @@ export function Filters({
             {/* Precio Filter */}
             {options.precio && (
               <div className='space-y-2'>
-                <label className='block text-sm font-medium text-gray-700'>
+                <label
+                  htmlFor='precio-select'
+                  className='block text-sm font-medium text-gray-700'
+                >
                   Rango de Precio
                 </label>
                 <select
+                  id='precio-select'
                   value={filters.precio || ''}
                   onChange={(e) =>
                     setFilters((f: Record<string, unknown>) => ({

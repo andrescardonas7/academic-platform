@@ -77,6 +77,38 @@ const checks = [
     },
     fix: 'Implementar validación de entrada en CerebrasService',
   },
+  {
+    name: 'PATH solo contiene directorios fijos y no escribibles',
+    test: () => {
+      const pathDirs = process.env.PATH
+        ? process.env.PATH.split(path.delimiter)
+        : [];
+      // Directorios que se consideran inseguros
+      const unsafePatterns = [
+        /tmp/i,
+        /temp/i,
+        /local/i,
+        /home/i,
+        /Users/i,
+        /AppData/i,
+      ];
+      for (const dir of pathDirs) {
+        if (!dir) continue;
+        // Si el directorio es inseguro, falla
+        if (unsafePatterns.some((re) => re.test(dir))) return false;
+        try {
+          // Si el directorio es escribible por el usuario actual, falla
+          fs.accessSync(dir, fs.constants.W_OK);
+          return false;
+        } catch (e) {
+          // Si no es escribible, está bien
+          continue;
+        }
+      }
+      return true;
+    },
+    fix: 'Asegúrate de que $PATH solo contenga directorios fijos y no escribibles por el usuario.',
+  },
 ];
 
 let passed = 0;

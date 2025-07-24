@@ -47,9 +47,9 @@ export default function CareerDetailPage() {
                   <div className='h-6 bg-gray-200 rounded mb-4 w-3/4'></div>
                   <div className='h-4 bg-gray-200 rounded mb-2 w-1/2'></div>
                   <div className='space-y-3'>
-                    {Array.from({ length: 6 }).map((_, i) => (
+                    {Array.from({ length: 6 }, (_, i) => (
                       <div
-                        key={`skeleton-main-${i}`}
+                        key={`skeleton-main-${Date.now()}-${i}`}
                         className='h-4 bg-gray-200 rounded w-full'
                       ></div>
                     ))}
@@ -59,9 +59,9 @@ export default function CareerDetailPage() {
               <div className='bg-white rounded-xl p-6 shadow-sm'>
                 <div className='h-6 bg-gray-200 rounded mb-4 w-1/2'></div>
                 <div className='space-y-3'>
-                  {Array.from({ length: 4 }).map((_, i) => (
+                  {Array.from({ length: 4 }, (_, i) => (
                     <div
-                      key={`skeleton-sidebar-${i}`}
+                      key={`skeleton-sidebar-${Date.now()}-${i}`}
                       className='h-4 bg-gray-200 rounded w-full'
                     ></div>
                   ))}

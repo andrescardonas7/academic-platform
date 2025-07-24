@@ -95,19 +95,18 @@ describe('ApiClient', () => {
     });
 
     it('should handle timeout', async () => {
-      mockFetch.mockImplementationOnce(
-        () =>
-          new Promise((resolve) => {
-            setTimeout(
-              () =>
-                resolve({
-                  ok: true,
-                  json: () => Promise.resolve({ success: true, data: {} }),
-                } as Response),
-              10000
-            );
-          })
-      );
+      const createDelayedResponse = () => {
+        const mockResponse = {
+          ok: true,
+          json: () => Promise.resolve({ success: true, data: {} }),
+        } as Response;
+
+        return new Promise((resolve) => {
+          setTimeout(() => resolve(mockResponse), 10000);
+        });
+      };
+
+      mockFetch.mockImplementationOnce(createDelayedResponse);
 
       const promise = apiClient.search.offerings();
 
