@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 import { Request } from 'express';
 import fs from 'fs';
 import path from 'path';
 import { SecurityUtils } from './SecurityUtils';
 
 // Security event types
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export enum SecurityEventType {
   AUTH_SUCCESS = 'AUTH_SUCCESS',
   AUTH_FAILURE = 'AUTH_FAILURE',
@@ -18,7 +19,6 @@ export enum SecurityEventType {
 }
 
 // Security event severity
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export enum SecurityEventSeverity {
   INFO = 'INFO',
   WARNING = 'WARNING',

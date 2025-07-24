@@ -7,6 +7,9 @@ export class AppError extends Error {
   ) {
     super(message);
     this.name = 'AppError';
+    // Use properties to avoid unused variable warnings
+    this.statusCode = statusCode;
+    this.code = code;
   }
 }
 

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { supabase } from '../config/supabase';
 import { rateLimit, validateApiKey } from '../middleware/auth';
 import { NotFoundError } from '../middleware/errorHandler';
 import { validateSearchQuery } from '../middleware/validation';

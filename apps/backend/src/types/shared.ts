@@ -25,7 +25,7 @@ export interface SecurityEventData {
   userAgent?: string;
   path?: string;
   method?: string;
-  details?: any;
+  details?: unknown;
 }
 
 export interface RateLimitData {
@@ -37,7 +37,10 @@ export interface BaseService {
   checkHealth(): Promise<boolean>;
 }
 
-export interface DatabaseQuery<T> {
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+// Database query interface - using generic but parameters need implementation
+export interface DatabaseQuery {
   query<T>(table: string, filters?: Record<string, unknown>): Promise<T[]>;
   count(table: string, filters?: Record<string, unknown>): Promise<number>;
 }

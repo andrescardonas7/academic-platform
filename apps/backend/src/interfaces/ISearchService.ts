@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 // Interface Segregation Principle - Clean interfaces
 import {
   FilterOptions,
