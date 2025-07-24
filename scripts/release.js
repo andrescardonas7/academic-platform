@@ -5,8 +5,9 @@
  * Automates the release process with semantic versioning
  */
 
-const { execSync } = require('child_process');
+const { spawnSync } = require('child_process');
 const fs = require('fs');
+const path = require('path');
 
 /**
  * Validates and sanitizes version string to prevent command injection
@@ -18,7 +19,7 @@ function isValidVersion(version) {
   const versionRegex = /^(\d+)\.(\d+)\.(\d+)$/;
   const match = versionRegex.exec(version);
   if (!match) return false;
-  
+
   // Ensure each part is a reasonable number (prevent extremely large versions)
   const [, major, minor, patch] = match;
   return (
@@ -36,60 +37,194 @@ function isValidVersion(version) {
 function isValidBranchName(branchName) {
   // Only allow alphanumeric characters, hyphens, underscores, and forward slashes
   const branchRegex = /^[a-zA-Z0-9\-_/]+$/;
-  return branchRegex.test(branchName) && branchName.length > 0 && branchName.length < 100;
+  return (
+    branchRegex.test(branchName) &&
+    branchName.length > 0 &&
+    branchName.length < 100
+  );
 }
 
+
 /**
- * Escapes shell arguments to prevent command injection
- * @param {string} arg - Argument to escape
- * @returns {string} - Escaped argument
+ * Safely reads and validates package.json files
+ * @param {string} filePath - Path to package.json file
+ * @returns {object} - Parsed package.json content
  */
-function escapeShellArg(arg) {
-  return arg.replace(/'/g, "'\"'\"'");
+function safeReadPackageJson(filePath) {
+  // Security: Validate file path
+  if (!filePath || typeof filePath !== 'string') {
+    throw new Error('Invalid file path');
+  }
+
+  // Security: Prevent path traversal
+  if (filePath.includes('..') || filePath.includes('~')) {
+    throw new Error('Invalid file path: path traversal detected');
+  }
+
+  // Security: Only allow specific package.json files
+  const allowedFiles = [
+    'package.json',
+    'apps/frontend/package.json',
+    'apps/backend/package.json',
+  ];
+  
+  if (!allowedFiles.includes(filePath)) {
+    throw new Error(`File not allowed: ${filePath}`);
+  }
+
+  // Security: Check if file exists
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`File not found: ${filePath}`);
+  }
+
+  try {
+    const content = fs.readFileSync(filePath, 'utf8');
+    
+    // Security: Check file size to prevent DoS
+    if (content.length > 1024 * 1024) { // 1MB limit
+      throw new Error('package.json file too large');
+    }
+
+    const packageJson = JSON.parse(content);
+    
+    // Security: Validate basic structure
+    if (!packageJson || typeof packageJson !== 'object') {
+      throw new Error('Invalid package.json format');
+    }
+
+    // Security: Validate version field if present
+    if (packageJson.version && !isValidVersion(packageJson.version)) {
+      throw new Error('Invalid version format in package.json');
+    }
+
+    return packageJson;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Error('Invalid JSON in package.json');
+    }
+    throw error;
+  }
 }
 
 /**
- * Safely executes git commands with validation
- * @param {string} command - Git command to execute
+ * Safely executes commands without shell using spawnSync
+ * @param {string} cmdString - Command string to parse
  * @param {object} options - Execution options
  * @returns {string} - Command output
  */
-function safeExecSync(command, options = {}) {
-  // Security: Validate command to prevent injection
-  const allowedCommands = [
-    /^git add [a-zA-Z0-9/.\-_\s]+$/,
-    /^git commit -m '[^']*'$/,
-    /^git tag -a '[^']*' -m '[^']*'$/,
-    /^git push origin [a-zA-Z0-9\-_/.]+$/,
-    /^git branch --show-current$/,
-    /^git status --porcelain$/,
-    /^pnpm deploy:check$/,
-  ];
-
-  const isAllowed = allowedCommands.some((pattern) => pattern.test(command));
-  if (!isAllowed) {
-    throw new Error(`Command not allowed: ${command}`);
+function safeSpawnSync(cmdString, options = {}) {
+  // Parse command string more intelligently
+  let cmd, args;
+  
+  // Handle specific command patterns
+  if (cmdString.startsWith('git commit -m ')) {
+    cmd = 'git';
+    const message = cmdString.substring('git commit -m '.length);
+    args = ['commit', '-m', message];
+  } else if (cmdString.startsWith('git tag -a ')) {
+    cmd = 'git';
+    const parts = cmdString.substring('git tag -a '.length).split(' -m ');
+    const tagName = parts[0];
+    const tagMessage = parts[1] || '';
+    args = ['tag', '-a', tagName, '-m', tagMessage];
+  } else if (cmdString.startsWith('git push origin ')) {
+    cmd = 'git';
+    const target = cmdString.substring('git push origin '.length);
+    args = ['push', 'origin', target];
+  } else {
+    // Standard parsing for simple commands
+    const parts = cmdString.trim().split(/\s+/);
+    cmd = parts[0];
+    args = parts.slice(1);
   }
 
-  // Security: Don't override PATH to prevent PATH injection attacks
-  // Use the system's existing PATH instead
+  // Security: Validate command
+  const allowedCommands = ['git', 'pnpm'];
+  if (!allowedCommands.includes(cmd)) {
+    throw new Error(`Command not allowed: ${cmd}`);
+  }
+
+  // Additional security validations for git commands
+  if (cmd === 'git') {
+    const allowedGitSubcommands = [
+      'add', 'commit', 'tag', 'push', 'branch', 'status'
+    ];
+    if (args.length === 0 || !allowedGitSubcommands.includes(args[0])) {
+      throw new Error(`Git subcommand not allowed: ${args[0]}`);
+    }
+  }
+
+  // Security: Check for dangerous patterns in all arguments
+  const forbiddenPatterns = [
+    /[;&|`$()]/,           // Shell metacharacters
+    /\.\./,                // Path traversal  
+    /\/etc\/|\/usr\/|\/bin\//, // System directories
+    /rm\s+|del\s+/,        // Delete commands
+    /curl\s+|wget\s+/,     // Network commands
+    /eval\s+|exec\s+/,     // Execution commands
+    /sudo\s+|su\s+/,       // Privilege escalation
+  ];
+
+  args.forEach(arg => {
+    const hasForbiddenPattern = forbiddenPatterns.some(pattern => pattern.test(arg));
+    if (hasForbiddenPattern) {
+      throw new Error(`Argument contains forbidden patterns: ${arg}`);
+    }
+  });
+
+  // Security: Validate total command length
+  const fullCommand = [cmd, ...args].join(' ');
+  if (fullCommand.length > 1000) {
+    throw new Error('Command too long');
+  }
+
+  // Security: Safe environment variables
   const safeEnv = {
     ...process.env,
     // Remove any potentially dangerous environment variables
     LD_PRELOAD: undefined,
     LD_LIBRARY_PATH: undefined,
+    NODE_OPTIONS: undefined,
+    PYTHONPATH: undefined,
+    RUBYLIB: undefined,
   };
 
+  // Security: Validate working directory
+  const workingDir = options.cwd || process.cwd();
+  if (workingDir.includes('..') || workingDir.includes('~')) {
+    throw new Error('Invalid working directory');
+  }
+
   try {
-    return execSync(command, {
+    const result = spawnSync(cmd, args, {
       encoding: 'utf8',
       env: safeEnv,
-      cwd: process.cwd(), // Explicitly set working directory
-      timeout: 30000, // 30 second timeout to prevent hanging
-      ...options,
+      cwd: workingDir,
+      timeout: 30000, // 30 second timeout
+      shell: false,   // CRITICAL: No shell execution for security
+      stdio: options.stdio || ['pipe', 'pipe', 'pipe'],
     });
+
+    // Check for errors
+    if (result.error) {
+      if (result.error.code === 'ENOENT') {
+        throw new Error(`Command not found: ${cmd}`);
+      }
+      throw new Error(`Spawn error: ${result.error.message}`);
+    }
+
+    if (result.status !== 0) {
+      const errorOutput = result.stderr || 'Unknown error';
+      throw new Error(`Command failed with exit code ${result.status}: ${errorOutput}`);
+    }
+
+    return result.stdout || '';
   } catch (error) {
-    throw new Error(`Command failed: ${command}\n${error.message}`);
+    // Security: Don't expose full error details
+    if (error.message.includes('timeout')) {
+      throw new Error('Command timed out');
+    }
+    throw error;
   }
 }
 
@@ -107,21 +242,21 @@ console.log(`🚀 Starting release process for ${releaseType} version...\n`);
 
 try {
   // Check if we're on main branch
-  const currentBranch = safeExecSync('git branch --show-current').trim();
-  
+  const currentBranch = safeSpawnSync('git branch --show-current').trim();
+
   // Validate branch name for security
   if (!isValidBranchName(currentBranch)) {
     console.error('❌ Invalid branch name detected');
     process.exit(1);
   }
-  
+
   if (currentBranch !== 'main') {
     console.error('❌ Release must be done from main branch');
     process.exit(1);
   }
 
   // Check if working directory is clean
-  const status = safeExecSync('git status --porcelain');
+  const status = safeSpawnSync('git status --porcelain');
   if (status.trim()) {
     console.error(
       '❌ Working directory is not clean. Please commit or stash changes.'
@@ -129,21 +264,10 @@ try {
     process.exit(1);
   }
 
-  // Get current version from package.json with path validation
+  // Get current version from package.json with safe reading
   const packageJsonPath = 'package.json';
-  if (!fs.existsSync(packageJsonPath)) {
-    console.error('❌ package.json not found in current directory');
-    process.exit(1);
-  }
-  
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const packageJson = safeReadPackageJson(packageJsonPath);
   const currentVersion = packageJson.version;
-
-  // Validate current version
-  if (!isValidVersion(currentVersion)) {
-    console.error('❌ Invalid current version format in package.json');
-    process.exit(1);
-  }
 
   console.log(`📋 Current version: ${currentVersion}`);
 
@@ -179,34 +303,23 @@ try {
 
   // Update package.json
   packageJson.version = newVersion;
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
-
-  // Update frontend package.json with path validation
-  const frontendPackageJsonPath = 'apps/frontend/package.json';
-  if (!fs.existsSync(frontendPackageJsonPath)) {
-    console.error('❌ Frontend package.json not found');
-    process.exit(1);
-  }
-  
-  const frontendPackageJson = JSON.parse(
-    fs.readFileSync(frontendPackageJsonPath, 'utf8')
+  fs.writeFileSync(
+    packageJsonPath,
+    JSON.stringify(packageJson, null, 2) + '\n'
   );
+
+  // Update frontend package.json with safe reading
+  const frontendPackageJsonPath = 'apps/frontend/package.json';
+  const frontendPackageJson = safeReadPackageJson(frontendPackageJsonPath);
   frontendPackageJson.version = newVersion;
   fs.writeFileSync(
     frontendPackageJsonPath,
     JSON.stringify(frontendPackageJson, null, 2) + '\n'
   );
 
-  // Update backend package.json with path validation
+  // Update backend package.json with safe reading
   const backendPackageJsonPath = 'apps/backend/package.json';
-  if (!fs.existsSync(backendPackageJsonPath)) {
-    console.error('❌ Backend package.json not found');
-    process.exit(1);
-  }
-  
-  const backendPackageJson = JSON.parse(
-    fs.readFileSync(backendPackageJsonPath, 'utf8')
-  );
+  const backendPackageJson = safeReadPackageJson(backendPackageJsonPath);
   backendPackageJson.version = newVersion;
   fs.writeFileSync(
     backendPackageJsonPath,
@@ -217,17 +330,17 @@ try {
 
   // Run pre-release checks
   console.log('🔍 Running pre-release checks...');
-  safeExecSync('pnpm deploy:check', { stdio: 'inherit' });
+  safeSpawnSync('pnpm deploy:check', { stdio: 'inherit' });
 
   // Commit version changes (using safe execution)
-  safeExecSync(
+  safeSpawnSync(
     'git add package.json apps/frontend/package.json apps/backend/package.json'
   );
-  safeExecSync(
-    `git commit -m 'chore: bump version to ${escapeShellArg(newVersion)}'`
+  safeSpawnSync(
+    `git commit -m chore: bump version to ${newVersion}`
   );
 
-  // Create git tag with escaped message
+  // Create git tag with message
   const tagMessage = `Release v${newVersion}
 
 🚀 Academic Platform v${newVersion}
@@ -237,17 +350,14 @@ See CHANGELOG.md for detailed information.
 
 Generated automatically by release script.`;
 
-  // Escape tag message to prevent injection
-  const escapedTagMessage = escapeShellArg(tagMessage);
-  safeExecSync(
-    `git tag -a 'v${escapeShellArg(newVersion)}' -m '${escapedTagMessage}'`
-  );
+  // Create tag safely without shell escaping (spawnSync handles this)
+  safeSpawnSync(`git tag -a v${newVersion} -m ${tagMessage}`);
 
   console.log(`✅ Created tag v${newVersion}`);
 
   // Push changes and tag (using safe execution)
-  safeExecSync('git push origin main');
-  safeExecSync(`git push origin 'v${escapeShellArg(newVersion)}'`);
+  safeSpawnSync('git push origin main');
+  safeSpawnSync(`git push origin v${newVersion}`);
 
   console.log(`\n🎉 Release v${newVersion} completed successfully!`);
   console.log('\n📋 Next steps:');

@@ -2,48 +2,103 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { spawnSync } = require('child_process');
 
 /**
- * Safely executes npm commands with validation
- * @param {string} command - Command to execute
+ * Safely executes npm commands without shell using spawnSync
+ * @param {string} cmdString - Command to execute
  * @param {object} options - Execution options
  * @returns {string} - Command output
  */
-function safeExecSync(command, options = {}) {
-  // Security: Validate command to prevent injection
-  const allowedCommands = [
-    /^npm outdated --json$/,
-    /^npm audit --audit-level=(low|moderate|high|critical)$/,
-    /^npm audit fix$/,
-    /^pnpm outdated$/,
-    /^pnpm audit$/,
-  ];
+function safeSpawnSync(cmdString, options = {}) {
+  // Parse command string
+  const parts = cmdString.trim().split(/\s+/);
+  const cmd = parts[0];
+  const args = parts.slice(1);
 
-  const isAllowed = allowedCommands.some((pattern) => pattern.test(command));
-  if (!isAllowed) {
-    throw new Error(`Command not allowed: ${command}`);
+  // Security: Validate command
+  const allowedCommands = {
+    'npm': ['outdated', 'audit'],
+    'pnpm': ['outdated', 'audit']
+  };
+
+  if (!allowedCommands[cmd] || !allowedCommands[cmd].includes(args[0])) {
+    throw new Error(`Command not allowed: ${cmd} ${args[0]}`);
   }
 
-  // Security: Don't override PATH to prevent PATH injection attacks
-  // Use the system's existing PATH instead
+  // Additional security: Check for malicious patterns
+  const forbiddenPatterns = [
+    /[;&|`$()]/,           // Shell metacharacters
+    /\.\./,                // Path traversal
+    /\/etc\/|\/usr\/|\/bin\//, // System directories
+    /rm\s+|del\s+/,        // Delete commands
+    /curl\s+|wget\s+/,     // Network commands
+    /eval\s+|exec\s+/,     // Execution commands
+  ];
+
+  // Check for forbidden patterns in all arguments
+  args.forEach(arg => {
+    const hasForbiddenPattern = forbiddenPatterns.some(pattern => pattern.test(arg));
+    if (hasForbiddenPattern) {
+      throw new Error(`Argument contains forbidden patterns: ${arg}`);
+    }
+  });
+
+  // Security: Validate command length to prevent buffer overflow
+  if (cmdString.length > 200) {
+    throw new Error('Command too long');
+  }
+
+  // Security: Safe environment variables
   const safeEnv = {
     ...process.env,
     // Remove any potentially dangerous environment variables
     LD_PRELOAD: undefined,
     LD_LIBRARY_PATH: undefined,
+    NODE_OPTIONS: undefined,
   };
 
+  // Security: Validate working directory if provided
+  if (options.cwd) {
+    const allowedDirs = ['apps/backend', 'apps/frontend', '.'];
+    if (!allowedDirs.includes(options.cwd)) {
+      throw new Error(`Invalid working directory: ${options.cwd}`);
+    }
+  }
+
   try {
-    return execSync(command, {
+    const result = spawnSync(cmd, args, {
       encoding: 'utf8',
       env: safeEnv,
       timeout: 30000, // 30 second timeout
-      ...options,
+      shell: false,   // CRITICAL: No shell execution for security
+      stdio: options.stdio || ['pipe', 'pipe', 'pipe'],
+      cwd: options.cwd,
     });
+
+    // Check for errors
+    if (result.error) {
+      if (result.error.code === 'ENOENT') {
+        throw new Error(`Command not found: ${cmd}`);
+      }
+      throw new Error(`Spawn error: ${result.error.message}`);
+    }
+
+    if (result.status !== 0) {
+      // For npm/pnpm commands, non-zero exit might be expected (e.g., outdated packages)
+      if ((cmd === 'npm' || cmd === 'pnpm') && args[0] === 'outdated') {
+        return result.stdout || '';
+      }
+      throw new Error(`Command failed with exit code ${result.status}`);
+    }
+
+    return result.stdout || '';
   } catch (error) {
-    // Don't expose full error details for security
-    throw new Error(`Command execution failed: ${command}`);
+    // Security: Don't expose full error details
+    if (error.message.includes('timeout')) {
+      throw new Error('Command timed out');
+    }
+    throw error;
   }
 }
 
@@ -53,9 +108,67 @@ function safeExecSync(command, options = {}) {
  * @returns {boolean} - True if path is safe
  */
 function isValidDirectory(dirPath) {
+  // Security: Prevent null/undefined/empty paths
+  if (!dirPath || typeof dirPath !== 'string') {
+    return false;
+  }
+
+  // Security: Normalize path to prevent traversal
+  const normalizedPath = path.normalize(dirPath);
+  
+  // Security: Check for path traversal attempts
+  if (normalizedPath.includes('..') || normalizedPath.includes('~')) {
+    return false;
+  }
+
+  // Security: Check path length to prevent buffer overflow
+  if (normalizedPath.length > 100) {
+    return false;
+  }
+
   // Only allow specific subdirectories
   const allowedPaths = ['apps/backend', 'apps/frontend', '.'];
-  return allowedPaths.includes(dirPath);
+  return allowedPaths.includes(normalizedPath);
+}
+
+/**
+ * Safely reads and validates package.json content
+ * @param {string} packageJsonPath - Path to package.json
+ * @returns {object} - Parsed package.json content
+ */
+function safeReadPackageJson(packageJsonPath) {
+  // Security: Validate file path
+  if (!packageJsonPath || typeof packageJsonPath !== 'string') {
+    throw new Error('Invalid package.json path');
+  }
+
+  // Security: Check if file exists and is readable
+  if (!fs.existsSync(packageJsonPath)) {
+    throw new Error('package.json not found');
+  }
+
+  try {
+    const content = fs.readFileSync(packageJsonPath, 'utf8');
+    
+    // Security: Check file size to prevent DoS
+    if (content.length > 1024 * 1024) { // 1MB limit
+      throw new Error('package.json file too large');
+    }
+
+    const packageJson = JSON.parse(content);
+    
+    // Security: Validate basic structure
+    if (!packageJson || typeof packageJson !== 'object') {
+      throw new Error('Invalid package.json format');
+    }
+
+    return packageJson;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new Error('Invalid JSON in package.json');
+    }
+    throw error;
+  }
 }
 
 console.log('🔍 VERIFICACIÓN DE DEPENDENCIAS DE SEGURIDAD\n');
@@ -77,7 +190,7 @@ function checkOutdatedPackages() {
   }
 
   try {
-    const result = safeExecSync('npm outdated --json', {
+    const result = safeSpawnSync('npm outdated --json', {
       cwd: backendDir,
     });
     const outdated = JSON.parse(result || '{}');
@@ -108,37 +221,36 @@ function checkKnownVulnerabilities() {
   }
 
   const packageJsonPath = path.join(backendDir, 'package.json');
-  
-  // Validate file exists and is in allowed location
-  if (!fs.existsSync(packageJsonPath)) {
-    console.log('❌ package.json no encontrado');
+
+  try {
+    const packageJson = safeReadPackageJson(packageJsonPath);
+
+    const allDeps = {
+      ...packageJson.dependencies,
+      ...packageJson.devDependencies,
+    };
+
+    let vulnerabilitiesFound = false;
+
+    Object.entries(KNOWN_VULNERABILITIES).forEach(([pkg, vulnerableVersions]) => {
+      if (allDeps[pkg]) {
+        const currentVersion = allDeps[pkg].replace(/[\^~]/, '');
+        if (vulnerableVersions.includes(currentVersion)) {
+          console.log(`❌ VULNERABILIDAD: ${pkg}@${currentVersion}`);
+          vulnerabilitiesFound = true;
+        }
+      }
+    });
+
+    if (!vulnerabilitiesFound) {
+      console.log('✅ No se encontraron vulnerabilidades conocidas');
+    }
+
+    return !vulnerabilitiesFound;
+  } catch (error) {
+    console.log(`❌ Error verificando vulnerabilidades: ${error.message}`);
     return false;
   }
-
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-
-  const allDeps = {
-    ...packageJson.dependencies,
-    ...packageJson.devDependencies,
-  };
-
-  let vulnerabilitiesFound = false;
-
-  Object.entries(KNOWN_VULNERABILITIES).forEach(([pkg, vulnerableVersions]) => {
-    if (allDeps[pkg]) {
-      const currentVersion = allDeps[pkg].replace(/[\^~]/, '');
-      if (vulnerableVersions.includes(currentVersion)) {
-        console.log(`❌ VULNERABILIDAD: ${pkg}@${currentVersion}`);
-        vulnerabilitiesFound = true;
-      }
-    }
-  });
-
-  if (!vulnerabilitiesFound) {
-    console.log('✅ No se encontraron vulnerabilidades conocidas');
-  }
-
-  return !vulnerabilitiesFound;
 }
 
 // Check for security-related packages
@@ -151,40 +263,39 @@ function checkSecurityPackages() {
   }
 
   const packageJsonPath = path.join(backendDir, 'package.json');
-  
-  // Validate file exists and is in allowed location
-  if (!fs.existsSync(packageJsonPath)) {
-    console.log('❌ package.json no encontrado');
+
+  try {
+    const packageJson = safeReadPackageJson(packageJsonPath);
+
+    const allDeps = {
+      ...packageJson.dependencies,
+      ...packageJson.devDependencies,
+    };
+
+    const requiredSecurityPackages = [
+      'helmet',
+      'express-session',
+      'csrf',
+      'bcryptjs',
+      'jsonwebtoken',
+    ];
+
+    let allPresent = true;
+
+    requiredSecurityPackages.forEach((pkg) => {
+      if (allDeps[pkg]) {
+        console.log(`✅ ${pkg} instalado`);
+      } else {
+        console.log(`❌ ${pkg} NO instalado`);
+        allPresent = false;
+      }
+    });
+
+    return allPresent;
+  } catch (error) {
+    console.log(`❌ Error verificando paquetes de seguridad: ${error.message}`);
     return false;
   }
-
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-
-  const allDeps = {
-    ...packageJson.dependencies,
-    ...packageJson.devDependencies,
-  };
-
-  const requiredSecurityPackages = [
-    'helmet',
-    'express-session',
-    'csrf',
-    'bcryptjs',
-    'jsonwebtoken',
-  ];
-
-  let allPresent = true;
-
-  requiredSecurityPackages.forEach((pkg) => {
-    if (allDeps[pkg]) {
-      console.log(`✅ ${pkg} instalado`);
-    } else {
-      console.log(`❌ ${pkg} NO instalado`);
-      allPresent = false;
-    }
-  });
-
-  return allPresent;
 }
 
 // Run npm audit
@@ -197,7 +308,7 @@ function runNpmAudit() {
   }
 
   try {
-    safeExecSync('npm audit --audit-level=moderate', {
+    safeSpawnSync('npm audit --audit-level=moderate', {
       stdio: 'inherit',
       cwd: backendDir,
     });

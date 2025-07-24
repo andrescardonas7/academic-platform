@@ -7,8 +7,11 @@ Enhanced the security of all Node.js scripts in the `scripts/` directory to addr
 ## Scripts Updated
 
 ### 1. `scripts/release.js` ✅
-### 2. `scripts/dependency-check.js` ✅  
+
+### 2. `scripts/dependency-check.js` ✅
+
 ### 3. `scripts/final-security-check.js` ✅
+
 ### 4. `scripts/deploy.js` ✅
 
 ## Security Issues Addressed
@@ -22,7 +25,7 @@ Enhanced the security of all Node.js scripts in the `scripts/` directory to addr
 ### 2. **Loose Command Validation**
 
 - **Issue**: Regular expressions were too permissive, allowing potential command injection
-- **Risk**: Malicious input could bypass validation and execute arbitrary commands  
+- **Risk**: Malicious input could bypass validation and execute arbitrary commands
 - **Fix**: Implemented strict regex patterns with specific allowed characters and formats
 
 ### 3. **Missing Input Validation**
@@ -95,23 +98,27 @@ const allowedCommands = [
 ## Script-Specific Improvements
 
 ### `scripts/release.js`
+
 - Added version number bounds checking
 - Enhanced git command validation
 - Improved file path security
 - Added branch name validation
 
 ### `scripts/dependency-check.js`
+
 - Secured npm/pnpm command execution
 - Added directory path validation
 - Enhanced package.json file validation
 - Improved error handling
 
 ### `scripts/final-security-check.js`
+
 - Secured credential scanning commands
 - Added timeout protection
 - Enhanced environment variable security
 
 ### `scripts/deploy.js`
+
 - Secured build command execution
 - Added command whitelist validation
 - Enhanced build process security
