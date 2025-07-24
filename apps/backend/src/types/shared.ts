@@ -13,6 +13,7 @@ export interface AuthenticatedRequest extends Request {
     email?: string;
     role?: string;
   };
+  headers: Request['headers'];
 }
 
 export interface SecurityEventData {

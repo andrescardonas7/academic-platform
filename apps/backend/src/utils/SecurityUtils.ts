@@ -124,7 +124,7 @@ export class SecurityUtils {
       });
     });
 
-    return [...new Set(suspicious)];
+    return Array.from(new Set(suspicious));
   }
 
   // Check if user agent is bot-like

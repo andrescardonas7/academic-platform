@@ -135,16 +135,16 @@ export class SearchService implements ISearchService {
     data: Record<string, unknown>[],
     field: string
   ): string[] {
-    return [
-      ...new Set(
+    return Array.from(
+      new Set(
         data
           .map((item) => item[field])
           .filter(
             (value): value is string =>
               typeof value === 'string' && value.trim().length > 0
           )
-      ),
-    ].sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
+      )
+    ).sort((a, b) => a.localeCompare(b, 'es', { sensitivity: 'base' }));
   }
 
   private mapSortField(sortBy: string): string {

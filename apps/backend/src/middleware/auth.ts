@@ -94,7 +94,7 @@ export const rateLimit = (req: Request, res: Response, next: NextFunction) => {
   const maxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100');
 
   // Clean up expired entries
-  for (const [ip, data] of rateLimitStore.entries()) {
+  for (const [ip, data] of Array.from(rateLimitStore.entries())) {
     if (now > data.resetTime) {
       rateLimitStore.delete(ip);
     }

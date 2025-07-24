@@ -29,7 +29,7 @@ router.get('/', async (req, res, next) => {
 
     // Get unique institutions and count their offerings
     const institutions = await Promise.all(
-      [...new Set(data?.map((item) => item.institucion))].map(
+      Array.from(new Set(data?.map((item) => item.institucion))).map(
         async (institucion) => {
           const { count: offeringsCount } = await supabase
             .from('offerings')
@@ -88,9 +88,9 @@ router.get('/:name', async (req, res, next) => {
     }
 
     // Get institution statistics
-    const modalidades = [...new Set(data.map((item) => item.modalidad))];
-    const niveles = [...new Set(data.map((item) => item.nivel))];
-    const areas = [...new Set(data.map((item) => item.area))];
+    const modalidades = Array.from(new Set(data.map((item) => item.modalidad)));
+    const niveles = Array.from(new Set(data.map((item) => item.nivel)));
+    const areas = Array.from(new Set(data.map((item) => item.area)));
 
     const institution = {
       name,
