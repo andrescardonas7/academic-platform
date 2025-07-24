@@ -1,17 +1,9 @@
 import crypto from 'crypto';
 import { NextFunction, Request, Response } from 'express';
-import session from 'express-session';
 
 // Simple CSRF protection middleware
 export interface CSRFRequest extends Request {
   csrfToken?: string;
-  method: string;
-  path: string;
-  headers: Request['headers'];
-  session?: session.Session &
-    Partial<session.SessionData> & {
-      csrfToken?: string;
-    };
 }
 
 // Generate CSRF token
