@@ -1,10 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CEREBRAS = exports.UI = exports.API = exports.PAGINATION = void 0;
 // Centralized constants - No more magic numbers!
-export const PAGINATION = {
+exports.PAGINATION = {
     DEFAULT_LIMIT: 20,
     MAX_LIMIT: 100,
     DEFAULT_PAGE: 1,
 };
-export const API = {
+exports.API = {
     TIMEOUT: 30000,
     RETRY_ATTEMPTS: 3,
     RATE_LIMIT: {
@@ -12,12 +15,12 @@ export const API = {
         MAX_REQUESTS: 100,
     },
 };
-export const UI = {
+exports.UI = {
     SEARCH_DEBOUNCE: 300,
     ANIMATION_DURATION: 250,
     PAGE_SIZE: 12,
 };
-export const CEREBRAS = {
+exports.CEREBRAS = {
     MODEL: 'llama3.1-8b',
     MAX_TOKENS: 500,
     TEMPERATURE: 0.7,
