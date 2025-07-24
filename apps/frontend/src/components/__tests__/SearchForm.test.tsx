@@ -1,5 +1,5 @@
 // TDD - Tests for SearchForm component
-import { AcademicProgram } from '@academic/shared-types';
+import { AcademicProgram } from '@/types';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import SearchForm from '../SearchForm';

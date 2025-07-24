@@ -1,4 +1,4 @@
-import { AcademicProgram, SearchFilters } from '@academic/shared-types';
+import { AcademicProgram, SearchFilters } from '@/types';
 
 /**
  * Filtra programas académicos basado en query de búsqueda y filtros

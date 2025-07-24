@@ -14,12 +14,6 @@ const nextConfig = {
     NEXT_PUBLIC_APP_URL:
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   },
-  // Transpile packages from workspace
-  transpilePackages: [
-    "@academic/shared-types",
-    "@academic/api-client",
-    "@academic/ui",
-  ],
   webpack: (config, { dev, isServer }) => {
     // Optimize bundle size
     if (!dev && !isServer) {

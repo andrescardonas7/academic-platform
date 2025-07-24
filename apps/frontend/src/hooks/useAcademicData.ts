@@ -1,5 +1,5 @@
 // Clean hook - Single responsibility for academic data
-import { AcademicProgram, FilterOptions } from '@academic/shared-types';
+import { AcademicProgram, FilterOptions } from '@/types';
 import { useEffect, useState } from 'react';
 import { apiClient } from '../utils/api';
 

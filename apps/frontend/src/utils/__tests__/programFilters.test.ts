@@ -1,4 +1,4 @@
-import { AcademicProgram, SearchFilters } from '@academic/shared-types';
+import { AcademicProgram, SearchFilters } from '@/types';
 import { filterPrograms, sortPrograms } from '../programFilters';
 
 const mockPrograms: AcademicProgram[] = [
