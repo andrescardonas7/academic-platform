@@ -31,3 +31,26 @@ Thumbs.db
 # Testing
 coverage/
 *.lcov
+
+# Documentation
+docs/
+*.md
+README.md
+
+# Scripts
+scripts/
+
+# Packages not needed for backend
+packages/api-client/
+packages/ui/
+packages/eslint-config/
+packages/tsconfig/
+
+# Database files
+*.db
+*.sqlite
+*.sql
+
+# Cache
+.cache/
+.turbo/

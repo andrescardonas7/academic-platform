@@ -7,6 +7,7 @@
     "dev": "npx tsx watch src/server.ts",
     "dev:dotenv": "npx -y dotenv-cli -- npx tsx watch src/server.ts",
     "build": "npx tsc",
+    "build:production": "npx tsc --project tsconfig.json",
     "start": "node dist/server.js",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
