@@ -193,6 +193,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.14.2
         version: 5.83.0(@tanstack/react-query@5.83.0(react@18.3.1))(react@18.3.1)
+      autoprefixer:
+        specifier: ^10.4.16
+        version: 10.4.21(postcss@8.5.6)
       axios:
         specifier: ^1.6.2
         version: 1.10.0
@@ -214,6 +217,9 @@ importers:
       next-themes:
         specifier: ^0.2.1
         version: 0.2.1(next@14.2.30(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.54.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      postcss:
+        specifier: ^8.4.32
+        version: 8.5.6
       react:
         specifier: ^18.2.0
         version: 18.3.1
@@ -232,6 +238,9 @@ importers:
       tailwind-merge:
         specifier: ^2.2.0
         version: 2.6.0
+      tailwindcss:
+        specifier: ^3.3.6
+        version: 3.4.17
       zod:
         specifier: ^3.22.4
         version: 3.25.76
@@ -275,9 +284,6 @@ importers:
       '@types/testing-library__jest-dom':
         specifier: ^6.0.0
         version: 6.0.0
-      autoprefixer:
-        specifier: ^10.4.16
-        version: 10.4.21(postcss@8.5.6)
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
@@ -293,18 +299,12 @@ importers:
       jest-environment-jsdom:
         specifier: ^29.7.0
         version: 29.7.0
-      postcss:
-        specifier: ^8.4.32
-        version: 8.5.6
       prettier:
         specifier: ^3.1.1
         version: 3.6.2
       prettier-plugin-tailwindcss:
         specifier: ^0.5.9
         version: 0.5.14(prettier@3.6.2)
-      tailwindcss:
-        specifier: ^3.3.6
-        version: 3.4.17
 
   packages/api-client:
     dependencies:
