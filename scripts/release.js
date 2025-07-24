@@ -44,7 +44,6 @@ function isValidBranchName(branchName) {
   );
 }
 
-
 /**
  * Safely reads and validates package.json files
  * @param {string} filePath - Path to package.json file
@@ -67,7 +66,7 @@ function safeReadPackageJson(filePath) {
     'apps/frontend/package.json',
     'apps/backend/package.json',
   ];
-  
+
   if (!allowedFiles.includes(filePath)) {
     throw new Error(`File not allowed: ${filePath}`);
   }
@@ -79,14 +78,15 @@ function safeReadPackageJson(filePath) {
 
   try {
     const content = fs.readFileSync(filePath, 'utf8');
-    
+
     // Security: Check file size to prevent DoS
-    if (content.length > 1024 * 1024) { // 1MB limit
+    if (content.length > 1024 * 1024) {
+      // 1MB limit
       throw new Error('package.json file too large');
     }
 
     const packageJson = JSON.parse(content);
-    
+
     // Security: Validate basic structure
     if (!packageJson || typeof packageJson !== 'object') {
       throw new Error('Invalid package.json format');
@@ -115,7 +115,7 @@ function safeReadPackageJson(filePath) {
 function safeSpawnSync(cmdString, options = {}) {
   // Parse command string more intelligently
   let cmd, args;
-  
+
   // Handle specific command patterns
   if (cmdString.startsWith('git commit -m ')) {
     cmd = 'git';
@@ -147,7 +147,12 @@ function safeSpawnSync(cmdString, options = {}) {
   // Additional security validations for git commands
   if (cmd === 'git') {
     const allowedGitSubcommands = [
-      'add', 'commit', 'tag', 'push', 'branch', 'status'
+      'add',
+      'commit',
+      'tag',
+      'push',
+      'branch',
+      'status',
     ];
     if (args.length === 0 || !allowedGitSubcommands.includes(args[0])) {
       throw new Error(`Git subcommand not allowed: ${args[0]}`);
@@ -156,17 +161,19 @@ function safeSpawnSync(cmdString, options = {}) {
 
   // Security: Check for dangerous patterns in all arguments
   const forbiddenPatterns = [
-    /[;&|`$()]/,           // Shell metacharacters
-    /\.\./,                // Path traversal  
+    /[;&|`$()]/, // Shell metacharacters
+    /\.\./, // Path traversal
     /\/etc\/|\/usr\/|\/bin\//, // System directories
-    /rm\s+|del\s+/,        // Delete commands
-    /curl\s+|wget\s+/,     // Network commands
-    /eval\s+|exec\s+/,     // Execution commands
-    /sudo\s+|su\s+/,       // Privilege escalation
+    /rm\s+|del\s+/, // Delete commands
+    /curl\s+|wget\s+/, // Network commands
+    /eval\s+|exec\s+/, // Execution commands
+    /sudo\s+|su\s+/, // Privilege escalation
   ];
 
-  args.forEach(arg => {
-    const hasForbiddenPattern = forbiddenPatterns.some(pattern => pattern.test(arg));
+  args.forEach((arg) => {
+    const hasForbiddenPattern = forbiddenPatterns.some((pattern) =>
+      pattern.test(arg)
+    );
     if (hasForbiddenPattern) {
       throw new Error(`Argument contains forbidden patterns: ${arg}`);
     }
@@ -201,7 +208,7 @@ function safeSpawnSync(cmdString, options = {}) {
       env: safeEnv,
       cwd: workingDir,
       timeout: 30000, // 30 second timeout
-      shell: false,   // CRITICAL: No shell execution for security
+      shell: false, // CRITICAL: No shell execution for security
       stdio: options.stdio || ['pipe', 'pipe', 'pipe'],
     });
 
@@ -215,7 +222,9 @@ function safeSpawnSync(cmdString, options = {}) {
 
     if (result.status !== 0) {
       const errorOutput = result.stderr || 'Unknown error';
-      throw new Error(`Command failed with exit code ${result.status}: ${errorOutput}`);
+      throw new Error(
+        `Command failed with exit code ${result.status}: ${errorOutput}`
+      );
     }
 
     return result.stdout || '';
@@ -336,9 +345,7 @@ try {
   safeSpawnSync(
     'git add package.json apps/frontend/package.json apps/backend/package.json'
   );
-  safeSpawnSync(
-    `git commit -m chore: bump version to ${newVersion}`
-  );
+  safeSpawnSync(`git commit -m chore: bump version to ${newVersion}`);
 
   // Create git tag with message
   const tagMessage = `Release v${newVersion}

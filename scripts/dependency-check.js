@@ -18,8 +18,8 @@ function safeSpawnSync(cmdString, options = {}) {
 
   // Security: Validate command
   const allowedCommands = {
-    'npm': ['outdated', 'audit'],
-    'pnpm': ['outdated', 'audit']
+    npm: ['outdated', 'audit'],
+    pnpm: ['outdated', 'audit'],
   };
 
   if (!allowedCommands[cmd] || !allowedCommands[cmd].includes(args[0])) {
@@ -28,17 +28,19 @@ function safeSpawnSync(cmdString, options = {}) {
 
   // Additional security: Check for malicious patterns
   const forbiddenPatterns = [
-    /[;&|`$()]/,           // Shell metacharacters
-    /\.\./,                // Path traversal
+    /[;&|`$()]/, // Shell metacharacters
+    /\.\./, // Path traversal
     /\/etc\/|\/usr\/|\/bin\//, // System directories
-    /rm\s+|del\s+/,        // Delete commands
-    /curl\s+|wget\s+/,     // Network commands
-    /eval\s+|exec\s+/,     // Execution commands
+    /rm\s+|del\s+/, // Delete commands
+    /curl\s+|wget\s+/, // Network commands
+    /eval\s+|exec\s+/, // Execution commands
   ];
 
   // Check for forbidden patterns in all arguments
-  args.forEach(arg => {
-    const hasForbiddenPattern = forbiddenPatterns.some(pattern => pattern.test(arg));
+  args.forEach((arg) => {
+    const hasForbiddenPattern = forbiddenPatterns.some((pattern) =>
+      pattern.test(arg)
+    );
     if (hasForbiddenPattern) {
       throw new Error(`Argument contains forbidden patterns: ${arg}`);
     }
@@ -71,7 +73,7 @@ function safeSpawnSync(cmdString, options = {}) {
       encoding: 'utf8',
       env: safeEnv,
       timeout: 30000, // 30 second timeout
-      shell: false,   // CRITICAL: No shell execution for security
+      shell: false, // CRITICAL: No shell execution for security
       stdio: options.stdio || ['pipe', 'pipe', 'pipe'],
       cwd: options.cwd,
     });
@@ -115,7 +117,7 @@ function isValidDirectory(dirPath) {
 
   // Security: Normalize path to prevent traversal
   const normalizedPath = path.normalize(dirPath);
-  
+
   // Security: Check for path traversal attempts
   if (normalizedPath.includes('..') || normalizedPath.includes('~')) {
     return false;
@@ -149,14 +151,15 @@ function safeReadPackageJson(packageJsonPath) {
 
   try {
     const content = fs.readFileSync(packageJsonPath, 'utf8');
-    
+
     // Security: Check file size to prevent DoS
-    if (content.length > 1024 * 1024) { // 1MB limit
+    if (content.length > 1024 * 1024) {
+      // 1MB limit
       throw new Error('package.json file too large');
     }
 
     const packageJson = JSON.parse(content);
-    
+
     // Security: Validate basic structure
     if (!packageJson || typeof packageJson !== 'object') {
       throw new Error('Invalid package.json format');
@@ -232,15 +235,17 @@ function checkKnownVulnerabilities() {
 
     let vulnerabilitiesFound = false;
 
-    Object.entries(KNOWN_VULNERABILITIES).forEach(([pkg, vulnerableVersions]) => {
-      if (allDeps[pkg]) {
-        const currentVersion = allDeps[pkg].replace(/[\^~]/, '');
-        if (vulnerableVersions.includes(currentVersion)) {
-          console.log(`❌ VULNERABILIDAD: ${pkg}@${currentVersion}`);
-          vulnerabilitiesFound = true;
+    Object.entries(KNOWN_VULNERABILITIES).forEach(
+      ([pkg, vulnerableVersions]) => {
+        if (allDeps[pkg]) {
+          const currentVersion = allDeps[pkg].replace(/[\^~]/, '');
+          if (vulnerableVersions.includes(currentVersion)) {
+            console.log(`❌ VULNERABILIDAD: ${pkg}@${currentVersion}`);
+            vulnerabilitiesFound = true;
+          }
         }
       }
-    });
+    );
 
     if (!vulnerabilitiesFound) {
       console.log('✅ No se encontraron vulnerabilidades conocidas');

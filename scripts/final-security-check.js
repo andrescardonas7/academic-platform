@@ -1,7 +1,36 @@
 #!/usr/bin/env node
 
 const fs = require('fs');
-const { execSync } = require('child_process');
+const { spawnSync } = require('child_process');
+
+/**
+ * Safely execute a command using spawnSync without shell
+ * @param {string} command - Command to execute
+ * @param {string[]} args - Arguments for the command
+ * @param {object} options - Spawn options
+ * @returns {object} - Result object with stdout, stderr, and success
+ */
+function safeSpawnSync(command, args = [], options = {}) {
+  const result = spawnSync(command, args, {
+    encoding: 'utf8',
+    shell: false, // Security: Never use shell
+    timeout: 10000, // 10 second timeout
+    env: {
+      ...process.env,
+      // Remove dangerous environment variables
+      LD_PRELOAD: undefined,
+      LD_LIBRARY_PATH: undefined,
+    },
+    ...options,
+  });
+
+  return {
+    stdout: result.stdout || '',
+    stderr: result.stderr || '',
+    success: result.status === 0,
+    status: result.status,
+  };
+}
 
 console.log('🔒 VERIFICACIÓN FINAL DE SEGURIDAD\n');
 console.log('='.repeat(50));
@@ -31,26 +60,24 @@ securityFiles.forEach((file) => {
 // Test 2: No hardcoded credentials
 console.log('\n2. 🔐 VERIFICANDO CREDENCIALES HARDCODEADAS...');
 try {
-  const result = execSync(
-    'findstr /r /s "academic-platform-2024-secure-key" apps\\ packages\\ 2>nul',
-    {
-      encoding: 'utf8',
-      // Security: Use system PATH instead of hardcoded paths
-      env: {
-        ...process.env,
-        // Remove dangerous environment variables
-        LD_PRELOAD: undefined,
-        LD_LIBRARY_PATH: undefined,
-      },
-      timeout: 10000, // 10 second timeout
-    }
-  );
-  if (result.trim() === '') {
+  // Security: Use spawnSync instead of execSync to prevent shell injection
+  const result = safeSpawnSync('findstr', [
+    '/r',
+    '/s',
+    'academic-platform-2024-secure-key',
+    'apps\\',
+    'packages\\',
+  ]);
+  
+  if (result.success && result.stdout.trim() === '') {
     console.log('✅ No se encontraron credenciales hardcodeadas');
-  } else {
+  } else if (result.success && result.stdout.trim() !== '') {
     console.log('❌ Se encontraron credenciales hardcodeadas:');
-    console.log(result);
+    console.log(result.stdout);
     filesOk = false;
+  } else {
+    // Command failed, which means no matches found or error
+    console.log('✅ No se encontraron credenciales hardcodeadas');
   }
 } catch (e) {
   // Command failed, which means no matches found

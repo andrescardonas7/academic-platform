@@ -23,7 +23,7 @@ function safeSpawnSync(cmdString, options = {}) {
 
   // Security: Validate command
   const allowedCommands = {
-    'pnpm': ['build', 'type-check']
+    pnpm: ['build', 'type-check'],
   };
 
   if (!allowedCommands[cmd] || !allowedCommands[cmd].includes(args[0])) {
@@ -34,31 +34,38 @@ function safeSpawnSync(cmdString, options = {}) {
   if (cmd === 'pnpm') {
     const validFilters = [
       '--filter=@academic/shared-types',
-      '--filter=@academic/api-client', 
+      '--filter=@academic/api-client',
       '--filter=@academic/ui',
-      '--filter=@academic/frontend'
+      '--filter=@academic/frontend',
     ];
-    
-    if (args.includes('--filter') || args.some(arg => arg.startsWith('--filter='))) {
-      const hasValidFilter = args.some(arg => validFilters.includes(arg));
+
+    if (
+      args.includes('--filter') ||
+      args.some((arg) => arg.startsWith('--filter='))
+    ) {
+      const hasValidFilter = args.some((arg) => validFilters.includes(arg));
       if (!hasValidFilter) {
-        throw new Error(`Invalid filter: ${args.find(arg => arg.startsWith('--filter'))}`);
+        throw new Error(
+          `Invalid filter: ${args.find((arg) => arg.startsWith('--filter'))}`
+        );
       }
     }
   }
 
   // Security: Check for dangerous patterns
   const forbiddenPatterns = [
-    /[;&|`$()]/,           // Shell metacharacters
-    /\.\./,                // Path traversal
+    /[;&|`$()]/, // Shell metacharacters
+    /\.\./, // Path traversal
     /\/etc\/|\/usr\/|\/bin\//, // System directories
-    /rm\s+|del\s+/,        // Delete commands
-    /curl\s+|wget\s+/,     // Network commands
-    /eval\s+|exec\s+/,     // Execution commands
+    /rm\s+|del\s+/, // Delete commands
+    /curl\s+|wget\s+/, // Network commands
+    /eval\s+|exec\s+/, // Execution commands
   ];
 
-  args.forEach(arg => {
-    const hasForbiddenPattern = forbiddenPatterns.some(pattern => pattern.test(arg));
+  args.forEach((arg) => {
+    const hasForbiddenPattern = forbiddenPatterns.some((pattern) =>
+      pattern.test(arg)
+    );
     if (hasForbiddenPattern) {
       throw new Error(`Argument contains forbidden patterns: ${arg}`);
     }
@@ -77,7 +84,7 @@ function safeSpawnSync(cmdString, options = {}) {
       encoding: 'utf8',
       env: safeEnv,
       timeout: 300000, // 5 minute timeout for build processes
-      shell: false,    // CRITICAL: No shell execution for security
+      shell: false, // CRITICAL: No shell execution for security
       stdio: options.stdio || ['pipe', 'pipe', 'pipe'],
     });
 
@@ -89,7 +96,9 @@ function safeSpawnSync(cmdString, options = {}) {
     }
 
     if (result.status !== 0) {
-      throw new Error(`Command failed with exit code ${result.status}: ${cmdString}`);
+      throw new Error(
+        `Command failed with exit code ${result.status}: ${cmdString}`
+      );
     }
 
     return result.stdout || '';
@@ -117,13 +126,19 @@ console.log('🔍 Running pre-deployment checks...');
 try {
   // Check if all workspace dependencies are built
   console.log('📦 Building workspace dependencies...');
-  safeSpawnSync('pnpm build --filter=@academic/shared-types', { stdio: 'inherit' });
-  safeSpawnSync('pnpm build --filter=@academic/api-client', { stdio: 'inherit' });
+  safeSpawnSync('pnpm build --filter=@academic/shared-types', {
+    stdio: 'inherit',
+  });
+  safeSpawnSync('pnpm build --filter=@academic/api-client', {
+    stdio: 'inherit',
+  });
   safeSpawnSync('pnpm build --filter=@academic/ui', { stdio: 'inherit' });
 
   // Type check
   console.log('🔧 Running type check...');
-  safeSpawnSync('pnpm type-check --filter=@academic/frontend', { stdio: 'inherit' });
+  safeSpawnSync('pnpm type-check --filter=@academic/frontend', {
+    stdio: 'inherit',
+  });
 
   // Build frontend
   console.log('🏗️  Building frontend for production...');
