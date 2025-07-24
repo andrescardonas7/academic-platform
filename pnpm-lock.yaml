@@ -181,15 +181,6 @@ importers:
 
   apps/frontend:
     dependencies:
-      '@academic/api-client':
-        specifier: workspace:*
-        version: link:../../packages/api-client
-      '@academic/shared-types':
-        specifier: workspace:*
-        version: link:../../packages/shared-types
-      '@academic/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       '@heroicons/react':
         specifier: ^2.2.0
         version: 2.2.0(react@18.3.1)
@@ -248,12 +239,6 @@ importers:
         specifier: ^4.4.7
         version: 4.5.7(@types/react@18.3.23)(react@18.3.1)
     devDependencies:
-      '@academic/eslint-config':
-        specifier: workspace:*
-        version: link:../../packages/eslint-config
-      '@academic/tsconfig':
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
       '@next/bundle-analyzer':
         specifier: ^14.0.4
         version: 14.2.30

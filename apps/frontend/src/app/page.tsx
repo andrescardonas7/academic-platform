@@ -1,7 +1,6 @@
 // HomePage - Academic Platform
 'use client';
 
-import React from 'react';
 import HeroSection from '@/components/HeroSection';
 import { AcademicProgram } from '@/types';
 import { Search, X } from 'lucide-react';
