@@ -1,6 +1,6 @@
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs'; // TODO: Usar cuando implementemos auth con Supabase
 import { Request, Response, Router } from 'express';
-import jwt from 'jsonwebtoken';
+// import jwt from 'jsonwebtoken'; // TODO: Usar cuando implementemos auth con Supabase
 import { ErrorHandler } from '../utils/ErrorHandler';
 
 const router = Router();
@@ -16,41 +16,10 @@ router.post('/login', async (req: Request, res: Response) => {
       });
     }
 
-    // Buscar usuario por email
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid credentials',
-      });
-    }
-
-    // Validar contraseña
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        error: 'Invalid credentials',
-      });
-    }
-
-    // Generar JWT
-    const jwtSecret = process.env.JWT_SECRET || 'secret';
-    const token = jwt.sign(
-      { id: user.id, email: user.email, name: user.name },
-      jwtSecret,
-      { expiresIn: '1d' }
-    );
-
-    res.json({
-      success: true,
-      message: 'Login successful',
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-      },
+    // TODO: Implementar autenticación con Supabase
+    return res.status(501).json({
+      success: false,
+      error: 'Authentication with Supabase not implemented yet',
     });
   } catch (error) {
     const appError = ErrorHandler.handle(error);
@@ -73,26 +42,10 @@ router.post('/register', async (req: Request, res: Response) => {
       });
     }
 
-    // Hashear contraseña
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Guardar usuario en la base de datos
-    const user = await prisma.user.create({
-      data: {
-        email,
-        name,
-        password: hashedPassword,
-      },
-    });
-
-    res.status(201).json({
-      success: true,
-      message: 'User registered successfully',
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-      },
+    // TODO: Implementar registro con Supabase
+    return res.status(501).json({
+      success: false,
+      error: 'Registration with Supabase not implemented yet',
     });
   } catch (error) {
     const appError = ErrorHandler.handle(error);

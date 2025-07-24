@@ -17,7 +17,6 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "@academic/database": "workspace:*",
     "@academic/shared-types": "workspace:*",
     "@cerebras/cerebras_cloud_sdk": "^1.35.0",
     "@supabase/supabase-js": "^2.51.0",
