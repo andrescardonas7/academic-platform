@@ -57,17 +57,18 @@ export class SecurityUtils {
   ];
 
   // Sanitize sensitive data
-  static sanitizeData(data: any): any {
+  static sanitizeData(data: unknown): unknown {
     if (!data) return data;
     const sanitized = JSON.parse(JSON.stringify(data));
     this.sanitizeObject(sanitized);
     return sanitized;
   }
 
-  private static sanitizeObject(obj: any): void {
+  private static sanitizeObject(obj: unknown): void {
     if (!obj || typeof obj !== 'object') return;
 
-    Object.keys(obj).forEach((key) => {
+    const objRecord = obj as Record<string, unknown>;
+    Object.keys(objRecord).forEach((key) => {
       const isLowerCaseSensitive = this.SENSITIVE_FIELDS.includes(
         key.toLowerCase()
       );
@@ -76,15 +77,15 @@ export class SecurityUtils {
       );
 
       if (isLowerCaseSensitive || containsSensitive) {
-        obj[key] = '[REDACTED]';
-      } else if (typeof obj[key] === 'object') {
-        this.sanitizeObject(obj[key]);
+        objRecord[key] = '[REDACTED]';
+      } else if (typeof objRecord[key] === 'object') {
+        this.sanitizeObject(objRecord[key]);
       }
     });
   }
 
   // Sanitize input for XSS prevention
-  static sanitizeInput(obj: any): any {
+  static sanitizeInput(obj: unknown): unknown {
     if (typeof obj === 'string') {
       return obj
         .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
@@ -98,7 +99,7 @@ export class SecurityUtils {
     }
 
     if (obj && typeof obj === 'object') {
-      const sanitized: any = {};
+      const sanitized: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(obj)) {
         sanitized[key] = this.sanitizeInput(value);
       }
