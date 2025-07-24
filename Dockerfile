@@ -1,6 +1,9 @@
 # Multi-stage build for optimized image size
 FROM node:18-alpine AS base
 
+# Install pnpm
+RUN npm install -g pnpm
+
 # Install dependencies only when needed
 FROM base AS deps
 WORKDIR /app
@@ -9,7 +12,7 @@ WORKDIR /app
 COPY apps/backend/package.railway.json ./package.json
 
 # Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+RUN pnpm install --prod --frozen-lockfile=false && pnpm store prune
 
 # Build stage
 FROM base AS builder
@@ -20,14 +23,14 @@ COPY apps/backend/package.railway.json ./package.json
 COPY apps/backend/tsconfig.json ./tsconfig.json
 
 # Install build dependencies
-RUN npm ci
+RUN pnpm install --frozen-lockfile=false
 
 # Copy source code
 COPY apps/backend/src ./src
 COPY apps/backend/src/types/railway.ts ./src/types/railway.ts
 
 # Build the application
-RUN npm run build:production
+RUN pnpm run build:production
 
 # Production stage
 FROM base AS runner
