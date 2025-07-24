@@ -5,7 +5,7 @@ import {
   FilterOptions,
   SearchFilters,
   SearchResult,
-} from '@academic/shared-types';
+} from '../types/railway';
 
 export interface ISearchService {
   searchOfferings(filters?: SearchFilters): Promise<SearchResult>;

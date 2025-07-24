@@ -5,7 +5,7 @@ import {
   PAGINATION,
   SearchFilters,
   SearchResult,
-} from '@academic/shared-types';
+} from '../types/railway';
 import { supabase } from '../config/supabase';
 import { ISearchService } from '../interfaces/ISearchService';
 import { AppError, ErrorHandler } from '../utils/ErrorHandler';
