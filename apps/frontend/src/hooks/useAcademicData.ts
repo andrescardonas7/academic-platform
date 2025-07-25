@@ -28,7 +28,7 @@ export function useAcademicData(): UseAcademicDataReturn {
       setError(null);
 
       const [programsResponse, filtersResponse] = await Promise.all([
-        apiClient.search.offerings(),
+        apiClient.search.offerings({ limit: 100 }), // Obtener hasta 100 programas por defecto
         apiClient.search.filters(),
       ]);
 
