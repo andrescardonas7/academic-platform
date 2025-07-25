@@ -24,7 +24,19 @@ async function request<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${api.baseURL}${endpoint}`;
+  // Ensure baseURL ends with a slash if endpoint starts with a slash
+  const baseUrl = api.baseURL.endsWith('/') || endpoint.startsWith('/')
+    ? api.baseURL
+    : `${api.baseURL}/`;
+
+  // Ensure endpoint doesn't start with a slash if baseURL ends with one
+  const cleanEndpoint = baseUrl.endsWith('/') && endpoint.startsWith('/')
+    ? endpoint.substring(1)
+    : endpoint;
+
+  const url = `${baseUrl}${cleanEndpoint}`;
+
+  console.log('API Request URL:', url); // Debug log
 
   const config: RequestInit = {
     credentials: 'include', // Include cookies for sessions
