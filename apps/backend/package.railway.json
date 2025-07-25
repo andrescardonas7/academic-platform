@@ -4,7 +4,7 @@
   "description": "Academic Platform Backend API",
   "main": "dist/server.minimal.js",
   "scripts": {
-    "build:production": "npx tsc --project tsconfig.json",
+    "build:production": "node build-minimal.js",
     "start": "node dist/server.minimal.js"
   },
   "dependencies": {
@@ -15,15 +15,6 @@
     "express": "^4.18.2",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0"
-  },
-  "devDependencies": {
-    "@types/compression": "^1.7.5",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/helmet": "^4.0.0",
-    "@types/morgan": "^1.9.9",
-    "@types/node": "^20.10.5",
-    "typescript": "^5.8.3"
   },
   "keywords": [
     "academic",
