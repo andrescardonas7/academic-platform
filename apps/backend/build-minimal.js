@@ -14,7 +14,6 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const API_PREFIX = ''; // Force empty prefix to ensure direct /api routes
 
 // Middleware
 app.use(helmet({
@@ -71,8 +70,7 @@ app.get('/debug', (req, res) => {
     method: req.method,
     env: {
       NODE_ENV: process.env.NODE_ENV || 'not set',
-      PORT: process.env.PORT || 'not set',
-      CORS_ORIGIN: process.env.CORS_ORIGIN || 'not set'
+      PORT: process.env.PORT || 'not set'
     },
     timestamp: new Date().toISOString()
   });
@@ -97,6 +95,7 @@ app.get('/api/health', (req, res) => {
 
 // Search mock endpoint
 app.get('/api/search', (req, res) => {
+  console.log('GET /api/search called with query:', req.query);
   res.json({
     data: [],
     pagination: {
@@ -113,6 +112,7 @@ app.get('/api/search', (req, res) => {
 
 // Search filters endpoint
 app.get('/api/search/filters', (req, res) => {
+  console.log('GET /api/search/filters called');
   res.json({
     modalidades: ["PRESENCIAL", "VIRTUAL", "HÍBRIDA"],
     instituciones: ["Universidad del Valle", "SENA", "Universidad Antonio Nariño", "Universidad Cooperativa de Colombia"],
@@ -123,6 +123,7 @@ app.get('/api/search/filters', (req, res) => {
 
 // Chatbot mock endpoint
 app.post('/api/chatbot/message', (req, res) => {
+  console.log('POST /api/chatbot/message called');
   res.json({
     message: "Hola, soy el chatbot de Academic Platform. Estoy en modo de mantenimiento en este momento.",
     timestamp: new Date().toISOString(),
@@ -179,3 +180,6 @@ fs.writeFileSync(path.join(distDir, 'server.minimal.js'), serverContent);
 
 console.log('✅ Minimal server built successfully!');
 console.log('📁 Output: dist/server.minimal.js');
+console.log(
+  '🔧 Routes included: /health, /debug, /api, /api/health, /api/search, /api/search/filters, /api/chatbot/message'
+);
