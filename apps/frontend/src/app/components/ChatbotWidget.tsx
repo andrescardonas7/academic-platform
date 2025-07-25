@@ -44,8 +44,27 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // KISS: Scroll to bot response start for better UX
+  const scrollToBotResponse = () => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage && !lastMessage.isUser) {
+      // Small delay to ensure DOM is updated
+      setTimeout(() => {
+        const botMessages = document.querySelectorAll('[data-bot-message]');
+        const lastBotMessage = botMessages[botMessages.length - 1];
+        if (lastBotMessage) {
+          lastBotMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  };
+
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > 1) {
+      scrollToBotResponse();
+    } else {
+      scrollToBottom();
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -138,8 +157,8 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
       {/* Chat Window */}
       {isOpen && (
         <div
-          className={`bg-white rounded-lg shadow-xl border border-gray-200 w-96 flex flex-col transition-all duration-300 ${
-            isMinimized ? 'h-auto' : 'min-h-[24rem] max-h-[80vh]'
+          className={`bg-white rounded-lg shadow-xl border border-gray-200 w-96 sm:w-[28rem] md:w-[32rem] lg:w-[36rem] flex flex-col transition-all duration-300 ${
+            isMinimized ? 'h-auto' : 'min-h-[32rem] max-h-[90vh]'
           }`}
         >
           {/* Header */}
@@ -173,17 +192,18 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
           {/* Messages */}
           {!isMinimized && (
             <>
-              <div className='flex-1 overflow-y-auto p-4 space-y-4'>
+              <div className='flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4 max-h-[60vh] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100'>
                 {messages.map((message) => (
                   <div
                     key={message.id}
                     className={`flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                    {...(!message.isUser && { 'data-bot-message': true })}
                   >
                     <div
-                      className={`max-w-[80%] p-3 rounded-lg ${
+                      className={`max-w-[90%] p-3 rounded-lg break-words overflow-hidden ${
                         message.isUser
                           ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-900'
+                          : 'text-gray-900'
                       }`}
                     >
                       <div className='flex items-start gap-2'>
@@ -191,10 +211,11 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
                           <Bot className='w-4 h-4 mt-0.5 flex-shrink-0' />
                         )}
                         <div className='flex-1'>
-                          <p className='text-sm whitespace-pre-wrap'>
-                            {message.content}
-                          </p>
-                          <p className='text-xs opacity-70 mt-1'>
+                          <MessageContent
+                            content={message.content}
+                            isUser={message.isUser}
+                          />
+                          <p className='text-xs opacity-70 mt-2'>
                             {message.timestamp.toLocaleTimeString([], {
                               hour: '2-digit',
                               minute: '2-digit',
@@ -262,6 +283,96 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
   );
 }
 
+// KISS: Component for better message formatting
+const MessageContent = ({
+  content,
+  isUser,
+}: {
+  content: string;
+  isUser: boolean;
+}) => {
+  // DRY: Format bot messages for better readability
+  if (isUser) {
+    return <p className='text-sm whitespace-pre-wrap'>{content}</p>;
+  }
+
+  // SonarQube: Better text processing for long responses
+  const formatBotMessage = (text: string): JSX.Element[] => {
+    const lines = text.split('\n').filter((line) => line.trim());
+    const elements: JSX.Element[] = [];
+
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+
+      // KISS: Simple formatting rules
+      if (trimmedLine.startsWith('===') && trimmedLine.endsWith('===')) {
+        // Section headers
+        const title = trimmedLine.replace(/=/g, '').trim();
+        elements.push(
+          <div
+            key={index}
+            className='font-bold text-blue-700 mt-3 mb-2 text-sm border-b border-blue-200 pb-1'
+          >
+            {title}
+          </div>
+        );
+      } else if (trimmedLine.match(/^\d+\./)) {
+        // Numbered lists (programs) - Simple and clean
+        elements.push(
+          <div key={index} className='mb-3 pl-2 border-l-2 border-blue-400'>
+            <p className='text-sm font-medium text-gray-900 leading-relaxed break-words overflow-wrap-anywhere hyphens-auto'>
+              {trimmedLine}
+            </p>
+          </div>
+        );
+      } else if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+        // Bullet points - Improved readability
+        elements.push(
+          <div key={index} className='mb-2 text-sm flex items-start gap-2'>
+            <span className='text-blue-600 font-bold mt-1 text-xs'>•</span>
+            <span className='leading-relaxed text-gray-800 break-words overflow-wrap-anywhere'>
+              {trimmedLine.replace(/^[•-]\s*/, '')}
+            </span>
+          </div>
+        );
+      } else if (trimmedLine.includes('**') && trimmedLine.includes('**')) {
+        // Bold text formatting
+        const parts = trimmedLine.split(/\*\*(.*?)\*\*/g);
+        elements.push(
+          <p
+            key={index}
+            className='text-sm mb-2 leading-relaxed break-words overflow-wrap-anywhere'
+          >
+            {parts.map((part, partIndex) =>
+              partIndex % 2 === 1 ? (
+                <strong key={partIndex} className='font-semibold text-blue-700'>
+                  {part}
+                </strong>
+              ) : (
+                part
+              )
+            )}
+          </p>
+        );
+      } else if (trimmedLine.length > 0) {
+        // Regular paragraphs
+        elements.push(
+          <p
+            key={index}
+            className='text-sm mb-2 leading-relaxed text-gray-800 break-words overflow-wrap-anywhere'
+          >
+            {trimmedLine}
+          </p>
+        );
+      }
+    });
+
+    return elements;
+  };
+
+  return <div className='space-y-1'>{formatBotMessage(content)}</div>;
+};
+
 const SuggestionChips = ({
   onSelect,
 }: {
@@ -275,14 +386,14 @@ const SuggestionChips = ({
   ];
 
   return (
-    <div className='p-4 border-t border-gray-200'>
+    <div className='mt-3'>
       <p className='text-sm font-medium text-gray-600 mb-2'>Sugerencias:</p>
       <div className='flex flex-wrap gap-2'>
         {suggestions.map((suggestion) => (
           <button
             key={suggestion}
             onClick={() => onSelect(suggestion)}
-            className='px-3 py-1.5 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors'
+            className='px-3 py-1.5 bg-gray-100 text-gray-800 rounded-full text-xs hover:bg-gray-200 transition-colors'
           >
             {suggestion}
           </button>

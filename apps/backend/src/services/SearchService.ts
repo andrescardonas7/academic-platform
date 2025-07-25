@@ -1,4 +1,6 @@
 // Refactored SearchService - SOLID principles
+import { supabase } from '../config/supabase';
+import { ISearchService } from '../interfaces/ISearchService';
 import {
   AcademicProgram,
   FilterOptions,
@@ -6,8 +8,6 @@ import {
   SearchFilters,
   SearchResult,
 } from '../types/railway';
-import { supabase } from '../config/supabase';
-import { ISearchService } from '../interfaces/ISearchService';
 import { AppError, ErrorHandler } from '../utils/ErrorHandler';
 
 export class SearchService implements ISearchService {
@@ -161,32 +161,52 @@ export class SearchService implements ISearchService {
   }
 
   private applyFilters(query: any, filters: SearchFilters): any {
-    // Apply text search filter (optimized with full-text search)
+    // KISS: Improved text search with better keyword matching
     if (filters.q?.trim()) {
-      const searchTerm = filters.q.trim();
-      query = query.or(
-        `carrera.ilike.%${searchTerm}%,institucion.ilike.%${searchTerm}%,clasificacion.ilike.%${searchTerm}%`
+      const searchTerms = this.normalizeSearchTerms(filters.q.trim());
+      const searchConditions = searchTerms.map(
+        (term) =>
+          `carrera.ilike.%${term}%,institucion.ilike.%${term}%,clasificacion.ilike.%${term}%`
       );
+
+      // DRY: Apply all search conditions
+      query = query.or(searchConditions.join(','));
     }
 
-    // Apply specific filters
-    if (filters.modalidad) {
-      query = query.eq('modalidad', filters.modalidad);
-    }
+    // SonarQube: Consistent filter application
+    const filterMappings = [
+      { filter: filters.modalidad, column: 'modalidad', exact: true },
+      { filter: filters.institucion, column: 'institucion', exact: true },
+      { filter: filters.nivel, column: 'nivel_programa', exact: false },
+      { filter: filters.area, column: 'clasificacion', exact: false },
+    ];
 
-    if (filters.institucion) {
-      query = query.eq('institucion', filters.institucion);
-    }
-
-    if (filters.nivel) {
-      query = query.ilike('nivel_programa', `%${filters.nivel}%`);
-    }
-
-    if (filters.area) {
-      query = query.ilike('clasificacion', `%${filters.area}%`);
-    }
+    filterMappings.forEach(({ filter, column, exact }) => {
+      if (filter) {
+        query = exact
+          ? query.eq(column, filter)
+          : query.ilike(column, `%${filter}%`);
+      }
+    });
 
     return query;
+  }
+
+  private normalizeSearchTerms(searchText: string): string[] {
+    // KISS: Simple normalization for better matching
+    const normalized = searchText
+      .toLowerCase()
+      .replace(/[áàäâ]/g, 'a')
+      .replace(/[éèëê]/g, 'e')
+      .replace(/[íìïî]/g, 'i')
+      .replace(/[óòöô]/g, 'o')
+      .replace(/[úùüû]/g, 'u')
+      .replace(/ñ/g, 'n');
+
+    // DRY: Extract unique terms
+    return [
+      ...new Set(normalized.split(/\s+/).filter((term) => term.length > 2)),
+    ];
   }
 
   async getOfferingById(id: number): Promise<AcademicProgram> {

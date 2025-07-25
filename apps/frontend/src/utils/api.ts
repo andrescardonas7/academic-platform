@@ -1,5 +1,14 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY || '';
+// Forzar la API key correcta directamente
+const API_KEY = 'academic-platform-dev-key';
+
+console.log('🔍 Frontend API Config:', {
+  API_BASE_URL,
+  API_KEY: API_KEY ? `"${API_KEY}"` : 'undefined',
+  fromEnv: process.env.NEXT_PUBLIC_API_KEY
+    ? `"${process.env.NEXT_PUBLIC_API_KEY}"`
+    : 'undefined',
+});
 
 // Create axios instance with default configuration
 const api = {
@@ -69,9 +78,9 @@ export const apiClient = {
           searchParams.append(key, String(value));
         }
       });
-      return request(`/careers?${searchParams.toString()}`);
+      return request(`/api/careers?${searchParams.toString()}`);
     },
-    byId: (id: number) => request(`/careers/${id}`),
+    byId: (id: number) => request(`/api/careers/${id}`),
     byInstitution: (
       institution: string,
       params: Record<string, unknown> = {}
@@ -83,7 +92,7 @@ export const apiClient = {
         }
       });
       return request(
-        `/careers/institution/${encodeURIComponent(institution)}?${searchParams.toString()}`
+        `/api/careers/institution/${encodeURIComponent(institution)}?${searchParams.toString()}`
       );
     },
   },
@@ -97,10 +106,10 @@ export const apiClient = {
           searchParams.append(key, String(value));
         }
       });
-      return request(`/institutions?${searchParams.toString()}`);
+      return request(`/api/institutions?${searchParams.toString()}`);
     },
     byName: (name: string) =>
-      request(`/institutions/${encodeURIComponent(name)}`),
+      request(`/api/institutions/${encodeURIComponent(name)}`),
   },
 
   // Chatbot endpoints

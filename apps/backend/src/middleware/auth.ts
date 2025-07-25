@@ -57,6 +57,14 @@ export const validateApiKey = (
 ) => {
   const apiKey = req.headers['x-api-key'] as string;
 
+  console.log('🔍 API Key Debug:', {
+    received: apiKey ? `"${apiKey}"` : 'undefined',
+    expected: process.env.API_KEY ? `"${process.env.API_KEY}"` : 'undefined',
+    match: apiKey === process.env.API_KEY,
+    receivedLength: apiKey?.length || 0,
+    expectedLength: process.env.API_KEY?.length || 0,
+  });
+
   if (!apiKey) {
     return res.status(401).json({
       error: 'Unauthorized',

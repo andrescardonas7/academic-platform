@@ -1,10 +1,10 @@
 // Refactored CerebrasService - Single Responsibility
 // CEREBRAS configuration for Railway deployment
 const CEREBRAS = {
-  MODEL: 'cerebras-llama-3.1-8b-instruct',
-  CONTEXT_LIMIT: 5,
-  MAX_TOKENS: 1000,
-  TEMPERATURE: 0.7,
+  MODEL: 'qwen-3-235b-a22b',
+  CONTEXT_LIMIT: 50, // KISS: Show ALL data for better context
+  MAX_TOKENS: 1500,
+  TEMPERATURE: 0.1, // DRY: Low temperature for precise answers
 } as const;
 import Cerebras from '@cerebras/cerebras_cloud_sdk';
 import { IChatService } from '../interfaces/IChatService';
@@ -38,7 +38,7 @@ export class CerebrasService implements IChatService {
 
       console.log('🔍 Processing message (length):', sanitizedMessage.length);
 
-      const academicContext = await this.getAcademicContext();
+      const academicContext = await this.getAcademicContext(sanitizedMessage);
       const systemPrompt = this.buildSystemPrompt(academicContext);
 
       const response = await this.callCerebrasAPI(
@@ -76,36 +76,66 @@ export class CerebrasService implements IChatService {
     }
   }
 
-  private async getAcademicContext(): Promise<string> {
-    const searchResult = await CerebrasService.searchService.searchOfferings({
-      limit: CEREBRAS.CONTEXT_LIMIT,
+  private async getAcademicContext(userMessage?: string): Promise<string> {
+    // KISS: Get ALL data first for complete context
+    const allDataResult = await CerebrasService.searchService.searchOfferings({
+      limit: CEREBRAS.CONTEXT_LIMIT, // Get all 50 programs
     });
 
+    // DRY: Generate comprehensive context with ALL data
     return CerebrasService.contextGenerator.generateAcademicContext(
-      searchResult.data
+      allDataResult.data
     );
   }
 
+  private extractKeywords(message: string): string[] {
+    const lowerMessage = message.toLowerCase();
+    const keywords: string[] = [];
+
+    // KISS: Simple keyword mapping
+    const keywordMap = {
+      ingenieria: ['ingeniería', 'ingenieria'],
+      sistemas: ['sistemas', 'sistema'],
+      software: ['software'],
+      electronica: ['electrónica', 'electronica'],
+      administracion: ['administración', 'administracion'],
+      contaduria: ['contaduría', 'contaduria'],
+      derecho: ['derecho'],
+      psicologia: ['psicología', 'psicologia'],
+      educacion: ['educación', 'educacion'],
+      tecnologia: ['tecnología', 'tecnologia'],
+    };
+
+    Object.entries(keywordMap).forEach(([key, variants]) => {
+      if (variants.some((variant) => lowerMessage.includes(variant))) {
+        keywords.push(key);
+      }
+    });
+
+    return keywords;
+  }
+
   private buildSystemPrompt(academicContext: string): string {
-    return `Eres "Orienta Cartago", un asistente académico experto, amigable y ultra-preciso, especializado en la oferta educativa de Cartago, Valle del Cauca, Colombia.
+    return `Eres "Orienta Cartago", asistente académico especializado en programas educativos de Cartago, Valle del Cauca, Colombia.
 
-Tu único propósito es responder a las preguntas de los usuarios basándote EXCLUSIVAMENTE en el contexto que se te proporciona en cada consulta. No debes usar ningún conocimiento externo o previo.
-
-**Tus Reglas Inquebrantables:**
-
-1. **Anclaje al Contexto:** TODA tu respuesta debe derivarse directamente de la sección "[CONTEXTO_DE_BASE_DE_DATOS]". No añadas, infieras ni supongas información que no esté explícitamente escrita en el contexto.
-
-2. **Cero Invenciones:** Si la respuesta a la pregunta del usuario no se encuentra en el contexto proporcionado, DEBES responder de forma clara y directa: "Lo siento, pero no encontré información específica sobre tu consulta en la base de datos de instituciones de Cartago." No intentes responder de otra manera.
-
-3. **Formato Claro:** Presenta la información de manera estructurada. Si hay múltiples opciones (ej. varias universidades), usa listas con viñetas. Destaca en negrita los nombres de las instituciones y los programas.
-
-4. **Tono:** Mantén un tono servicial, profesional y alentador.
-
-5. **Final Proactivo:** Al final de una respuesta exitosa, sugiere una o dos preguntas de seguimiento que el usuario podría hacer, basadas en la información que sí proporcionaste.
-
-[CONTEXTO_DE_BASE_DE_DATOS]
+## CONTEXTO COMPLETO DE PROGRAMAS ACADÉMICOS
 ${academicContext}
-[/CONTEXTO_DE_BASE_DE_DATOS]`;
+
+## INSTRUCCIONES CRÍTICAS
+1. **REVISAR TODO**: Antes de responder, revisa COMPLETAMENTE el contexto anterior
+2. **DATOS DISPONIBLES**: El contexto contiene TODOS los 27 programas disponibles
+3. **NO NEGAR INFORMACIÓN**: Si preguntan por Derecho, Ingenierías o Virtual, SÍ están disponibles
+4. **BUSCAR EXHAUSTIVAMENTE**: Revisa todo el listado antes de decir "no hay información"
+
+## REGLAS DE RESPUESTA
+- Responde SOLO en español colombiano
+- Usa ÚNICAMENTE información del contexto
+- Lista programas con detalles completos: nombre, institución, modalidad, precio
+- Formato claro con viñetas y texto en negrita
+- Si encuentras programas, muéstralos todos
+
+## IMPORTANTE
+Los datos SÍ están en el contexto. Revisa TODO antes de responder.`;
   }
 
   private async callCerebrasAPI(
@@ -124,10 +154,29 @@ ${academicContext}
       }
     );
 
-    const result = (chatCompletion.choices as any)?.[0]?.message?.content || '';
-    console.log('📊 Tokens used:', (chatCompletion.usage as any)?.total_tokens);
+    let result = (chatCompletion.choices as any)?.[0]?.message?.content || '';
+    console.log(
+      '📊 Tokens used:',
+      (chatCompletion.usage as unknown)?.total_tokens
+    );
+
+    // Clean up any unwanted internal process text
+    result = this.cleanResponse(result);
 
     return result;
+  }
+
+  private cleanResponse(response: string): string {
+    // Remove <think> tags and their content
+    response = response.replace(/<think>[\s\S]*?<\/think>/gi, '');
+
+    // Remove any remaining XML-like tags
+    response = response.replace(/<[^>]*>/g, '');
+
+    // Clean up extra whitespace
+    response = response.replace(/\s+/g, ' ').trim();
+
+    return response;
   }
 
   private getFallbackResponse(): string {
