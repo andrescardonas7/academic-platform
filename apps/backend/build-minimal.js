@@ -14,6 +14,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const API_PREFIX = ''; // Force empty prefix to ensure direct /api routes
 
 // Middleware
 app.use(helmet({
@@ -22,10 +23,26 @@ app.use(helmet({
 }));
 app.use(compression());
 app.use(cors({
-  origin: [
-    'https://academic-platform.vercel.app',
-    'http://localhost:3000'
-  ],
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    // List of allowed origins
+    const allowedOrigins = [
+      'https://academic-platform.vercel.app',
+      'https://academic-frontend.vercel.app',
+      'https://academic-platform-git-main.vercel.app',
+      'http://localhost:3000'
+    ];
+
+    // Check if the origin is allowed
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      console.log('Blocked origin:', origin);
+      callback(null, true); // Temporarily allow all origins for debugging
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key']
@@ -41,6 +58,23 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     version: '1.0.0',
+  });
+});
+
+// Debug endpoint to check request information
+app.get('/debug', (req, res) => {
+  res.status(200).json({
+    headers: req.headers,
+    origin: req.headers.origin || 'No origin header',
+    host: req.headers.host,
+    url: req.url,
+    method: req.method,
+    env: {
+      NODE_ENV: process.env.NODE_ENV || 'not set',
+      PORT: process.env.PORT || 'not set',
+      CORS_ORIGIN: process.env.CORS_ORIGIN || 'not set'
+    },
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -98,10 +132,19 @@ app.post('/api/chatbot/message', (req, res) => {
 // Start server
 const startServer = async () => {
   try {
+    // Log all registered routes
+    console.log('📝 Registered routes:');
+    app._router.stack.forEach(function(r) {
+      if (r.route && r.route.path) {
+        console.log(\`\${Object.keys(r.route.methods)[0].toUpperCase()} \${r.route.path}\`);
+      }
+    });
+
     app.listen(PORT, () => {
       console.log(\`🚀 Backend server running on port \${PORT}\`);
       console.log(\`📊 Environment: \${process.env.NODE_ENV || 'development'}\`);
       console.log(\`🔗 Health check: http://localhost:\${PORT}/health\`);
+      console.log(\`🔍 API endpoints: http://localhost:\${PORT}/api/search and http://localhost:\${PORT}/api/search/filters\`);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
