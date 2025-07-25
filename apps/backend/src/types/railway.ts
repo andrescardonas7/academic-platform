@@ -1,7 +1,7 @@
 // Basic types for Railway deployment (without workspace dependencies)
 
 export interface AcademicProgram {
-  id: number;
+  Id: string;  // Changed from id: number to match Supabase column
   carrera: string;
   institucion: string;
   modalidad: string;
@@ -11,6 +11,8 @@ export interface AcademicProgram {
   clasificacion?: string;
   nivel_programa?: string;
   enlace?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface SearchFilters {

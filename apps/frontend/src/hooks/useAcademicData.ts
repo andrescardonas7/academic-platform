@@ -32,13 +32,6 @@ export function useAcademicData(): UseAcademicDataReturn {
         apiClient.search.filters(),
       ]);
 
-      console.log('🔍 API Responses:', {
-        programsResponse,
-        filtersResponse,
-        programsData: (programsResponse as { data?: AcademicProgram[] }).data,
-        filtersData: (filtersResponse as { data?: FilterOptions }).data
-      });
-
       setPrograms(
         (programsResponse as { data?: AcademicProgram[] }).data || []
       );
