@@ -1,6 +1,6 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-// Forzar la API key correcta directamente
-const API_KEY = 'academic-platform-dev-key';
+// Usar la API key desde las variables de entorno
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 console.log('🔍 Frontend API Config:', {
   API_BASE_URL,
@@ -25,14 +25,16 @@ async function request<T>(
   options: RequestInit = {}
 ): Promise<T> {
   // Ensure baseURL ends with a slash if endpoint starts with a slash
-  const baseUrl = api.baseURL.endsWith('/') || endpoint.startsWith('/')
-    ? api.baseURL
-    : `${api.baseURL}/`;
+  const baseUrl =
+    api.baseURL.endsWith('/') || endpoint.startsWith('/')
+      ? api.baseURL
+      : `${api.baseURL}/`;
 
   // Ensure endpoint doesn't start with a slash if baseURL ends with one
-  const cleanEndpoint = baseUrl.endsWith('/') && endpoint.startsWith('/')
-    ? endpoint.substring(1)
-    : endpoint;
+  const cleanEndpoint =
+    baseUrl.endsWith('/') && endpoint.startsWith('/')
+      ? endpoint.substring(1)
+      : endpoint;
 
   const url = `${baseUrl}${cleanEndpoint}`;
 
