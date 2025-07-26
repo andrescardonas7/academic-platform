@@ -1,72 +1,15 @@
-# Railway ignore - Frontend deployment
-apps/frontend/
-apps/frontend/**
-
-# Development files
-.env
-.env.local
-.env.*.local
-
-# Build artifacts
-dist/
-build/
-.next/
-
-# Dependencies
+# Railway ignore file
 node_modules/
-
-# Logs
-*.log
-npm-debug.log*
-pnpm-debug.log*
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Testing
-coverage/
-*.lcov
-
-# Documentation
-docs/
-*.md
-README.md
-
-# Scripts
-scripts/
-
-# Packages not needed for backend
-packages/
-packages/api-client/
-packages/ui/
-packages/eslint-config/
-packages/tsconfig/
-packages/shared-types/
-packages/database/
-
-# Database files
-*.db
-*.sqlite
-*.sql
-
-# Cache
-.cache/
-.turbo/
-
-# Git
 .git/
-.gitignore
-
-# Root files
-pnpm-lock.yaml
-pnpm-workspace.yaml
-turbo.json
-jest.config.js
-jest.setup.js
-eslint.config.mjs
-sonar-project.properties
+.env.local
+.env.development
+*.log
+.DS_Store
+.vscode/
+.cursor/
+apps/frontend/
+packages/
+docs/
+scripts/
+*.md
+!apps/backend/

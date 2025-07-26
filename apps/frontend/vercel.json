@@ -5,7 +5,11 @@
   "framework": "nextjs",
   "regions": ["iad1"],
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://academic-platform-production.up.railway.app/api",
+    "SUPABASE_URL": "@supabase-url",
+    "SUPABASE_ANON_KEY": "@supabase-anon-key",
+    "API_KEY": "@api-key",
+    "CEREBRAS_API_KEY": "@cerebras-api-key",
+    "NEXT_PUBLIC_API_URL": "/api",
     "NEXT_PUBLIC_API_KEY": "@api-key",
     "NEXT_PUBLIC_APP_NAME": "Academic Platform"
   }

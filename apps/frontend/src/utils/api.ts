@@ -1,5 +1,7 @@
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+  process.env.NODE_ENV === 'production'
+    ? '/api' // Use Vercel API routes in production
+    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 // Usar la API key desde las= variables de entorno
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
