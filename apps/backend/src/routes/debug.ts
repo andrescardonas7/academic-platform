@@ -51,10 +51,18 @@ router.get('/db-status', async (req, res) => {
       });
     }
 
-    // Get table structure
-    const { data: tableInfo, error: tableError } = await supabase
-      .rpc('get_table_info', { table_name: 'oferta_academica' })
-      .catch(() => ({ data: null, error: { message: 'RPC not available' } }));
+    // Get table structure via RPC if available (optional)
+    let tableInfo: any = null;
+    let tableError: any = null;
+    try {
+      const rpcRes = await supabase.rpc('get_table_info', {
+        table_name: 'oferta_academica',
+      });
+      tableInfo = rpcRes.data;
+      tableError = rpcRes.error;
+    } catch (err) {
+      tableError = { message: 'RPC not available' } as any;
+    }
 
     console.log('✅ Database status check completed');
 
