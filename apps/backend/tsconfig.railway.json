@@ -16,7 +16,11 @@
     "declaration": false,
     "sourceMap": false,
     "removeComments": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "types": []
   },
   "include": ["src/**/*", "src/**/*.json"],
   "exclude": [

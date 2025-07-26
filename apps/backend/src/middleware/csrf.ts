@@ -36,7 +36,7 @@ export const csrfProtection = (
   }
 
   const token = req.headers['x-csrf-token'] as string;
-  const sessionToken = req.session?.csrfToken;
+  const sessionToken = (req.session as any)?.csrfToken;
 
   if (!token || !sessionToken || token !== sessionToken) {
     return res.status(403).json({
@@ -60,7 +60,7 @@ export const getCSRFToken = (req: CSRFRequest, res: Response) => {
     });
   }
 
-  req.session.csrfToken = token;
+  (req.session as any).csrfToken = token;
 
   res.json({
     success: true,
