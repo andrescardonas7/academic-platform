@@ -9,6 +9,7 @@ WORKDIR /app
 # Copy package files
 COPY apps/backend/package.railway.json ./package.json
 COPY apps/backend/build-minimal.js ./build-minimal.js
+COPY apps/backend/tsconfig.railway.json ./tsconfig.railway.json
 
 # Install dependencies
 RUN pnpm install --prod --frozen-lockfile=false
