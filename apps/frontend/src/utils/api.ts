@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 // Usar la API key desde las= variables de entorno
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
@@ -79,10 +80,10 @@ export const apiClient = {
           searchParams.append(key, String(value));
         }
       });
-      return request(`/api/search?${searchParams.toString()}`);
+      return request(`/search?${searchParams.toString()}`);
     },
-    filters: () => request('/api/search/filters'),
-    byId: (id: number) => request(`/api/search/${id}`),
+    filters: () => request('/search/filters'),
+    byId: (id: number) => request(`/search/${id}`),
   },
 
   // Careers endpoints
@@ -94,9 +95,9 @@ export const apiClient = {
           searchParams.append(key, String(value));
         }
       });
-      return request(`/api/careers?${searchParams.toString()}`);
+      return request(`/careers?${searchParams.toString()}`);
     },
-    byId: (id: number) => request(`/api/careers/${id}`),
+    byId: (id: number) => request(`/careers/${id}`),
     byInstitution: (
       institution: string,
       params: Record<string, unknown> = {}
@@ -108,7 +109,7 @@ export const apiClient = {
         }
       });
       return request(
-        `/api/careers/institution/${encodeURIComponent(institution)}?${searchParams.toString()}`
+        `/careers/institution/${encodeURIComponent(institution)}?${searchParams.toString()}`
       );
     },
   },
@@ -122,24 +123,24 @@ export const apiClient = {
           searchParams.append(key, String(value));
         }
       });
-      return request(`/api/institutions?${searchParams.toString()}`);
+      return request(`/institutions?${searchParams.toString()}`);
     },
     byName: (name: string) =>
-      request(`/api/institutions/${encodeURIComponent(name)}`),
+      request(`/institutions/${encodeURIComponent(name)}`),
   },
 
   // Chatbot endpoints
   chatbot: {
     sendMessage: (message: string, context?: string) =>
-      request('/api/chatbot/message', {
+      request('/chatbot/message', {
         method: 'POST',
         body: JSON.stringify({ message, context }),
       }),
-    health: () => request('/api/chatbot/health'),
+    health: () => request('/chatbot/health'),
   },
 
   // Health check
-  health: () => request('/api/health'),
+  health: () => request('/health'),
 };
 
 export default apiClient;

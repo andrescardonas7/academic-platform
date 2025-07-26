@@ -11,6 +11,9 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_API_URL:
       process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+    NEXT_PUBLIC_API_KEY:
+      process.env.NEXT_PUBLIC_API_KEY ||
+      'a05a30d9a9334856e510716d590db51e9b1cd9508459cc0891b162e3f6fa814d',
     NEXT_PUBLIC_APP_URL:
       process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   },

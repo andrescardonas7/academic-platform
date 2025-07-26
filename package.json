@@ -34,7 +34,8 @@
     "release:patch": "node scripts/release.js patch",
     "release:minor": "node scripts/release.js minor",
     "release:major": "node scripts/release.js major",
-    "changelog": "node scripts/changelog.js"
+    "changelog": "node scripts/changelog.js",
+    "test:db": "node temp-test-db.js"
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",

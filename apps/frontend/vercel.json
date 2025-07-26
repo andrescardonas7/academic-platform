@@ -5,7 +5,8 @@
   "framework": "nextjs",
   "regions": ["iad1"],
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://academic-platform-production.up.railway.app",
-    "NEXT_PUBLIC_API_KEY": "@api-key"
+    "NEXT_PUBLIC_API_URL": "https://academic-platform-production.up.railway.app/api",
+    "NEXT_PUBLIC_API_KEY": "@api-key",
+    "NEXT_PUBLIC_APP_NAME": "Academic Platform"
   }
 }
