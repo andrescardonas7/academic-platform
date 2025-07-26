@@ -155,10 +155,7 @@ Los datos SÍ están en el contexto. Revisa TODO antes de responder.`;
     );
 
     let result = (chatCompletion.choices as any)?.[0]?.message?.content || '';
-    console.log(
-      '📊 Tokens used:',
-      (chatCompletion.usage as any)?.total_tokens
-    );
+    console.log('📊 Tokens used:', (chatCompletion.usage as any)?.total_tokens);
 
     // Clean up any unwanted internal process text
     result = this.cleanResponse(result);

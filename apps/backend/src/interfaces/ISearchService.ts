@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
 // Interface Segregation Principle - Clean interfaces
-import {
-  FilterOptions,
-  SearchFilters,
-  SearchResult,
-} from '../types/railway';
+import { FilterOptions, SearchFilters, SearchResult } from '../types/railway';
 
 export interface ISearchService {
   searchOfferings(filters?: SearchFilters): Promise<SearchResult>;

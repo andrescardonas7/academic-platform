@@ -1,6 +1,6 @@
 // Single Responsibility - Only generates context
-import { AcademicProgram } from '../types/railway';
 import { IContextGenerator } from '../interfaces/IChatService';
+import { AcademicProgram } from '../types/railway';
 
 export class ContextGenerator implements IContextGenerator {
   generateAcademicContext(academicData: AcademicProgram[]): string {
@@ -28,9 +28,13 @@ export class ContextGenerator implements IContextGenerator {
     const instituciones = [...new Set(programs.map((p) => p.institucion))].sort(
       (a, b) => a.localeCompare(b, 'es')
     );
-    const niveles = [...new Set(programs.map((p) => p.nivel_programa).filter((nivel): nivel is string => Boolean(nivel)))].sort(
-      (a, b) => a.localeCompare(b, 'es')
-    );
+    const niveles = [
+      ...new Set(
+        programs
+          .map((p) => p.nivel_programa)
+          .filter((nivel): nivel is string => Boolean(nivel))
+      ),
+    ].sort((a, b) => a.localeCompare(b, 'es'));
 
     // SonarQube: Count programs by category for better context
     const categoryCounts = this.getCategoryCounts(programs);

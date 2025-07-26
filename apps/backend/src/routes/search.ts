@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { supabase } from '../config/supabase';
 import { rateLimit, validateApiKey } from '../middleware/auth';
 import { NotFoundError } from '../middleware/errorHandler';
 import { validateSearchQuery } from '../middleware/validation';
@@ -28,12 +27,15 @@ router.get('/', validateSearchQuery, async (req, res, next) => {
       sortOrder: (req.query.sortOrder as 'asc' | 'desc') || 'asc',
     };
 
-    console.log('🔍 [ROUTE] About to call searchService.searchOfferings with filters:', filters);
+    console.log(
+      '🔍 [ROUTE] About to call searchService.searchOfferings with filters:',
+      filters
+    );
     const result = await searchService.searchOfferings(filters);
-    console.log('🔍 [ROUTE] SearchService returned:', { 
+    console.log('🔍 [ROUTE] SearchService returned:', {
       dataLength: result.data?.length || 0,
       total: result.pagination?.total || 0,
-      hasData: !!result.data?.length 
+      hasData: !!result.data?.length,
     });
 
     res.json({
@@ -63,12 +65,15 @@ router.get('/offerings', validateSearchQuery, async (req, res, next) => {
       sortOrder: (req.query.sortOrder as 'asc' | 'desc') || 'asc',
     };
 
-    console.log('🔍 [ROUTE] About to call searchService.searchOfferings with filters:', filters);
+    console.log(
+      '🔍 [ROUTE] About to call searchService.searchOfferings with filters:',
+      filters
+    );
     const result = await searchService.searchOfferings(filters);
-    console.log('🔍 [ROUTE] SearchService returned:', { 
+    console.log('🔍 [ROUTE] SearchService returned:', {
       dataLength: result.data?.length || 0,
       total: result.pagination?.total || 0,
-      hasData: !!result.data?.length 
+      hasData: !!result.data?.length,
     });
 
     res.json({

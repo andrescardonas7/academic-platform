@@ -41,7 +41,7 @@ export class SearchService implements ISearchService {
         tableName: this.tableName,
         filters,
         limit,
-        offset
+        offset,
       });
 
       const result = await query;
@@ -58,11 +58,11 @@ export class SearchService implements ISearchService {
       const { data, count } = result;
 
       // Debug log for Railway
-      console.log('🔍 SearchService - Query result:', { 
-        dataLength: data?.length || 0, 
-        count, 
+      console.log('🔍 SearchService - Query result:', {
+        dataLength: data?.length || 0,
+        count,
         hasData: !!data?.length,
-        resultKeys: Object.keys(result)
+        resultKeys: Object.keys(result),
       });
 
       return this.buildSearchResult(
