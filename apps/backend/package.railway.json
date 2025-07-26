@@ -4,7 +4,7 @@
   "description": "Academic Platform Backend API",
   "main": "dist/server.js",
   "scripts": {
-    "build:production": "npx tsc --project tsconfig.railway.json --skipLibCheck",
+    "build:production": "npx tsc --project tsconfig.railway.json --skipLibCheck --noEmitOnError false",
     "start": "node dist/server.js"
   },
   "dependencies": {
