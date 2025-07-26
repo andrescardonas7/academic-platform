@@ -1,33 +1,12 @@
-# --- apps/backend/Dockerfile (nuevo) ---
 FROM node:18-alpine
 
-# 1. Gestor de paquetes
+# Install pnpm globally
 RUN npm i -g pnpm
 
-# 2. Workspace
+# Set working directory
 WORKDIR /app
 
-# 3. Copiamos package.json COMPLETO y lockfile
-COPY apps/backend/package.json ./package.json
-COPY pnpm-lock.yaml ./pnpm-lock.yaml
-
-# 4. Instalamos TODAS las dependencias necesarias para runtime
-RUN pnpm install --prod --frozen-lockfile
-
-# 5. Copiamos el resto del código
-COPY apps/backend/tsconfig.json ./tsconfig.json
-COPY apps/backend/src ./src
-
-# 6. Compilamos
-RUN npx tsc --project tsconfig.json --skipLibCheck
-
-# 7. Usuario sin privilegios
-RUN addgroup -S app && adduser -S app -G app
-USER app
-
-EXPOSE 3001
-HEALTHCHECK --interval=30s --timeout=3s CMD wget -qO- http://localhost:3001/health || exit 1
-CMD ["node", "dist/server.js"]
+# Copy package.json and lockfile
 COPY apps/backend/package.json ./package.json
 COPY pnpm-lock.yaml ./pnpm-lock.yaml
 
