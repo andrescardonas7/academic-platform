@@ -3,10 +3,10 @@ import { ISearchService } from '../interfaces/ISearchService';
 import {
   AcademicProgram,
   FilterOptions,
+  PAGINATION,
   SearchFilters,
   SearchResult,
-  PAGINATION,
-} from '@academic/shared-types';
+} from '../types/railway';
 import { AppError, ErrorHandler } from '../utils/ErrorHandler';
 
 export class SearchService implements ISearchService {
