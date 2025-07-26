@@ -8,6 +8,8 @@ console.log('🔍 Frontend API Config:', {
   fromEnv: process.env.NEXT_PUBLIC_API_KEY
     ? `"${process.env.NEXT_PUBLIC_API_KEY}"`
     : 'undefined',
+  NODE_ENV: process.env.NODE_ENV,
+  isClient: typeof window !== 'undefined',
 });
 
 // Create axios instance with default configuration

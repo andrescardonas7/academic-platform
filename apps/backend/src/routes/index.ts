@@ -3,6 +3,7 @@ import careersRoutes from './careers';
 import chatbotRoutes from './chatbot';
 import institutionsRoutes from './institutions';
 import searchRoutes from './search';
+import debugRoutes from './debug';
 
 const router = Router();
 
@@ -11,6 +12,7 @@ router.use('/search', searchRoutes);
 router.use('/careers', careersRoutes);
 router.use('/institutions', institutionsRoutes);
 router.use('/chatbot', chatbotRoutes);
+router.use('/debug', debugRoutes);
 
 // Health check endpoint (no authentication required)
 router.get('/health', (req, res) => {
@@ -19,6 +21,10 @@ router.get('/health', (req, res) => {
     message: 'Academic Platform API is running',
     timestamp: new Date().toISOString(),
     version: '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
+    cors_origin: process.env.CORS_ORIGIN || 'not set',
+    api_prefix: process.env.API_PREFIX || '/api',
+    has_api_key: !!process.env.API_KEY,
   });
 });
 
