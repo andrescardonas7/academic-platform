@@ -28,7 +28,48 @@ router.get('/', validateSearchQuery, async (req, res, next) => {
       sortOrder: (req.query.sortOrder as 'asc' | 'desc') || 'asc',
     };
 
+    console.log('🔍 [ROUTE] About to call searchService.searchOfferings with filters:', filters);
     const result = await searchService.searchOfferings(filters);
+    console.log('🔍 [ROUTE] SearchService returned:', { 
+      dataLength: result.data?.length || 0,
+      total: result.pagination?.total || 0,
+      hasData: !!result.data?.length 
+    });
+
+    res.json({
+      success: true,
+      data: result.data,
+      pagination: result.pagination,
+      filters: result.filters,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// GET /api/search/offerings - Search offerings (alias for root search)
+router.get('/offerings', validateSearchQuery, async (req, res, next) => {
+  try {
+    console.log('GET /api/search/offerings params:', req.query); // Log de depuración
+    const filters = {
+      q: req.query.q as string,
+      modalidad: req.query.modalidad as string,
+      institucion: req.query.institucion as string,
+      nivel: req.query.nivel as string,
+      area: req.query.area as string,
+      page: parseInt(req.query.page as string) || 1,
+      limit: parseInt(req.query.limit as string) || 50,
+      sortBy: (req.query.sortBy as string) || 'nombre',
+      sortOrder: (req.query.sortOrder as 'asc' | 'desc') || 'asc',
+    };
+
+    console.log('🔍 [ROUTE] About to call searchService.searchOfferings with filters:', filters);
+    const result = await searchService.searchOfferings(filters);
+    console.log('🔍 [ROUTE] SearchService returned:', { 
+      dataLength: result.data?.length || 0,
+      total: result.pagination?.total || 0,
+      hasData: !!result.data?.length 
+    });
 
     res.json({
       success: true,
