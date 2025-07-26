@@ -135,8 +135,11 @@ app.use(errorHandler);
 // Start server
 const startServer = async () => {
   try {
-    // Connect to database
-    await connectDatabase();
+    try {
+      await connectDatabase();
+    } catch (dbErr) {
+      console.error('⚠️ Database connection failed, continuing without DB:', dbErr);
+    }
 
     app.listen(PORT, () => {
       console.log(`🚀 Backend server running on port ${PORT}`);
