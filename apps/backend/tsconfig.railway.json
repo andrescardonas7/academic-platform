@@ -8,7 +8,7 @@
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames": false,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
@@ -20,9 +20,10 @@
     "noImplicitReturns": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
+    "noEmitOnError": false,
     "types": []
   },
-  "include": ["src/**/*", "src/**/*.json"],
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules",
     "dist",

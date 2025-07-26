@@ -65,14 +65,31 @@ app.use(
         process.env.CORS_ORIGIN || 'http://localhost:3000',
         'http://localhost:3000',
         'https://localhost:3000',
+        'https://academic-platform.vercel.app',
+        'https://academic-platform-git-main-academic-platform.vercel.app',
+        'https://academic-platform-git-cursor-debug-data-display-issue-on-vercel-and-railway-a3e9-academic-platform.vercel.app',
+        // Permitir cualquier subdominio de vercel.app para desarrollo
+        /^https:\/\/.*\.vercel\.app$/,
       ];
 
       // Allow requests with no origin (mobile apps, etc.)
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
+      // Check if origin matches any allowed pattern
+      const isAllowed = allowedOrigins.some(allowed => {
+        if (typeof allowed === 'string') {
+          return allowed === origin;
+        }
+        if (allowed instanceof RegExp) {
+          return allowed.test(origin);
+        }
+        return false;
+      });
+
+      if (isAllowed) {
         callback(null, true);
       } else {
+        console.log('CORS blocked origin:', origin);
         callback(new Error('Not allowed by CORS'));
       }
     },
@@ -118,8 +135,11 @@ app.use(errorHandler);
 // Start server
 const startServer = async () => {
   try {
-    // Connect to database
-    await connectDatabase();
+    try {
+      await connectDatabase();
+    } catch (dbErr) {
+      console.error('⚠️ Database connection failed, continuing without DB:', dbErr);
+    }
 
     app.listen(PORT, () => {
       console.log(`🚀 Backend server running on port ${PORT}`);

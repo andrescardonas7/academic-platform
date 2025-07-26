@@ -44,22 +44,25 @@ export class SearchService implements ISearchService {
         offset
       });
 
-      const { data, error, count } = await query;
+      const result = await query;
 
-      if (error) {
-        console.error('❌ Supabase query error:', error);
+      if (result.error) {
+        console.error('❌ Supabase query error:', result.error);
         throw new AppError(
-          `Database error: ${error.message}`,
+          `Database error: ${result.error.message}`,
           500,
           'DATABASE_ERROR'
         );
       }
 
+      const { data, count } = result;
+
       // Debug log for Railway
       console.log('🔍 SearchService - Query result:', { 
         dataLength: data?.length || 0, 
         count, 
-        hasData: !!data 
+        hasData: !!data?.length,
+        resultKeys: Object.keys(result)
       });
 
       return this.buildSearchResult(
@@ -87,19 +90,20 @@ export class SearchService implements ISearchService {
         return this.filterOptionsCache;
       }
 
-      const { data, error } = await supabase
+      const result = await supabase
         .from(this.tableName)
         .select('modalidad, institucion, clasificacion, nivel_programa')
         .limit(PAGINATION.MAX_LIMIT);
 
-      if (error) {
+      if (result.error) {
         throw new AppError(
-          `Database error: ${error.message}`,
+          `Database error: ${result.error.message}`,
           500,
           'DATABASE_ERROR'
         );
       }
 
+      const { data } = result;
       const filterOptions = this.extractUniqueValues(data || []);
 
       // Update cache
@@ -226,17 +230,17 @@ export class SearchService implements ISearchService {
 
   async getOfferingById(id: number): Promise<AcademicProgram> {
     try {
-      const { data, error } = await supabase
+      const result = await supabase
         .from(this.tableName)
         .select('*')
         .eq('id', id)
         .single();
 
-      if (error || !data) {
+      if (result.error || !result.data) {
         throw new AppError('Offering not found', 404, 'NOT_FOUND');
       }
 
-      return data;
+      return result.data;
     } catch (error) {
       const appError = ErrorHandler.handle(error);
       ErrorHandler.logError(appError, 'SearchService.getOfferingById');
