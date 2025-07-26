@@ -1,13 +1,12 @@
-// Refactored SearchService - SOLID principles
 import { supabase } from '../config/supabase';
 import { ISearchService } from '../interfaces/ISearchService';
 import {
   AcademicProgram,
   FilterOptions,
-  PAGINATION,
   SearchFilters,
   SearchResult,
-} from '../types/railway';
+  PAGINATION,
+} from '@academic/shared-types';
 import { AppError, ErrorHandler } from '../utils/ErrorHandler';
 
 export class SearchService implements ISearchService {
