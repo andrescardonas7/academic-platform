@@ -4,6 +4,7 @@ import chatbotRoutes from './chatbot';
 import institutionsRoutes from './institutions';
 import searchRoutes from './search';
 import debugRoutes from './debug';
+import testDbRoutes from './test-db';
 
 const router = Router();
 
@@ -13,6 +14,7 @@ router.use('/careers', careersRoutes);
 router.use('/institutions', institutionsRoutes);
 router.use('/chatbot', chatbotRoutes);
 router.use('/debug', debugRoutes);
+router.use('/test-db', testDbRoutes);
 
 // Health check endpoint (no authentication required)
 router.get('/health', (req, res) => {
