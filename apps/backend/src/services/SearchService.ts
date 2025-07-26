@@ -13,7 +13,7 @@ export class SearchService implements ISearchService {
   private readonly tableName = 'oferta_academica';
   private filterOptionsCache: FilterOptions | null = null;
   private filterOptionsCacheTime: number = 0;
-  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+  private readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes cache
 
   async searchOfferings(filters: SearchFilters = {}): Promise<SearchResult> {
     try {
@@ -36,15 +36,31 @@ export class SearchService implements ISearchService {
       // Apply pagination
       query = query.range(offset, offset + limit - 1);
 
+      // Debug: Log query details for Railway
+      console.log('🔍 SearchService - About to execute query:', {
+        tableName: this.tableName,
+        filters,
+        limit,
+        offset
+      });
+
       const { data, error, count } = await query;
 
       if (error) {
+        console.error('❌ Supabase query error:', error);
         throw new AppError(
           `Database error: ${error.message}`,
           500,
           'DATABASE_ERROR'
         );
       }
+
+      // Debug log for Railway
+      console.log('🔍 SearchService - Query result:', { 
+        dataLength: data?.length || 0, 
+        count, 
+        hasData: !!data 
+      });
 
       return this.buildSearchResult(
         data || [],
