@@ -2,10 +2,10 @@
   "name": "academic-backend",
   "version": "1.0.0",
   "description": "Academic Platform Backend API",
-  "main": "dist/server.minimal.js",
+  "main": "dist/server.js",
   "scripts": {
-    "build:production": "node build-minimal.js",
-    "start": "node dist/server.minimal.js"
+    "build:production": "npx tsc --project tsconfig.railway.json",
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.51.0",
