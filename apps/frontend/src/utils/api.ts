@@ -1,5 +1,5 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-// Usar la API key desde las variables de entorno
+// Usar la API key desde las= variables de entorno
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
 console.log('🔍 Frontend API Config:', {

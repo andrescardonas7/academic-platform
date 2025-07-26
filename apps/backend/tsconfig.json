@@ -17,6 +17,7 @@
     "sourceMap": false,
     "removeComments": true,
     "noImplicitAny": false,
+    "types": [],
     "paths": {
       "@/*": ["./src/*"],
       "@/types/*": ["./src/types/*"],
@@ -28,6 +29,18 @@
       "@/config/*": ["./src/config/*"]
     }
   },
-  "include": ["src/**/*", "src/**/*.json"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/__tests__/**/*",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "jest.config.js",
+    "vitest.config.ts",
+    "*.test.*",
+    "*.spec.*"
+  ]
 }
