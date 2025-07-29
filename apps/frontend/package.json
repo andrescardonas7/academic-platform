@@ -21,6 +21,8 @@
     "vercel-build": "pnpm install && pnpm build:production"
   },
   "dependencies": {
+    "@academic/api-client": "workspace:*",
+    "@academic/shared-types": "workspace:*",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.3.2",
     "@supabase/supabase-js": "^2.39.0",

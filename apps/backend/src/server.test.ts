@@ -1,5 +1,5 @@
 /* eslint-env jest */
-/* global jest, describe, it, expect, beforeEach, afterEach */
+/* global describe, it, expect */
 
 import request from 'supertest';
 import app from './server';

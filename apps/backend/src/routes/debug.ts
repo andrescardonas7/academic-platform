@@ -7,9 +7,9 @@ const router = Router();
 router.get('/db-status', async (req, res) => {
   try {
     console.log('🔍 Debug: Checking database status...');
-    
+
     // Check if we can connect to the database
-    const { data: connectionTest, error: connectionError } = await supabase
+    const { error: connectionError } = await supabase
       .from('oferta_academica')
       .select('count', { count: 'exact', head: true });
 
@@ -52,16 +52,14 @@ router.get('/db-status', async (req, res) => {
     }
 
     // Get table structure via RPC if available (optional)
-    let tableInfo: any = null;
-    let tableError: any = null;
+    let tableInfo: unknown = null;
     try {
       const rpcRes = await supabase.rpc('get_table_info', {
         table_name: 'oferta_academica',
       });
       tableInfo = rpcRes.data;
-      tableError = rpcRes.error;
     } catch (err) {
-      tableError = { message: 'RPC not available' } as any;
+      tableInfo = 'RPC not available';
     }
 
     console.log('✅ Database status check completed');
@@ -97,7 +95,9 @@ router.get('/env-status', (req, res) => {
     environment: {
       NODE_ENV: process.env.NODE_ENV || 'not set',
       SUPABASE_URL: process.env.SUPABASE_URL ? 'set' : 'not set',
-      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'set' : 'not set',
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY
+        ? 'set'
+        : 'not set',
       API_KEY: process.env.API_KEY ? 'set' : 'not set',
       CORS_ORIGIN: process.env.CORS_ORIGIN || 'not set',
       PORT: process.env.PORT || 'not set',

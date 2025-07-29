@@ -1,10 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Supabase configuration
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+// Supabase configuration with validation
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+// Only create client if environment variables are available
+const supabase =
+  supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 interface FilterOptions {
   modalidades: string[];
@@ -28,6 +31,20 @@ function validateApiKey(request: NextRequest): boolean {
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if Supabase is configured
+    if (!supabase) {
+      console.error(
+        '❌ Supabase not configured - missing environment variables'
+      );
+      return NextResponse.json(
+        {
+          error: 'Service unavailable',
+          message: 'Database service not configured',
+        },
+        { status: 503 }
+      );
+    }
+
     // Validate API key
     if (!validateApiKey(request)) {
       return NextResponse.json(

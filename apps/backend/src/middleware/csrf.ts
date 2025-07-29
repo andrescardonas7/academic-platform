@@ -1,9 +1,13 @@
 import crypto from 'crypto';
 import { NextFunction, Request, Response } from 'express';
+import { Session } from 'express-session';
 
 // Simple CSRF protection middleware
-export interface CSRFRequest extends Request {
+export interface CSRFRequest extends Omit<Request, 'session'> {
   csrfToken?: string;
+  session?: Session & {
+    csrfToken?: string;
+  };
 }
 
 // Generate CSRF token
@@ -37,7 +41,7 @@ export const csrfProtection = (
   }
 
   const token = req.headers['x-csrf-token'] as string;
-  const sessionToken = (req.session as any)?.csrfToken;
+  const sessionToken = req.session?.csrfToken;
 
   if (!token || !sessionToken || token !== sessionToken) {
     return res.status(403).json({
@@ -61,7 +65,7 @@ export const getCSRFToken = (req: CSRFRequest, res: Response) => {
     });
   }
 
-  (req.session as any).csrfToken = token;
+  req.session.csrfToken = token;
 
   res.json({
     success: true,

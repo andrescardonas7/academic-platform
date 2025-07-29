@@ -7,8 +7,8 @@ import { SearchService } from '../SearchService';
 
 // Mock helpers to reduce nesting
 const createMockResponse = (
-  data: any,
-  error: any = null,
+  data: unknown,
+  error: unknown = null,
   count: number = 0
 ) => ({
   data,
@@ -16,18 +16,18 @@ const createMockResponse = (
   count,
 });
 
-const createMockRange = (response: any) =>
+const createMockRange = (response: unknown) =>
   jest.fn(() => Promise.resolve(response));
 
-const createMockSelect = (rangeResponse: any) =>
+const createMockSelect = (rangeResponse: unknown) =>
   jest.fn(() => ({
     range: createMockRange(rangeResponse),
   }));
 
-const createMockLimit = (response: any) =>
+const createMockLimit = (response: unknown) =>
   jest.fn(() => Promise.resolve(response));
 
-const createMockSelectWithLimit = (limitResponse: any) =>
+const createMockSelectWithLimit = (limitResponse: unknown) =>
   jest.fn(() => ({
     limit: createMockLimit(limitResponse),
   }));
@@ -71,7 +71,7 @@ describe('SearchService', () => {
 
       mockSupabaseFrom.mockReturnValue({
         select: mockSelect,
-      } as any);
+      } as unknown);
 
       const result = await searchService.searchOfferings({
         page: 1,

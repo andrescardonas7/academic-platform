@@ -177,8 +177,9 @@ Responde de forma rápida y precisa.`;
       }
     );
 
-    let result = (chatCompletion.choices as any)?.[0]?.message?.content || '';
-    console.log('📊 Tokens used:', (chatCompletion.usage as any)?.total_tokens);
+    const firstChoice = (chatCompletion.choices as unknown[])?.[0];
+    let result = (firstChoice as { message?: { content?: string } })?.message?.content || '';
+    console.log('📊 Tokens used:', (chatCompletion.usage as { total_tokens?: number })?.total_tokens);
 
     // Clean up any unwanted internal process text
     result = this.cleanResponse(result);
