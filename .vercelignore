@@ -1,0 +1,44 @@
+# Vercel ignore file - exclude unnecessary files from deployment
+
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs (will be rebuilt)
+dist
+.next
+.turbo
+
+# Development files
+*.log
+.env.local
+.env.development
+
+# Test files
+**/*.test.*
+**/*.spec.*
+__tests__
+coverage
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp
+temp

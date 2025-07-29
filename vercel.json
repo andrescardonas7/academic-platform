@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "apps/backend/api/index.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "apps/frontend/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "apps/backend/api/index.ts"
+    },
+    {
+      "src": "/health",
+      "dest": "apps/backend/api/index.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "apps/frontend/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "VERCEL": "1"
+  },
+  "functions": {
+    "apps/backend/api/index.ts": {
+      "maxDuration": 30
+    }
+  },
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm run vercel-build"
+}

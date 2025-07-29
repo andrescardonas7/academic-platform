@@ -9,7 +9,7 @@ import {
   User,
   X,
 } from 'lucide-react';
-import { KeyboardEvent, useEffect, useRef, useState } from 'react';
+import { KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { apiClient } from '../../utils/api';
 
 interface ChatMessage {
@@ -45,7 +45,7 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
   };
 
   // KISS: Scroll to bot response start for better UX
-  const scrollToBotResponse = () => {
+  const scrollToBotResponse = useCallback(() => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && !lastMessage.isUser) {
       // Small delay to ensure DOM is updated
@@ -57,7 +57,7 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
         }
       }, 100);
     }
-  };
+  }, [messages]);
 
   useEffect(() => {
     if (messages.length > 1) {
@@ -65,7 +65,7 @@ export function ChatbotWidget({ className = '' }: ChatbotWidgetProps) {
     } else {
       scrollToBottom();
     }
-  }, [messages]);
+  }, [messages, scrollToBotResponse]);
 
   useEffect(() => {
     if (isOpen && inputRef.current) {

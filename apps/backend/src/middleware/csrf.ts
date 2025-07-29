@@ -61,7 +61,7 @@ export const getCSRFToken = (req: CSRFRequest, res: Response) => {
     });
   }
 
-  (req.session as unknown).csrfToken = token;
+  (req.session as any).csrfToken = token;
 
   res.json({
     success: true,
