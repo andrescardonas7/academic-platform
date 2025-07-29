@@ -2,8 +2,10 @@ import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Supabase configuration with validation
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+const supabaseUrl =
+  process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+const supabaseKey =
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
 
 // Only create client if environment variables are available
 const supabase =
@@ -70,18 +72,23 @@ export async function POST(request: NextRequest) {
 
     // Validate Cerebras API key
     if (!process.env.CEREBRAS_API_KEY) {
+      console.error('❌ CEREBRAS_API_KEY not configured');
       return NextResponse.json(
         {
           error: 'Service Unavailable',
-          message: 'Chatbot service not configured',
+          message: 'Chatbot service not configured - missing CEREBRAS_API_KEY',
         },
         { status: 503 }
       );
     }
 
+    console.log('✅ Cerebras API key configured, proceeding with request');
+
     // Get academic context from database
     const academicContext = await getAcademicContext(message);
     const systemPrompt = buildSystemPrompt(academicContext);
+
+    console.log('✅ Academic context retrieved, calling Cerebras API');
 
     // Call Cerebras API
     const response = await callCerebrasAPI(message, systemPrompt);
@@ -97,6 +104,7 @@ export async function POST(request: NextRequest) {
       {
         error: 'Internal server error',
         message: 'An unexpected error occurred',
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
@@ -186,6 +194,8 @@ async function callCerebrasAPI(
   systemPrompt: string
 ): Promise<string> {
   try {
+    console.log('🔄 Calling Cerebras API...');
+
     const response = await fetch(
       'https://api.cerebras.ai/v1/chat/completions',
       {
@@ -206,17 +216,25 @@ async function callCerebrasAPI(
       }
     );
 
+    console.log(`📡 Cerebras API response status: ${response.status}`);
+
     if (!response.ok) {
-      throw new Error(`Cerebras API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error(`❌ Cerebras API error ${response.status}:`, errorText);
+      throw new Error(`Cerebras API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('✅ Cerebras API response received successfully');
+
     return (
       data.choices[0]?.message?.content ||
       'Lo siento, no pude generar una respuesta.'
     );
   } catch (error) {
     console.error('❌ Cerebras API call failed:', error);
-    throw new Error('Failed to get AI response');
+    throw new Error(
+      `Failed to get AI response: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
