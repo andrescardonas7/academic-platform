@@ -6,6 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "npx tsc",
+    "build:vercel": "npx tsc --project tsconfig.vercel.json",
     "dev": "npx tsc --watch",
     "clean": "rm -rf dist",
     "lint": "eslint src/**/*.{ts,tsx}",

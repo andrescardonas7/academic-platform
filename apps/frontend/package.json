@@ -18,7 +18,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "analyze": "cross-env ANALYZE=true next build",
-    "vercel-build": "cd ../.. && pnpm install && pnpm build:frontend"
+    "vercel-build": "cd ../.. && pnpm install && pnpm --filter @academic/shared-types build:vercel && pnpm --filter @academic/ui build:vercel && pnpm --filter @academic/frontend build:production"
   },
   "dependencies": {
     "@academic/api-client": "workspace:*",
