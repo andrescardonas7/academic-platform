@@ -30,7 +30,8 @@ export const csrfProtection = (
   // Skip CSRF for chatbot routes during development
   if (
     req.path.startsWith('/api/chatbot/') ||
-    req.path.startsWith('/chatbot/')
+    req.path.startsWith('/chatbot/') ||
+    req.originalUrl.includes('/chatbot/')
   ) {
     return next();
   }

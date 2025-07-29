@@ -1,6 +1,8 @@
+type PaginationQuery = { page?: string | number; limit?: string | number };
+
 // Utilidad para paginación reutilizable en controladores
 export function getPaginationParams(
-  query: any,
+  query: PaginationQuery,
   defaultLimit = 20,
   maxLimit = 100
 ) {

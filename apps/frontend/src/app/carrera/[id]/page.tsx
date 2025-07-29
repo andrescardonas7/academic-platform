@@ -196,7 +196,7 @@ export default function CareerDetailPage() {
                       <span className='text-2xl font-bold text-green-600'>
                         {Number(career.valor_semestre) > 0
                           ? `$${Number(career.valor_semestre).toLocaleString()}`
-                          : 'Gratuito'}
+                          : 'Consultar'}
                       </span>
                     </div>
                   </div>

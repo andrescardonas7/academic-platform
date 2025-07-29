@@ -35,7 +35,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
   className = '',
 }) => {
   const formatCurrency = (amount: number) => {
-    if (amount === 0) return 'Gratuito';
+    if (amount === 0) return 'Consultar';
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
       currency: 'COP',

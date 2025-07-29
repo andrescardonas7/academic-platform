@@ -5,15 +5,7 @@ const API_BASE_URL =
 // Usar la API key desde las= variables de entorno
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
-console.log('🔍 Frontend API Config:', {
-  API_BASE_URL,
-  API_KEY: API_KEY ? `"${API_KEY}"` : 'undefined',
-  fromEnv: process.env.NEXT_PUBLIC_API_KEY
-    ? `"${process.env.NEXT_PUBLIC_API_KEY}"`
-    : 'undefined',
-  NODE_ENV: process.env.NODE_ENV,
-  isClient: typeof window !== 'undefined',
-});
+// API configuration loaded
 
 // Create axios instance with default configuration
 const api = {
@@ -29,21 +21,26 @@ async function request<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  // Ensure baseURL ends with a slash if endpoint starts with a slash
-  const baseUrl =
-    api.baseURL.endsWith('/') || endpoint.startsWith('/')
-      ? api.baseURL
-      : `${api.baseURL}/`;
+  // Corregido: evitar duplicar '/api' en la URL
+  let baseUrl = api.baseURL;
+  let cleanEndpoint = endpoint;
 
-  // Ensure endpoint doesn't start with a slash if baseURL ends with one
-  const cleanEndpoint =
-    baseUrl.endsWith('/') && endpoint.startsWith('/')
-      ? endpoint.substring(1)
-      : endpoint;
+  // Si baseUrl termina con '/api' y endpoint comienza con '/api', elimina uno
+  if (baseUrl.endsWith('/api') && endpoint.startsWith('/api')) {
+    cleanEndpoint = endpoint.replace(/^\/api/, '');
+  }
 
-  const url = `${baseUrl}${cleanEndpoint}`;
+  // Si baseUrl termina con '/' y endpoint comienza con '/', elimina uno
+  if (baseUrl.endsWith('/') && cleanEndpoint.startsWith('/')) {
+    cleanEndpoint = cleanEndpoint.substring(1);
+  }
 
-  console.log('API Request URL:', url); // Debug log
+  // Eliminar todos los dobles slashes excepto después de 'http(s):'
+  const url = `${baseUrl}${baseUrl.endsWith('/') ? '' : '/'}${cleanEndpoint}`
+    .replace(/([^:]\/)\/+/, '$1/')
+    .replace(/([^:]\/)\/+/, '$1/'); // Aplica dos veces para casos consecutivos
+
+  // Optimized: removed debug log for better performance
 
   const config: RequestInit = {
     credentials: 'include', // Include cookies for sessions
@@ -146,3 +143,5 @@ export const apiClient = {
 };
 
 export default apiClient;
+// Agregar importación para RequestInit si no está disponible globalmente
+// import type { RequestInit } from 'node-fetch'; // Descomentar si es necesario
