@@ -11,6 +11,11 @@
 
 ¡Estamos emocionados de anunciar el primer release oficial de Academic Platform! Esta versión incluye una arquitectura completa de monorepo con frontend y backend totalmente funcionales, listos para producción.
 
+### 🚀 Latest Update: Vercel Deployment Fix
+- ✅ Resueltos problemas de variables de entorno en Vercel
+- ✅ Configuración optimizada para despliegue en producción
+- ✅ Variables de entorno seguras configuradas
+
 ## 🏗️ Arquitectura
 
 Este proyecto utiliza una **arquitectura separada** con frontend y backend independientes para mayor escalabilidad y flexibilidad.
