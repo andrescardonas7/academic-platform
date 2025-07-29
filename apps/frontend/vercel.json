@@ -3,14 +3,5 @@
   "outputDirectory": ".next",
   "installCommand": "pnpm install",
   "framework": "nextjs",
-  "regions": ["iad1"],
-  "env": {
-    "SUPABASE_URL": "@supabase-url",
-    "SUPABASE_ANON_KEY": "@supabase-anon-key",
-    "API_KEY": "@api-key",
-    "CEREBRAS_API_KEY": "@cerebras-api-key",
-    "NEXT_PUBLIC_API_URL": "@next-public-api-url",
-    "NEXT_PUBLIC_API_KEY": "@next-public-api-key",
-    "NEXT_PUBLIC_APP_NAME": "@next-public-app-name"
-  }
+  "regions": ["iad1"]
 }
