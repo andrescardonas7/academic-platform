@@ -2,7 +2,8 @@ const axios = require('axios');
 require('dotenv').config();
 
 const API_BASE_URL = 'http://localhost:3001';
-const API_KEY = 'academic-platform-dev-key';
+const API_KEY =
+  'a05a30d9a9334856e510716d590db51e9b1cd9508459cc0891b162e3f6fa814d';
 
 async function testChatbot() {
   console.log('🤖 Testing Chatbot functionality...\n');

@@ -5,18 +5,17 @@ import { AcademicProgram } from '../types/railway';
 export class ContextGenerator implements IContextGenerator {
   generateAcademicContext(academicData: AcademicProgram[]): string {
     if (!academicData?.length) {
-      return 'No hay datos disponibles en la base de datos.';
+      return 'No hay programas disponibles.';
     }
 
-    // KISS: Generate comprehensive context with ALL data
-    const summary = this.generateSummary(academicData);
-    const programsList = this.formatAllPrograms(academicData);
+    // Optimized: Generate concise context for faster processing
+    const programsList = this.formatProgramsCompact(academicData);
 
-    return this.buildContextTemplate(
-      academicData.length,
-      summary,
-      programsList
-    );
+    return `PROGRAMAS EN CARTAGO (${academicData.length} disponibles):
+${programsList}
+
+Modalidades: Presencial, Virtual, Híbrida, Mixta
+Instituciones: Univalle, UAN, UCC, COTECNOVA, ESAP`;
   }
 
   // DRY: Generate summary of available options
@@ -85,6 +84,16 @@ IMPORTANTE: SÍ hay programas VIRTUALES disponibles en Cartago.`;
     return 'OTROS';
   }
 
+  // Optimized: Compact program formatting for faster processing
+  private formatProgramsCompact(programs: AcademicProgram[]): string {
+    return programs
+      .map(
+        (program) =>
+          `${program.carrera} | ${program.institucion} | ${program.modalidad} | ${this.formatPrice(program.valor_semestre)}`
+      )
+      .join('\n');
+  }
+
   // SonarQube: Improved program formatting
   private formatAllPrograms(programs: AcademicProgram[]): string {
     return programs
@@ -109,7 +118,7 @@ IMPORTANTE: SÍ hay programas VIRTUALES disponibles en Cartago.`;
   private formatPrice(price: number): string {
     return price > 0
       ? `$${price.toLocaleString()} COP por semestre`
-      : 'Precio no disponible';
+      : 'Consultar';
   }
 
   private buildContextTemplate(

@@ -325,7 +325,7 @@ const SuggestionsList: React.FC<SuggestionsListProps> = ({
                 </span>
                 {suggestion.valor_semestre === 0 && (
                   <span className='inline-flex items-center px-2 py-1 rounded-full text-xs bg-yellow-100 text-yellow-800'>
-                    Gratuito
+                    Consultar
                   </span>
                 )}
               </div>

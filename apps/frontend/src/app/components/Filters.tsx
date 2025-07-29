@@ -270,7 +270,7 @@ export function Filters({
                   <option value='1000000-3000000'>$1M - $3M</option>
                   <option value='3000000-5000000'>$3M - $5M</option>
                   <option value='5000000+'>Más de $5M</option>
-                  <option value='gratuito'>Gratuito</option>
+                  <option value='gratuito'>Consultar</option>
                 </select>
               </div>
             )}

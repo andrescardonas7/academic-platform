@@ -30,27 +30,34 @@ export function useAcademicData(): UseAcademicDataReturn {
       console.log('🔍 useAcademicData: Starting data fetch...');
 
       const [programsResponse, filtersResponse] = await Promise.all([
-        apiClient.search.offerings({ limit: 100 }), // Obtener hasta 100 programas por defecto
+        apiClient.search.offerings({ limit: 100 }),
         apiClient.search.filters(),
       ]);
 
+      type ProgramsApiResponse = {
+        success?: boolean;
+        data?: AcademicProgram[];
+      };
+      type FiltersApiResponse = { success?: boolean; data?: FilterOptions };
+
+      const pr = programsResponse as ProgramsApiResponse;
+      const fr = filtersResponse as FiltersApiResponse;
+
       console.log('🔍 useAcademicData: API responses received:', {
         programsResponse: {
-          success: (programsResponse as any)?.success,
-          dataLength: (programsResponse as any)?.data?.length || 0,
-          hasData: !!(programsResponse as any)?.data?.length,
+          success: pr.success,
+          dataLength: pr.data?.length || 0,
+          hasData: !!pr.data?.length,
         },
         filtersResponse: {
-          success: (filtersResponse as any)?.success,
-          dataLength: (filtersResponse as any)?.data ? Object.keys((filtersResponse as any).data).length : 0,
+          success: fr.success,
+          dataLength: fr.data ? Object.keys(fr.data).length : 0,
         },
       });
 
-      setPrograms(
-        (programsResponse as { data?: AcademicProgram[] }).data || []
-      );
+      setPrograms(pr.data || []);
       setFilterOptions(
-        (filtersResponse as { data?: FilterOptions }).data || {
+        fr.data || {
           modalidades: [],
           instituciones: [],
           areas: [],

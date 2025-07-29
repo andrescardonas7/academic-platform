@@ -17,8 +17,9 @@ export class SearchService implements ISearchService {
 
   async searchOfferings(filters: SearchFilters = {}): Promise<SearchResult> {
     try {
+      // Optimized: Use smaller default limit for faster responses
       const limit = Math.min(
-        filters.limit || PAGINATION.DEFAULT_LIMIT,
+        filters.limit || 30, // Reduced from PAGINATION.DEFAULT_LIMIT
         PAGINATION.MAX_LIMIT
       );
       const page = Math.max(filters.page || PAGINATION.DEFAULT_PAGE, 1);
@@ -179,7 +180,9 @@ export class SearchService implements ISearchService {
     return fieldMap[sortBy] || 'carrera';
   }
 
-  private applyFilters(query: any, filters: SearchFilters): any {
+  private applyFilters<
+    T extends { or: Function; eq: Function; ilike: Function },
+  >(query: T, filters: SearchFilters): T {
     // KISS: Improved text search with better keyword matching
     if (filters.q?.trim()) {
       const searchTerms = this.normalizeSearchTerms(filters.q.trim());

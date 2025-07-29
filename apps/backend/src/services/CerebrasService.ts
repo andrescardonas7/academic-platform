@@ -1,10 +1,9 @@
-// Refactored CerebrasService - Single Responsibility
-// CEREBRAS configuration for Railway deployment
+// Optimized CerebrasService for faster responses
 const CEREBRAS = {
-  MODEL: 'qwen-3-235b-a22b',
-  CONTEXT_LIMIT: 50, // KISS: Show ALL data for better context
-  MAX_TOKENS: 1500,
-  TEMPERATURE: 0.1, // DRY: Low temperature for precise answers
+  MODEL: 'llama3.1-8b', // Faster model for quicker responses
+  CONTEXT_LIMIT: 30, // Reduced for faster processing
+  MAX_TOKENS: 800, // Reduced for faster generation
+  TEMPERATURE: 0.2, // Slightly higher for more natural responses
 } as const;
 import Cerebras from '@cerebras/cerebras_cloud_sdk';
 import { IChatService } from '../interfaces/IChatService';
@@ -16,6 +15,13 @@ export class CerebrasService implements IChatService {
   private static client: Cerebras;
   private static readonly contextGenerator = new ContextGenerator();
   private static readonly searchService = new SearchService();
+
+  // Cache for faster responses
+  private static responseCache = new Map<
+    string,
+    { response: string; timestamp: number }
+  >();
+  private static readonly CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
   static {
     this.client = new Cerebras({
@@ -36,9 +42,22 @@ export class CerebrasService implements IChatService {
       // Security: Validate and sanitize input
       const sanitizedMessage = this.validateAndSanitizeInput(message);
 
-      console.log('🔍 Processing message (length):', sanitizedMessage.length);
+      // Check cache first for faster responses
+      const cacheKey = sanitizedMessage.toLowerCase().trim();
+      const cached = CerebrasService.responseCache.get(cacheKey);
+      const now = Date.now();
 
-      const academicContext = await this.getAcademicContext(sanitizedMessage);
+      if (cached && now - cached.timestamp < CerebrasService.CACHE_TTL) {
+        console.log('⚡ Cache hit - returning cached response');
+        return cached.response;
+      }
+
+      console.log(
+        '🔍 Processing new message (length):',
+        sanitizedMessage.length
+      );
+
+      const academicContext = await this.getAcademicContext();
       const systemPrompt = this.buildSystemPrompt(academicContext);
 
       const response = await this.callCerebrasAPI(
@@ -46,7 +65,16 @@ export class CerebrasService implements IChatService {
         systemPrompt
       );
 
-      console.log('🤖 Response generated successfully');
+      // Cache the response for future use
+      CerebrasService.responseCache.set(cacheKey, {
+        response,
+        timestamp: now,
+      });
+
+      // Clean old cache entries to prevent memory leaks
+      this.cleanCache();
+
+      console.log('🤖 Response generated and cached successfully');
       return response;
     } catch (error) {
       const appError = ErrorHandler.handle(error);
@@ -66,7 +94,10 @@ export class CerebrasService implements IChatService {
           temperature: 0.1,
         });
 
-      return !!(testCompletion.choices as any)?.[0]?.message?.content;
+      return !!(
+        Array.isArray(testCompletion.choices) &&
+        testCompletion.choices[0]?.message?.content
+      );
     } catch (error) {
       ErrorHandler.logError(
         ErrorHandler.handle(error),
@@ -76,7 +107,7 @@ export class CerebrasService implements IChatService {
     }
   }
 
-  private async getAcademicContext(userMessage?: string): Promise<string> {
+  private async getAcademicContext(): Promise<string> {
     // KISS: Get ALL data first for complete context
     const allDataResult = await CerebrasService.searchService.searchOfferings({
       limit: CEREBRAS.CONTEXT_LIMIT, // Get all 50 programs
@@ -116,26 +147,18 @@ export class CerebrasService implements IChatService {
   }
 
   private buildSystemPrompt(academicContext: string): string {
-    return `Eres "Orienta Cartago", asistente académico especializado en programas educativos de Cartago, Valle del Cauca, Colombia.
+    return `Eres "Orienta Cartago", asistente académico de Cartago, Valle del Cauca, Colombia.
 
-## CONTEXTO COMPLETO DE PROGRAMAS ACADÉMICOS
 ${academicContext}
 
-## INSTRUCCIONES CRÍTICAS
-1. **REVISAR TODO**: Antes de responder, revisa COMPLETAMENTE el contexto anterior
-2. **DATOS DISPONIBLES**: El contexto contiene TODOS los 27 programas disponibles
-3. **NO NEGAR INFORMACIÓN**: Si preguntan por Derecho, Ingenierías o Virtual, SÍ están disponibles
-4. **BUSCAR EXHAUSTIVAMENTE**: Revisa todo el listado antes de decir "no hay información"
+INSTRUCCIONES:
+- Responde en español colombiano, de forma concisa y directa
+- Usa SOLO la información del contexto anterior
+- Formato: **Nombre** - Institución - Modalidad - Precio
+- Máximo 5 programas por respuesta para rapidez
+- Si hay más de 5, menciona "y X programas más disponibles"
 
-## REGLAS DE RESPUESTA
-- Responde SOLO en español colombiano
-- Usa ÚNICAMENTE información del contexto
-- Lista programas con detalles completos: nombre, institución, modalidad, precio
-- Formato claro con viñetas y texto en negrita
-- Si encuentras programas, muéstralos todos
-
-## IMPORTANTE
-Los datos SÍ están en el contexto. Revisa TODO antes de responder.`;
+Responde de forma rápida y precisa.`;
   }
 
   private async callCerebrasAPI(
@@ -155,7 +178,10 @@ Los datos SÍ están en el contexto. Revisa TODO antes de responder.`;
     );
 
     let result = (chatCompletion.choices as any)?.[0]?.message?.content || '';
-    console.log('📊 Tokens used:', (chatCompletion.usage as any)?.total_tokens);
+    console.log(
+      '📊 Tokens used:',
+      (chatCompletion.usage as unknown)?.total_tokens
+    );
 
     // Clean up any unwanted internal process text
     result = this.cleanResponse(result);
@@ -178,6 +204,15 @@ Los datos SÍ están en el contexto. Revisa TODO antes de responder.`;
 
   private getFallbackResponse(): string {
     return '¡Hola! Soy Orienta Cartago, tu asistente de orientación académica. Actualmente tengo algunos problemas técnicos, pero estoy aquí para ayudarte con información sobre programas académicos en Cartago. ¿En qué puedo asistirte?';
+  }
+
+  private cleanCache(): void {
+    const now = Date.now();
+    for (const [key, value] of CerebrasService.responseCache.entries()) {
+      if (now - value.timestamp > CerebrasService.CACHE_TTL) {
+        CerebrasService.responseCache.delete(key);
+      }
+    }
   }
 
   private validateAndSanitizeInput(message: string): string {

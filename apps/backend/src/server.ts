@@ -64,6 +64,7 @@ app.use(
       const allowedOrigins = [
         process.env.CORS_ORIGIN || 'http://localhost:3000',
         'http://localhost:3000',
+        'http://localhost:3002', // Permitir frontend en puerto 3002
         'https://localhost:3000',
         'https://academic-platform.vercel.app',
         'https://academic-platform-git-main-academic-platform.vercel.app',
@@ -76,7 +77,7 @@ app.use(
       if (!origin) return callback(null, true);
 
       // Check if origin matches any allowed pattern
-      const isAllowed = allowedOrigins.some(allowed => {
+      const isAllowed = allowedOrigins.some((allowed) => {
         if (typeof allowed === 'string') {
           return allowed === origin;
         }
@@ -138,7 +139,10 @@ const startServer = async () => {
     try {
       await connectDatabase();
     } catch (dbErr) {
-      console.error('⚠️ Database connection failed, continuing without DB:', dbErr);
+      console.error(
+        '⚠️ Database connection failed, continuing without DB:',
+        dbErr
+      );
     }
 
     app.listen(PORT, () => {
