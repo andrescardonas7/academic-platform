@@ -9,8 +9,8 @@
     "SUPABASE_ANON_KEY": "@supabase-anon-key",
     "API_KEY": "@api-key",
     "CEREBRAS_API_KEY": "@cerebras-api-key",
-    "NEXT_PUBLIC_API_URL": "/api",
-    "NEXT_PUBLIC_API_KEY": "@api-key",
-    "NEXT_PUBLIC_APP_NAME": "Academic Platform"
+    "NEXT_PUBLIC_API_URL": "@next-public-api-url",
+    "NEXT_PUBLIC_API_KEY": "@next-public-api-key",
+    "NEXT_PUBLIC_APP_NAME": "@next-public-app-name"
   }
 }
