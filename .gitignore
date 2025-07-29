@@ -36,6 +36,7 @@ packages/*/.env
 *.pfx
 secrets/
 config/secrets/
+scripts/migrate-to-vercel.js
 
 # Logs
 logs/

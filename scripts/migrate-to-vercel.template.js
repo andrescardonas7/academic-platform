@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Script para migrar completamente a Vercel
+ * Script template para migrar completamente a Vercel
+ * IMPORTANTE: Copia este archivo a migrate-to-vercel.js y reemplaza los valores [YOUR_*]
  * Ejecutar: node scripts/migrate-to-vercel.js
  */
 
