@@ -70,32 +70,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate Cerebras API key
-    if (!process.env.CEREBRAS_API_KEY) {
-      console.error('❌ CEREBRAS_API_KEY not configured');
-      return NextResponse.json(
-        {
-          error: 'Service Unavailable',
-          message: 'Chatbot service not configured - missing CEREBRAS_API_KEY',
-        },
-        { status: 503 }
-      );
-    }
-
-    console.log('✅ Cerebras API key configured, proceeding with request');
-
     // Get academic context from database
     const academicContext = await getAcademicContext(message);
-    const systemPrompt = buildSystemPrompt(academicContext);
 
-    console.log('✅ Academic context retrieved, calling Cerebras API');
+    // Try Cerebras AI first, fallback to basic response
+    let response: string;
 
-    // Call Cerebras API
-    const response = await callCerebrasAPI(message, systemPrompt);
+    if (process.env.CEREBRAS_API_KEY) {
+      console.log('✅ Cerebras API key configured, proceeding with AI request');
+      try {
+        const systemPrompt = buildSystemPrompt(academicContext);
+        console.log('✅ Academic context retrieved, calling Cerebras API');
+        response = await callCerebrasAPI(message, systemPrompt);
+      } catch (error) {
+        console.error('❌ Cerebras API failed, using fallback:', error);
+        response = generateFallbackResponse(message, academicContext);
+      }
+    } else {
+      console.log(
+        '⚠️ Cerebras API key not configured, using fallback response'
+      );
+      response = generateFallbackResponse(message, academicContext);
+    }
 
     return NextResponse.json({
       success: true,
-      response,
+      data: {
+        message: response
+      },
       context: academicContext.length,
     });
   } catch (error) {
@@ -237,4 +239,49 @@ async function callCerebrasAPI(
       `Failed to get AI response: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
+}
+
+function generateFallbackResponse(
+  message: string,
+  academicContext: any[]
+): string {
+  const lowerMessage = message.toLowerCase();
+
+  // Si tenemos contexto académico, lo incluimos en la respuesta
+  if (academicContext.length > 0) {
+    const programs = academicContext.slice(0, 3); // Mostrar máximo 3 programas
+    let response = `He encontrado ${academicContext.length} programa(s) relacionado(s) con tu consulta:\n\n`;
+
+    programs.forEach((program, index) => {
+      response += `${index + 1}. **${program.carrera}**\n`;
+      response += `   - Institución: ${program.institucion}\n`;
+      response += `   - Modalidad: ${program.modalidad}\n`;
+      response += `   - Nivel: ${program.nivel_programa}\n`;
+      if (program.duracion_semestres) {
+        response += `   - Duración: ${program.duracion_semestres} semestres\n`;
+      }
+      if (program.valor_semestre) {
+        response += `   - Valor semestre: $${program.valor_semestre.toLocaleString()}\n`;
+      }
+      response += '\n';
+    });
+
+    if (academicContext.length > 3) {
+      response += `Y ${academicContext.length - 3} programa(s) más. Usa los filtros de búsqueda para ver todos los resultados.`;
+    }
+
+    return response;
+  }
+
+  // Respuestas básicas sin contexto específico
+  if (lowerMessage.includes('hola') || lowerMessage.includes('saludo')) {
+    return '¡Hola! Soy tu asistente para encontrar programas académicos en Colombia. ¿En qué carrera o institución estás interesado?';
+  }
+
+  if (lowerMessage.includes('ayuda') || lowerMessage.includes('help')) {
+    return 'Te puedo ayudar a encontrar información sobre:\n- Carreras universitarias\n- Instituciones educativas\n- Modalidades de estudio\n- Costos y duración de programas\n\n¿Qué te interesa saber?';
+  }
+
+  // Respuesta general cuando no hay coincidencias
+  return `No encontré programas específicos para "${message}". Te sugiero:\n\n1. Usar términos más generales (ej: "ingeniería", "medicina", "administración")\n2. Buscar por institución (ej: "Universidad Nacional")\n3. Explorar las opciones disponibles en la página principal\n\n¿Puedes intentar con una búsqueda más específica?`;
 }

@@ -25,13 +25,7 @@
       "@/utils/*": ["./src/utils/*"],
       "@/store/*": ["./src/store/*"],
       "@/types/*": ["./src/types/*"],
-      "@/config/*": ["./src/config/*"],
-      "@academic/api-client": ["../../packages/api-client/src"],
-      "@academic/api-client/*": ["../../packages/api-client/src/*"],
-      "@academic/shared-types": ["../../packages/shared-types/src"],
-      "@academic/shared-types/*": ["../../packages/shared-types/src/*"],
-      "@academic/ui": ["../../packages/ui/src"],
-      "@academic/ui/*": ["../../packages/ui/src/*"]
+      "@/config/*": ["./src/config/*"]
     },
     "plugins": [
       {

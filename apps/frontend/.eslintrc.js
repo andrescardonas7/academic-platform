@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ['next'],
+  extends: ['next/core-web-vitals'],
   rules: {
     '@typescript-eslint/no-explicit-any': 'off', // Temporarily disable for tests
     'react/no-unescaped-entities': 'off', // Allow quotes in JSX
